@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="resume_type_elearning_certificate" model="hr.resume.line.type">
+            <field name="name">Chứng chỉ eLearning</field>
+            <field name="sequence">25</field>
+        </record>
+    </data>
+</odoo>

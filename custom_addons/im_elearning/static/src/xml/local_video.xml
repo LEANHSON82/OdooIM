@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="im_elearning.fullscreen.video.local">
+        <div class="o_im_fs_video_local player ratio ratio-16x9 h-100">
+            <video class="o_im_fs_video_local_player"
+                   controls="controls"
+                   controlsList="nodownload"
+                   preload="metadata"
+                   playsinline="playsinline"
+                   webkit-playsinline="webkit-playsinline"
+                   t-att-src="widget.videoUrl">
+                Trình duyệt của bạn không phát được video này.
+            </video>
+        </div>
+    </t>
+
+</templates>

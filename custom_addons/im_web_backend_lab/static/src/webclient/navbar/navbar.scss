@@ -1,0 +1,45 @@
+// ImNavBar — Home menu toggle + transparent navbar on home screen
+
+.o_home_menu_toggle {
+    order: -1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    margin-right: 4px;
+    border-radius: 8px;
+    color: inherit;
+    transition: background 0.15s, color 0.15s;
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    &.active {
+        background: rgba(255, 255, 255, 0.15);
+    }
+}
+
+// Always show user login name next to avatar on desktop
+.o_user_menu .oe_topbar_name {
+    @media (min-width: 992px) {
+        display: inline-block !important;
+    }
+}
+
+// When home menu is open
+body.o_home_menu_background {
+    .o_menu_brand,
+    .o_menu_sections {
+        display: none !important;
+    }
+    .o_action_manager {
+        display: none !important;
+    }
+    .o_main_navbar {
+        background: transparent !important;
+        border-bottom-color: transparent !important;
+        box-shadow: none !important;
+    }
+}

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <template id="im_webclient_bootstrap" inherit_id="web.webclient_bootstrap"
+              name="InMotion WebClient Bootstrap">
+        <xpath expr="//meta[@name='theme-color']" position="attributes">
+            <attribute name="content">#2563eb</attribute>
+        </xpath>
+    </template>
+</odoo>

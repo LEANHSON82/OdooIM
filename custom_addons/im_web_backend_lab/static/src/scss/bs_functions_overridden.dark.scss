@@ -1,0 +1,9 @@
+/// Invert tint/shade for dark backgrounds
+
+@function tint-color($color, $weight) {
+    @return mix(#000, $color, $weight);    // CE: mix with #FFF
+}
+
+@function shade-color($color, $weight) {
+    @return mix(#FFF, $color, $weight);    // CE: mix with #000
+}

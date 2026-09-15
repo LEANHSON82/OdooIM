@@ -1,0 +1,171 @@
+// Home Menu — App Grid Layout
+
+.o_home_menu {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem 1rem;
+    flex: 1 1 auto;
+    overflow: auto;
+    width: 100%;
+    box-sizing: border-box;
+
+    body.o_home_menu_background & {
+        display: flex;
+    }
+}
+
+// Search Bar
+.o_home_menu_search {
+    width: 100%;
+    max-width: 400px;
+    margin-bottom: 2rem;
+
+    .o_home_menu_search_wrap {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .o_home_menu_search_icon {
+        position: absolute;
+        left: 12px;
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 14px;
+        pointer-events: none;
+        z-index: 1;
+    }
+
+    .o_home_menu_search_input {
+        width: 100%;
+        padding: 10px 36px 10px 36px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(8px);
+        color: #fff;
+        font-size: 15px;
+        outline: none;
+        transition: border-color 0.2s, background 0.2s;
+
+        &::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        &:focus {
+            border-color: rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.15);
+        }
+    }
+
+    .o_home_menu_search_clear {
+        position: absolute;
+        right: 4px;
+        color: rgba(255, 255, 255, 0.6);
+        padding: 4px 8px;
+
+        &:hover {
+            color: #fff;
+        }
+    }
+}
+
+// App Grid — responsive columns
+.o_home_menu_grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 1.75rem;
+    width: 100%;
+    max-width: 900px;
+    justify-items: center;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 2rem;
+
+    @media (max-width: 768px) {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.25rem;
+        max-width: 600px;
+    }
+
+    @media (max-width: 576px) {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+        max-width: 440px;
+    }
+}
+
+// Single App
+.o_app {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    padding: 12px 8px;
+    border-radius: 12px;
+    transition: background 0.15s, transform 0.15s;
+    cursor: pointer;
+    width: 100%;
+    max-width: 120px;
+
+    &:hover,
+    &.o_focused {
+        background: rgba(255, 255, 255, 0.1);
+        transform: scale(1.05);
+    }
+
+    &:active {
+        transform: scale(0.98);
+    }
+
+    .o_app_icon {
+        width: 88px;
+        height: 88px;
+        border-radius: 20px;
+        overflow: hidden;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.08);
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .o_app_icon_placeholder {
+            font-size: 36px;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.7);
+            text-transform: uppercase;
+        }
+
+        @media (max-width: 576px) {
+            width: 68px;
+            height: 68px;
+            border-radius: 16px;
+        }
+    }
+
+    .o_caption {
+        font-size: 13px;
+        font-weight: 500;
+        text-align: center;
+        line-height: 1.3;
+        word-break: break-word;
+        color: #e2e8f0;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+        max-width: 110px;
+    }
+}
+
+// Empty state
+.o_home_menu_empty {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.6);
+    padding: 2rem;
+    font-size: 14px;
+}

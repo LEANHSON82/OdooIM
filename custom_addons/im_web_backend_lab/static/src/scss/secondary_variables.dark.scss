@@ -1,0 +1,10 @@
+/// Dark tag/kanban colors — saturated + mixed with white for visibility
+
+$o-colors-original: lighten(#000, 46.7%), #e74e4e, #f4b660, #F7CD1F, #6cedeb, #8d5482,
+              #f07b50, #2C8397, #475577, #dc0457, #30C381, #9365B8 !default;
+
+$o-colors: () !default;
+@each $-color in $o-colors-original {
+    $-adjusted: saturate(mix($-color, $o-black, 50%), 60%);
+    $o-colors: append($o-colors, $-adjusted);
+}

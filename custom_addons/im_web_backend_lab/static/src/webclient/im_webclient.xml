@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+<t t-name="im_web_backend_lab.ImWebClient">
+    <t t-if="!state.fullscreen">
+        <NavBar/>
+    </t>
+    <HomeMenu/>
+    <ActionContainer/>
+    <MainComponentsContainer/>
+</t>
+
+</templates>

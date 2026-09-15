@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_slide_move_section_form" model="ir.ui.view">
+        <field name="name">im.slide.move.section.form</field>
+        <field name="model">im.slide.move.section</field>
+        <field name="arch" type="xml">
+            <form string="Chuyển bài giảng sang phần khác">
+                <group>
+                    <field name="channel_id" readonly="1"/>
+                    <field name="section_id" options="{'no_create': True}"/>
+                </group>
+                <field name="slide_ids" nolabel="1" readonly="1">
+                    <list>
+                        <field name="sequence" column_invisible="1"/>
+                        <field name="name"/>
+                        <field name="category_id" string="Phần hiện tại"/>
+                    </list>
+                </field>
+                <div class="text-muted mt-2">
+                    Các bài giảng được chuyển xuống ngay sau phần đã chọn, giữ nguyên
+                    thứ tự tương đối giữa chúng. Để trống ô phần thì chuyển xuống cuối
+                    khoá học.
+                </div>
+                <footer>
+                    <button name="action_move" type="object" string="Chuyển"
+                            class="btn-primary"/>
+                    <button special="cancel" string="Huỷ" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_slide_move_section" model="ir.actions.act_window">
+        <field name="name">Chuyển sang phần khác</field>
+        <field name="res_model">im.slide.move.section</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="website_slides.model_slide_slide"/>
+        <field name="binding_view_types">list</field>
+        <field name="group_ids" eval="[(4, ref('website_slides.group_website_slides_officer'))]"/>
+    </record>
+</odoo>

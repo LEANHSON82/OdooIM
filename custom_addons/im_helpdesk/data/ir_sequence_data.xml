@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Sequence mã ticket dùng để sinh ticket ID helpdesk dễ đọc. -->
+<odoo>
+    <data noupdate="1">
+        <record id="seq_helpdesk_ticket" model="ir.sequence">
+            <field name="name">Helpdesk Ticket</field>
+            <field name="code">helpdesk.ticket</field>
+            <field name="prefix">HD-</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+    </data>
+</odoo>

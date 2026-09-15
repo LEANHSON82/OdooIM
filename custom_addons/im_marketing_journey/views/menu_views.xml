@@ -1,0 +1,24 @@
+<odoo>
+    <menuitem id="menu_im_marketing_journey_root" 
+              name="Marketing Automation" 
+              parent="crm.crm_menu_root" 
+              sequence="25"/>
+
+    <menuitem id="menu_im_journey" 
+              name="Kịch bản Marketing" 
+              parent="menu_im_marketing_journey_root" 
+              action="action_im_journey" 
+              sequence="10"/>
+
+    <menuitem id="menu_im_journey_participant" 
+              name="Đối tượng tham gia" 
+              parent="menu_im_marketing_journey_root" 
+              action="action_im_journey_participant" 
+              sequence="20"/>
+
+    <menuitem id="menu_im_journey_log" 
+              name="Nhật ký gửi tin" 
+              parent="menu_im_marketing_journey_root" 
+              action="action_im_journey_log" 
+              sequence="30"/>
+</odoo>

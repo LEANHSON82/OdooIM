@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_slide_slide_form_local_video" model="ir.ui.view">
+        <field name="name">slide.slide.form.local.video</field>
+        <field name="model">slide.slide</field>
+        <field name="inherit_id" ref="website_slides.view_slide_slide_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='video_url']" position="attributes">
+                <attribute name="required">slide_category == 'video' and not video_binary_content</attribute>
+                <attribute name="string">Liên kết video</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='video_url']" position="after">
+                <field name="video_binary_content" widget="im_video_upload"
+                       string="Hoặc tải tệp video lên"
+                       invisible="slide_category != 'video'"/>
+                <div class="text-muted" colspan="2" invisible="slide_category != 'video'">
+                    Dán liên kết YouTube / Vimeo / Google Drive, hoặc tải thẳng tệp
+                    video lên nếu nội dung không được phép đưa ra nền tảng công cộng.
+                    Tệp tải lên chỉ phát cho học viên đã tham gia khoá.
+                </div>
+                <field name="video_source_type" invisible="1"/>
+            </xpath>
+
+        </field>
+    </record>
+
+    <record id="view_slide_slide_list_quick_edit" model="ir.ui.view">
+        <field name="name">slide.slide.list.quick.edit</field>
+        <field name="model">slide.slide</field>
+        <field name="inherit_id" ref="website_slides.view_slide_slide_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='category_id']" position="attributes">
+                <attribute name="readonly">0</attribute>
+                <attribute name="optional">show</attribute>
+                <attribute name="string">Phần</attribute>
+                <attribute name="options">{'no_create': True, 'no_open': True}</attribute>
+                <attribute name="domain">[('channel_id', '=', channel_id), ('is_category', '=', True)]</attribute>
+            </xpath>
+            <xpath expr="//field[@name='category_id']" position="after">
+                <field name="is_preview" string="Xem trước" optional="show"
+                       widget="boolean_toggle"/>
+                <field name="is_category" column_invisible="1"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

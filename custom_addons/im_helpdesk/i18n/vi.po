@@ -1,0 +1,2648 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* im_helpdesk
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-02 00:57+0000\n"
+"PO-Revision-Date: 2026-06-03 09:10+0000\n"
+"Last-Translator: Codex\n"
+"Language-Team: Vietnamese\n"
+"Language: vi\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_team__open_ticket_count
+msgid "# Open Tickets"
+msgstr "Số phiếu đang mở"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_team__rating_count
+msgid "# Ratings"
+msgstr "Số đánh giá"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_team__sla_policy_count
+msgid "# SLA Policy"
+msgstr "Số chính sách SLA"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_team__urgent_ticket
+msgid "# Urgent Ticket"
+msgstr "Số phiếu khẩn cấp"
+
+#. module: im_helpdesk
+#. odoo-python
+#: code:addons/im_helpdesk/models/res_partner.py:0
+msgid "%(partner_name)s's Tickets"
+msgstr "Phiếu của %(partner_name)s"
+
+#. module: im_helpdesk
+#. odoo-python
+#: code:addons/im_helpdesk/models/helpdesk_sla.py:0
+#: code:addons/im_helpdesk/models/helpdesk_team.py:0
+#: code:addons/im_helpdesk/models/helpdesk_ticket.py:0
+msgid "%s (copy)"
+msgstr "%s (bản sao)"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.ticket_invitation_follower
+msgid ""
+",<br/><br/>\n"
+"    You have been invited to follow Ticket:"
+msgstr ""
+",<br/><br/>\n"
+"    Bạn đã được mời theo dõi phiếu:"
+
+#. module: im_helpdesk
+#: model:mail.template,body_html:im_helpdesk.rating_ticket_request_email_template
+msgid ""
+"<div>\n"
+"    <t t-set=\"access_token\" t-value=\"object._rating_get_access_token()\"/>\n"
+"    <t t-set=\"partner\" t-value=\"object._rating_get_partner()\"/>\n"
+"    <t t-if=\"partner.name\">Hello <t t-out=\"partner.name\">Brandon Freeman</t>,<br/><br/></t>\n"
+"    <t t-else=\"\">Hello,<br/></t>\n"
+"    Please take a moment to rate our services related to the ticket\n"
+"    \"<strong t-out=\"object.name or ''\">Table legs are unbalanced</strong>\"<br/><br/>\n"
+"    <table style=\"width:100%;text-align:center;margin-top:2rem;\">\n"
+"        <tr>\n"
+"            <td><a t-attf-href=\"/rate/{{ access_token }}/5\"><img alt=\"Happy\" src=\"/rating/static/src/img/rating_5.png\" title=\"Happy\"/></a></td>\n"
+"            <td><a t-attf-href=\"/rate/{{ access_token }}/3\"><img alt=\"Neutral\" src=\"/rating/static/src/img/rating_3.png\" title=\"Neutral\"/></a></td>\n"
+"            <td><a t-attf-href=\"/rate/{{ access_token }}/1\"><img alt=\"Unhappy\" src=\"/rating/static/src/img/rating_1.png\" title=\"Unhappy\"/></a></td>\n"
+"        </tr>\n"
+"    </table>\n"
+"    <br/>We appreciate your feedback.\n"
+"</div>\n"
+"        "
+msgstr ""
+"<div>\n"
+"    <t t-set=\"access_token\" t-value=\"object._rating_get_access_token()\"/>\n"
+"    <t t-set=\"partner\" t-value=\"object._rating_get_partner()\"/>\n"
+"    <t t-if=\"partner.name\">Xin chào <t t-out=\"partner.name\">Brandon Freeman</t>,<br/><br/></t>\n"
+"    <t t-else=\"\">Xin chào,<br/></t>\n"
+"    Vui lòng dành chút thời gian đánh giá dịch vụ của chúng tôi liên quan đến phiếu\n"
+"    \"<strong t-out=\"object.name or ''\">Chân bàn bị lệch</strong>\"<br/><br/>\n"
+"    <table style=\"width:100%;text-align:center;margin-top:2rem;\">\n"
+"        <tr>\n"
+"            <td><a t-attf-href=\"/rate/{{ access_token }}/5\"><img alt=\"Hài lòng\" src=\"/rating/static/src/img/rating_5.png\" title=\"Hài lòng\"/></a></td>\n"
+"            <td><a t-attf-href=\"/rate/{{ access_token }}/3\"><img alt=\"Bình thường\" src=\"/rating/static/src/img/rating_3.png\" title=\"Bình thường\"/></a></td>\n"
+"            <td><a t-attf-href=\"/rate/{{ access_token }}/1\"><img alt=\"Không hài lòng\" src=\"/rating/static/src/img/rating_1.png\" title=\"Không hài lòng\"/></a></td>\n"
+"        </tr>\n"
+"    </table>\n"
+"    <br/>Cảm ơn phản hồi của bạn.\n"
+"</div>\n"
+"        "
+
+#. module: im_helpdesk
+#: model:mail.template,body_html:im_helpdesk.solved_ticket_request_email_template
+msgid ""
+"<div>\n"
+"    Dear <t t-out=\"object.sudo().partner_id.name or 'Madam/Sir'\">Madam/Sir</t>,<br/><br/>\n"
+"    We would like to inform you that we have closed your ticket (reference <t t-out=\"object.id or ''\">15</t>).\n"
+"    We trust that the services provided have met your expectations.<br/><br/>\n"
+"    If you have any further questions, please reply to this email to re-open your ticket.<br/><br/>\n"
+"    Kind regards,<br/><br/>\n"
+"    <t t-out=\"object.team_id.name or 'Helpdesk'\">Helpdesk</t> Team.\n"
+"</div>\n"
+"        "
+msgstr ""
+"<div>\n"
+"    Kính gửi <t t-out=\"object.sudo().partner_id.name or 'Quý khách'\">Quý khách</t>,<br/><br/>\n"
+"    Chúng tôi xin thông báo rằng phiếu của bạn đã được đóng (tham chiếu <t t-out=\"object.id or ''\">15</t>).\n"
+"    Hy vọng dịch vụ đã đáp ứng mong đợi của bạn.<br/><br/>\n"
+"    Nếu bạn còn câu hỏi nào khác, vui lòng trả lời email này để mở lại phiếu.<br/><br/>\n"
+"    Trân trọng,<br/><br/>\n"
+"    Đội <t t-out=\"object.team_id.name or 'Hỗ trợ'\">Hỗ trợ</t>.\n"
+"</div>\n"
+"        "
+
+#. module: im_helpdesk
+#: model:mail.template,body_html:im_helpdesk.new_ticket_request_email_template
+msgid ""
+"<div>\n"
+"    Dear <t t-out=\"object.sudo().partner_id.name or object.sudo().partner_name or 'Madam/Sir'\">Madam/Sir</t>,<br/><br/>\n"
+"    Your request has been received and is being reviewed by our\n"
+"    <t t-out=\"object.team_id.name or ''\">VIP Support</t> team.<br/><br/>\n"
+"    The reference for your ticket is <strong><t t-out=\"object.ticket_ref or ''\">00001</t></strong>.<br/><br/>\n"
+"    To provide any additional information, simply reply to this email.<br/><br/>\n"
+"    <div style=\"text-align: center; padding: 16px 0px 16px 0px;\">\n"
+"        <a t-attf-style=\"background-color: #875A7B; padding: 8px 16px; text-decoration: none; color: #FFFFFF; border-radius: 5px; font-size:13px;\" t-att-href=\"object.get_portal_url()\" target=\"_blank\">View Ticket</a>\n"
+"    </div>\n"
+"    Best regards,<br/><br/>\n"
+"    <t t-out=\"object.team_id.name or 'Helpdesk'\">Helpdesk</t> Team\n"
+"</div>\n"
+"        "
+msgstr ""
+"<div>\n"
+"    Kính gửi <t t-out=\"object.sudo().partner_id.name or object.sudo().partner_name or 'Quý khách'\">Quý khách</t>,<br/><br/>\n"
+"    Yêu cầu của bạn đã được tiếp nhận và đang được đội\n"
+"    <t t-out=\"object.team_id.name or ''\">Hỗ trợ VIP</t> xem xét.<br/><br/>\n"
+"    Mã tham chiếu phiếu của bạn là <strong><t t-out=\"object.ticket_ref or ''\">00001</t></strong>.<br/><br/>\n"
+"    Để bổ sung thông tin, bạn chỉ cần trả lời email này.<br/><br/>\n"
+"    <div style=\"text-align: center; padding: 16px 0px 16px 0px;\">\n"
+"        <a t-attf-style=\"background-color: #875A7B; padding: 8px 16px; text-decoration: none; color: #FFFFFF; border-radius: 5px; font-size:13px;\" t-att-href=\"object.get_portal_url()\" target=\"_blank\">Xem phiếu</a>\n"
+"    </div>\n"
+"    Trân trọng,<br/><br/>\n"
+"    Đội <t t-out=\"object.team_id.name or 'Hỗ trợ'\">Hỗ trợ</t>\n"
+"</div>\n"
+"        "
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_team_view_kanban
+msgid "<i class=\"fa fa-envelope-o\" title=\"Email Alias\"/>"
+msgstr "<i class=\"fa fa-envelope-o\" title=\"Bí danh email\"/>"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_team_view_form
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_ticket_view_form
+msgid ""
+"<i class=\"fa fa-fw o_button_icon fa-smile-o text-success\" invisible=\"rating_avg &lt; 3.66\" title=\"Happy\"/>\n"
+"                            <i class=\"fa fa-fw o_button_icon fa-meh-o text-warning\" invisible=\"rating_avg &lt; 2.33 or rating_avg &gt;= 3.66\" title=\"Neutral\"/>\n"
+"                            <i class=\"fa fa-fw o_button_icon fa-frown-o text-danger\" invisible=\"rating_avg &gt;= 2.33\" title=\"Unhappy\"/>"
+msgstr ""
+"<i class=\"fa fa-fw o_button_icon fa-smile-o text-success\" invisible=\"rating_avg < 3.66\" title=\"Hài lòng\"/>\n"
+"                            <i class=\"fa fa-fw o_button_icon fa-meh-o text-warning\" invisible=\"rating_avg < 2.33 or rating_avg >= 3.66\" title=\"Bình thường\"/>\n"
+"                            <i class=\"fa fa-fw o_button_icon fa-frown-o text-danger\" invisible=\"rating_avg >= 2.33\" title=\"Không hài lòng\"/>"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_ticket_view_form
+msgid "<i class=\"fa fa-lg fa-clock-o me-2 mt-1\" title=\"SLA Deadline\"/>"
+msgstr "<i class=\"fa fa-lg fa-clock-o me-2 mt-1\" title=\"Hạn SLA\"/>"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_team_view_form
+msgid ""
+"<i class=\"fa fa-lightbulb-o\" title=\"Tip\"/>\n"
+"                                    <span class=\"ms-2\">A rating request will be sent when ticket reaches a stage with email template.</span>"
+msgstr ""
+"<i class=\"fa fa-lightbulb-o\" title=\"Mẹo\"/>\n"
+"                                    <span class=\"ms-2\">Yêu cầu đánh giá sẽ được gửi khi phiếu đạt đến giai đoạn có mẫu email.</span>"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_team_view_form
+msgid "<i class=\"fa fa-lightbulb-o\" title=\"Tip\"/>&amp;nbsp;"
+msgstr "<i class=\"fa fa-lightbulb-o\" title=\"Mẹo\"/>&amp;nbsp;"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_team_view_form
+msgid "<i class=\"fa fa-warning\" title=\"Warning\"/>&amp;nbsp;"
+msgstr "<i class=\"fa fa-warning\" title=\"Cảnh báo\"/>&amp;nbsp;"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.portal_helpdesk_ticket
+msgid "<small>#</small>"
+msgstr "<small>#</small>"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.tickets_followup
+msgid "<small>Stage:</small>"
+msgstr "<small>Giai đoạn:</small>"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_ticket_view_form
+msgid ""
+"<span class=\"fa fa-exclamation-triangle text-warning oe_edit_only\" "
+"title=\"By saving, customer phone will also be updated.\" invisible=\"not "
+"is_partner_phone_update\"/>"
+msgstr ""
+"<span class=\"fa fa-exclamation-triangle text-warning oe_edit_only\" "
+"title=\"Khi lưu, số điện thoại khách hàng cũng sẽ được cập nhật.\" "
+"invisible=\"not is_partner_phone_update\"/>"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.view_partner_form_inherit_helpdesk
+msgid "<span class=\"o_stat_text\"> Tickets</span>"
+msgstr "<span class=\"o_stat_text\"> Phiếu</span>"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_team_view_form
+msgid "<span class=\"o_stat_text\">Avg. Rating</span>"
+msgstr "<span class=\"o_stat_text\">Đánh giá TB</span>"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_ticket_view_form
+msgid "<span class=\"o_stat_text\">Open</span>"
+msgstr "<span class=\"o_stat_text\">Mở</span>"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_ticket_view_form
+msgid "<span class=\"o_stat_text\">Portal Link</span>"
+msgstr "<span class=\"o_stat_text\">Liên kết portal</span>"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_ticket_view_form
+msgid "<span class=\"o_stat_text\">Rating</span>"
+msgstr "<span class=\"o_stat_text\">Đánh giá</span>"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_ticket_view_form
+msgid "<span class=\"o_stat_text\">Tickets</span>"
+msgstr "<span class=\"o_stat_text\">Phiếu</span>"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_team_view_kanban
+msgid "<span class=\"text-muted\">Failed</span>"
+msgstr "<span class=\"text-muted\">Không đạt</span>"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_team_view_kanban
+msgid "<span class=\"text-muted\">Open</span>"
+msgstr "<span class=\"text-muted\">Mở</span>"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_team_view_kanban
+msgid "<span class=\"text-muted\">Unassigned</span>"
+msgstr "<span class=\"text-muted\">Chưa phân công</span>"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_team_view_kanban
+msgid "<span class=\"text-muted\">Urgent</span>"
+msgstr "<span class=\"text-muted\">Khẩn cấp</span>"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_team_view_form
+msgid "<span><b>Followers </b></span>"
+msgstr "<span><b>Người theo dõi </b></span>"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_team_view_kanban
+msgid "<span>Reporting</span>"
+msgstr "<span>Báo cáo</span>"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_team_view_kanban
+msgid "<span>SLA Success Rate</span>"
+msgstr "<span>Tỷ lệ SLA đạt</span>"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_team_view_kanban
+msgid "<span>Tickets Closed</span>"
+msgstr "<span>Phiếu đã đóng</span>"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_team_view_kanban
+msgid "<span>View</span>"
+msgstr "<span>Xem</span>"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.tickets_followup
+msgid "<span>Your ticket has successfully been closed.</span>"
+msgstr "<span>Phiếu của bạn đã được đóng thành công.</span>"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_team_view_form
+msgid "<span>days of inactivity</span>"
+msgstr "<span>ngày không hoạt động</span>"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.tickets_followup
+msgid "<strong class=\"col-lg-3\">Reported on</strong>"
+msgstr "<strong class=\"col-lg-3\">Báo cáo vào</strong>"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_team_view_form
+msgid "<strong>After</strong>"
+msgstr "<strong>Sau</strong>"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_team_view_form
+msgid "<strong>Alias </strong>"
+msgstr "<strong>Bí danh </strong>"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,help:im_helpdesk.field_helpdesk_team__alias_defaults
+msgid ""
+"A Python dictionary that will be evaluated to provide default values when "
+"creating new records for this alias."
+msgstr ""
+"Thư viên Python sẽ được biểu thị/đánh giá để cung cấp các giá trị mặc định "
+"khi tạo mới các bản ghi cho bí danh này."
+
+#. module: im_helpdesk
+#: model:ir.model.constraint,message:im_helpdesk.constraint_helpdesk_tag_assignment_tag_team_unique
+msgid "A tag can only be used once per team."
+msgstr "Mỗi thẻ chỉ có thể được dùng một lần cho mỗi đội."
+
+#. module: im_helpdesk
+#: model:ir.model.constraint,message:im_helpdesk.constraint_helpdesk_tag_name_uniq
+msgid "A tag with the same name already exists."
+msgstr "Thẻ có cùng tên đã tồn tại."
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_team__description
+msgid "About Team"
+msgstr "Giới thiệu đội"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_team_view_form
+msgid "Accept Emails From"
+msgstr "Chấp nhận email từ"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__access_warning
+msgid "Access warning"
+msgstr "Cảnh báo truy cập"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_team__message_needaction
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__message_needaction
+msgid "Action Needed"
+msgstr "Tác vụ cần thiết"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_sla__active
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_sla_report_analysis__active
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_stage__active
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_team__active
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__active
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket_report_analysis__active
+msgid "Active"
+msgstr "Đang hoạt động"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__activity_ids
+msgid "Activities"
+msgstr "Hoạt động"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr "Hoạt động ngoại lệ"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__activity_state
+msgid "Activity State"
+msgstr "Trạng thái hoạt động"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__activity_type_icon
+msgid "Activity Type Icon"
+msgstr "Biểu tượng loại hoạt động"
+
+#. module: im_helpdesk
+#: model:ir.actions.act_window,name:im_helpdesk.mail_activity_type_action_config_helpdesk
+#: model:ir.ui.menu,name:im_helpdesk.helpdesk_menu_config_activity_type
+msgid "Activity Types"
+msgstr "Loại hoạt động"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_ticket_view_form
+msgid "Add details about this ticket..."
+msgstr "Thêm chi tiết về phiếu này..."
+
+#. module: im_helpdesk
+#: model:res.groups,name:im_helpdesk.group_helpdesk_manager
+msgid "Administrator"
+msgstr "Quản trị viên"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_team__alias_id
+msgid "Alias"
+msgstr "Bí danh"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_team__alias_contact
+msgid "Alias Contact Security"
+msgstr "Bảo mật bí danh liên hệ"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_team__alias_domain_id
+msgid "Alias Domain"
+msgstr "Miền bí danh"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_team__alias_domain
+msgid "Alias Domain Name"
+msgstr "Tên miền bí danh"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_team__alias_full_name
+msgid "Alias Email"
+msgstr "Email bí danh"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_team__alias_name
+msgid "Alias Name"
+msgstr "Tên bí danh"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_team__alias_status
+msgid "Alias Status"
+msgstr "Trạng thái bí danh"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,help:im_helpdesk.field_helpdesk_team__alias_status
+msgid "Alias status assessed on the last message received."
+msgstr "Trạng thái bí danh được ước tính trong tin nhắn đã nhận gần đây nhất."
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_team__alias_model_id
+msgid "Aliased Model"
+msgstr "Mô hình bí danh"
+
+#. module: im_helpdesk
+#. odoo-python
+#: code:addons/im_helpdesk/controllers/portal.py:0
+msgid "All"
+msgstr "Tất cả"
+
+#. module: im_helpdesk
+#: model:ir.actions.act_window,name:im_helpdesk.helpdesk_ticket_action_main_tree
+#: model:ir.ui.menu,name:im_helpdesk.helpdesk_ticket_menu_all
+msgid "All Tickets"
+msgstr "Tất cả phiếu"
+
+#. module: im_helpdesk
+#: model:ir.model.fields.selection,name:im_helpdesk.selection__helpdesk_team__privacy_visibility__internal
+msgid "All internal users (company)"
+msgstr "Tất cả người dùng nội bộ (công ty)"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_team_view_form
+msgid "Allow customers to close their own tickets"
+msgstr "Cho phép khách hàng tự đóng phiếu của họ"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.view_helpdesk_stage_delete_wizard
+msgid "Archive Stages"
+msgstr "Lưu trữ các giai đoạn"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_sla_view_form
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_sla_view_search
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_stage_view_form
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_stage_view_search
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_team_view_form
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_team_view_search
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_ticket_view_form
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_tickets_view_search_base
+msgid "Archived"
+msgstr "Đã lưu trữ"
+
+#. module: im_helpdesk
+#. odoo-python
+#: code:addons/im_helpdesk/controllers/portal.py:0
+msgid "Assigned"
+msgstr "Đã phân công"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_sla_report_analysis__user_id
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket_report_analysis__user_id
+msgid "Assigned To"
+msgstr "Phân công cho"
+
+#. module: im_helpdesk
+#. odoo-python
+#: code:addons/im_helpdesk/controllers/portal.py:0
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__user_id
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_tickets_view_search_base
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.portal_helpdesk_ticket
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.rating_rating_view_search_inherit_helpdesk
+msgid "Assigned to"
+msgstr "Phân công cho"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_team__assign_method
+msgid "Assignment Method"
+msgstr "Phương thức phân công"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_team__message_attachment_count
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__message_attachment_count
+msgid "Attachment Count"
+msgstr "Số tệp đính kèm"
+
+#. module: im_helpdesk
+#: model:res.groups,name:im_helpdesk.group_auto_assignment
+msgid "Auto Assignment"
+msgstr "Phân công tự động"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_team_view_form
+msgid "Auto-assign new tickets"
+msgstr "Tự động phân công phiếu mới"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_team__auto_assignment
+msgid "Automatic Assignment"
+msgstr "Phân công tự động"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_team__auto_close_ticket
+msgid "Automatic Closing"
+msgstr "Tự động đóng"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_sla_report_analysis__rating_avg
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_team__rating_avg
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__rating_avg
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket_report_analysis__rating_avg
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_team_view_form
+msgid "Average Rating"
+msgstr "Đánh giá trung bình"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_team__rating_avg_percentage
+msgid "Average Rating (%)"
+msgstr "Đánh giá trung bình (%)"
+
+#. module: im_helpdesk
+#. odoo-python
+#: code:addons/im_helpdesk/models/helpdesk_stage.py:0
+#: model:helpdesk.stage,legend_blocked:im_helpdesk.stage_cancelled
+#: model:helpdesk.stage,legend_blocked:im_helpdesk.stage_in_progress
+#: model:helpdesk.stage,legend_blocked:im_helpdesk.stage_new
+#: model:helpdesk.stage,legend_blocked:im_helpdesk.stage_on_hold
+#: model:helpdesk.stage,legend_blocked:im_helpdesk.stage_solved
+#: model:ir.model.fields.selection,name:im_helpdesk.selection__helpdesk_ticket__kanban_state__blocked
+msgid "Blocked"
+msgstr "Đã bị chặn"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__campaign_id
+msgid "Campaign"
+msgstr "Chiến dịch"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.view_helpdesk_stage_delete_confirmation_wizard
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.view_helpdesk_stage_delete_wizard
+msgid "Cancel"
+msgstr "Hủy"
+
+#. module: im_helpdesk
+#: model:helpdesk.stage,name:im_helpdesk.stage_cancelled
+msgid "Cancelled"
+msgstr "Đã hủy"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_team_view_form
+msgid "Channels"
+msgstr "Kênh"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__close_date
+msgid "Close date"
+msgstr "Ngày đóng"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_team_view_form
+msgid "Close inactive tickets automatically"
+msgstr "Tự động đóng phiếu không hoạt động"
+
+#. module: im_helpdesk
+#. odoo-python
+#: code:addons/im_helpdesk/controllers/portal.py:0
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_tickets_view_search_base
+msgid "Closed"
+msgstr "Đã đóng"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_tickets_view_search_base
+msgid "Closed On"
+msgstr "Đóng vào"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__closed_by_partner
+msgid "Closed by Partner"
+msgstr "Được khách hàng đóng"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_sla_report_analysis__close_date
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket_report_analysis__close_date
+msgid "Closing Date"
+msgstr "Ngày đóng"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_team__allow_portal_ticket_closing
+msgid "Closure by Customers"
+msgstr "Khách hàng đóng phiếu"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_tag__color
+msgid "Color"
+msgstr "Màu sắc"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_sla_status__color
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_team__color
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__color
+msgid "Color Index"
+msgstr "Mã màu"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__commercial_partner_id
+msgid "Commercial Entity"
+msgstr "Thực thể thương mại"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.tickets_followup
+msgid "Communication history"
+msgstr "Lịch sử trao đổi"
+
+#. module: im_helpdesk
+#: model:ir.model,name:im_helpdesk.model_res_company
+msgid "Companies"
+msgstr "Công ty"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_sla__company_id
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_sla_report_analysis__company_id
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_team__company_id
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__company_id
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket_report_analysis__company_id
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_tickets_view_search_base
+msgid "Company"
+msgstr "Công ty"
+
+#. module: im_helpdesk
+#: model:ir.ui.menu,name:im_helpdesk.helpdesk_menu_config
+msgid "Configuration"
+msgstr "Cấu hình"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_team_view_form
+msgid "Configure tags handled by team members"
+msgstr "Cấu hình thẻ do thành viên đội xử lý"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.view_helpdesk_stage_delete_confirmation_wizard
+msgid "Confirm"
+msgstr "Xác nhận"
+
+#. module: im_helpdesk
+#. odoo-python
+#: code:addons/im_helpdesk/wizard/helpdesk_stage_delete.py:0
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.view_helpdesk_stage_delete_confirmation_wizard
+msgid "Confirmation"
+msgstr "Xác nhận"
+
+#. module: im_helpdesk
+#: model:ir.model,name:im_helpdesk.model_res_partner
+msgid "Contact"
+msgstr "Liên hệ"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_tickets_view_search_base
+msgid "Create Date"
+msgstr "Ngày tạo"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.portal_create_ticket
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.portal_helpdesk_ticket
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.portal_my_home_menu_helpdesk
+msgid "Create Ticket"
+msgstr "Tạo phiếu"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_team_view_form
+msgid "Create tickets by sending an email to an alias"
+msgstr "Tạo phiếu bằng cách gửi email đến bí danh"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_sla__create_uid
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_sla_status__create_uid
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_stage__create_uid
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_stage_delete_wizard__create_uid
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_tag__create_uid
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_tag_assignment__create_uid
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_team__create_uid
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__create_uid
+msgid "Created by"
+msgstr "Được tạo bởi"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_sla__create_date
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_sla_status__create_date
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_stage__create_date
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_stage_delete_wizard__create_date
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_tag__create_date
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_tag_assignment__create_date
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_team__create_date
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__create_date
+msgid "Created on"
+msgstr "Được tạo vào"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_tickets_view_search_base
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_tickets_view_tree
+msgid "Creation Date"
+msgstr "Ngày tạo"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_team__alias_bounced_content
+msgid "Custom Bounced Message"
+msgstr "Tin nhắn bị trả lại tuỳ chỉnh"
+
+#. module: im_helpdesk
+#. odoo-python
+#: code:addons/im_helpdesk/controllers/portal.py:0
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_sla_report_analysis__partner_id
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__partner_id
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket_report_analysis__partner_id
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_tickets_view_search_base
+msgid "Customer"
+msgstr "Khách hàng"
+
+#. module: im_helpdesk
+#. odoo-python
+#: code:addons/im_helpdesk/models/helpdesk_team.py:0
+#: code:addons/im_helpdesk/models/res_company.py:0
+#: model:helpdesk.team,name:im_helpdesk.helpdesk_team1
+msgid "Customer Care"
+msgstr "Chăm sóc khách hàng"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_sla_report_analysis__partner_email
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__partner_email
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket_report_analysis__partner_email
+msgid "Customer Email"
+msgstr "Email khách hàng"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_sla_report_analysis__partner_name
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__partner_name
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket_report_analysis__partner_name
+msgid "Customer Name"
+msgstr "Tên khách hàng"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_sla_report_analysis__partner_phone
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__partner_phone
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket_report_analysis__partner_phone
+msgid "Customer Phone"
+msgstr "Số điện thoại khách hàng"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,help:im_helpdesk.field_helpdesk_ticket__access_url
+msgid "Customer Portal URL"
+msgstr "URL cổng thông tin khách hàng"
+
+#. module: im_helpdesk
+#: model:ir.actions.act_window,name:im_helpdesk.rating_rating_action_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_team__use_rating
+#: model:ir.ui.menu,name:im_helpdesk.helpdesk_ticket_report_menu_ratings
+msgid "Customer Ratings"
+msgstr "Đánh giá của khách hàng"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_sla__partner_ids
+msgid "Customers"
+msgstr "Khách hàng"
+
+#. module: im_helpdesk
+#. odoo-python
+#: code:addons/im_helpdesk/models/helpdesk_team.py:0
+msgid "Customers will be added to the followers of their tickets."
+msgstr "Khách hàng sẽ được thêm vào danh sách người theo dõi phiếu của họ."
+
+#. module: im_helpdesk
+#: model:ir.model.fields,help:im_helpdesk.field_helpdesk_sla_status__reached_datetime
+msgid "Datetime at which the SLA stage was reached for the first time"
+msgstr "Thời điểm giai đoạn SLA được đạt lần đầu tiên"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,help:im_helpdesk.field_helpdesk_ticket__rotting_days
+msgid "Day count since this resource was last updated"
+msgstr "Số ngày kể từ lần cập nhật gần nhất của tài nguyên này"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__rotting_days
+msgid "Days Rotting"
+msgstr "Số ngày tồn đọng"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_sla_status__deadline
+msgid "Deadline"
+msgstr "Thời hạn"
+
+#. module: im_helpdesk
+#. odoo-python
+#: code:addons/im_helpdesk/models/helpdesk_ticket.py:0
+msgid "Deadline reached"
+msgstr "Đã đến hạn"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_team__alias_defaults
+msgid "Default Values"
+msgstr "Giá trị mặc định"
+
+#. module: im_helpdesk
+#. odoo-python
+#: code:addons/im_helpdesk/models/helpdesk_stage.py:0
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.view_helpdesk_stage_delete_wizard
+msgid "Delete Stage"
+msgstr "Xoá giai đoạn"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.view_helpdesk_stage_delete_wizard
+msgid "Delete Stages"
+msgstr "Xóa giai đoạn"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_team_view_form
+msgid "Describe your team..."
+msgstr "Mô tả đội của bạn..."
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_sla_report_analysis__description
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_stage__description
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__description
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket_report_analysis__description
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_sla_view_form
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_stage_view_form
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_ticket_view_form
+msgid "Description"
+msgstr "Diễn giải"
+
+#. module: im_helpdesk
+#: model:ir.model.fields.selection,name:im_helpdesk.selection__helpdesk_team__assign_method__tags
+msgid "Dispatch tickets based on tags"
+msgstr "Phân phối phiếu dựa trên thẻ"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_sla__display_name
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_sla_report_analysis__display_name
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_sla_status__display_name
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_stage__display_name
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_stage_delete_wizard__display_name
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_tag__display_name
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_tag_assignment__display_name
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_team__display_name
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__display_name
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket_report_analysis__display_name
+#: model:ir.model.fields,field_description:im_helpdesk.field_res_company__display_name
+#: model:ir.model.fields,field_description:im_helpdesk.field_res_partner__display_name
+#: model:ir.model.fields,field_description:im_helpdesk.field_res_users__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.view_helpdesk_stage_unarchive_wizard
+msgid "Do you want to unarchive tickets in the selected stages?"
+msgstr "Bạn có muốn bỏ lưu trữ các phiếu trong những giai đoạn đã chọn không?"
+
+#. module: im_helpdesk
+#: model:ir.model.fields.selection,name:im_helpdesk.selection__helpdesk_team__assign_method__balanced
+msgid "Each user has an equal number of open tickets"
+msgstr "Mỗi người dùng có số phiếu đang mở bằng nhau"
+
+#. module: im_helpdesk
+#: model:ir.model.fields.selection,name:im_helpdesk.selection__helpdesk_team__assign_method__randomly
+msgid "Each user is assigned an equal number of tickets"
+msgstr "Mỗi người dùng được phân công số phiếu bằng nhau"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_team__alias_email
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_team_view_form
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_team_view_tree
+msgid "Email Alias"
+msgstr "Bí danh email"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_stage__template_id
+msgid "Email Template"
+msgstr "Mẫu email"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,help:im_helpdesk.field_helpdesk_stage__template_id
+msgid ""
+"Email automatically sent to the customer when the ticket reaches this stage."
+msgstr "Email tự động gửi cho khách hàng khi phiếu đạt đến giai đoạn này."
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__email_cc
+msgid "Email cc"
+msgstr "Email CC"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,help:im_helpdesk.field_helpdesk_team__alias_domain
+msgid "Email domain e.g. 'example.com' in 'odoo@example.com'"
+msgstr "Ví dụ miền email 'example.com' trong 'odoo@example.com'"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_sla_status__exceeded_hours
+msgid "Exceeded Working Hours"
+msgstr "Số giờ làm việc vượt hạn"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_sla__exclude_stage_ids
+msgid "Excluding Stages"
+msgstr "Giai đoạn loại trừ"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_ticket_view_form
+msgid "Extra Info"
+msgstr "Thông tin bổ sung"
+
+#. module: im_helpdesk
+#: model:ir.model.fields.selection,name:im_helpdesk.selection__helpdesk_sla_status__status__failed
+msgid "Failed"
+msgstr "Không đạt"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__sla_fail
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket_report_analysis__sla_fail
+msgid "Failed SLA Policy"
+msgstr "Chính sách SLA không đạt"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_team__sla_failed
+msgid "Failed SLA Ticket"
+msgstr "Phiếu vi phạm SLA"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__assign_date
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket_report_analysis__assign_date
+msgid "First assignment date"
+msgstr "Ngày phân công đầu tiên"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_stage__fold
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_stage_view_search
+msgid "Folded"
+msgstr "Đóng vào"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_team_view_form
+msgid "Follow All Team's Tickets"
+msgstr "Theo dõi tất cả phiếu của đội"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.portal_my_home_helpdesk_ticket
+msgid "Follow all your helpdesk tickets"
+msgstr "Theo dõi tất cả phiếu hỗ trợ của bạn"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_tickets_view_search_base
+msgid "Followed"
+msgstr "Đã theo dõi"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_team__message_follower_ids
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__message_follower_ids
+msgid "Followers"
+msgstr "Người theo dõi"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_team__message_partner_ids
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "Người theo dõi (Đối tác)"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,help:im_helpdesk.field_helpdesk_ticket__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr "Font biểu tượng, ví dụ: fa-tasks"
+
+#. module: im_helpdesk
+#: model_terms:ir.actions.act_window,help:im_helpdesk.helpdesk_ticket_analysis_action
+msgid "Get statistics on your tickets."
+msgstr "Xem thống kê về các phiếu của bạn."
+
+#. module: im_helpdesk
+#. odoo-python
+#: code:addons/im_helpdesk/models/helpdesk_team.py:0
+msgid ""
+"Grant employees access to your helpdesk team or tickets by adding them as "
+"followers."
+msgstr ""
+"Cấp quyền cho nhân viên truy cập đội hỗ trợ hoặc phiếu bằng cách thêm họ làm"
+" người theo dõi."
+
+#. module: im_helpdesk
+#. odoo-python
+#: code:addons/im_helpdesk/models/helpdesk_team.py:0
+msgid ""
+"Grant portal users access to your helpdesk team or tickets by adding them as"
+" followers."
+msgstr ""
+"Cấp quyền cho người dùng cổng thông tin truy cập đội hỗ trợ hoặc phiếu bằng "
+"cách thêm họ làm người theo dõi."
+
+#. module: im_helpdesk
+#: model:ir.model.fields.selection,name:im_helpdesk.selection__helpdesk_sla_report_analysis__kanban_state__done
+#: model:ir.model.fields.selection,name:im_helpdesk.selection__helpdesk_ticket_report_analysis__kanban_state__done
+msgid "Green"
+msgstr "Xanh lá"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_stage__legend_done
+msgid "Green Kanban Label"
+msgstr "Nhãn kanban xanh"
+
+#. module: im_helpdesk
+#: model:ir.model.fields.selection,name:im_helpdesk.selection__helpdesk_sla_report_analysis__kanban_state__normal
+#: model:ir.model.fields.selection,name:im_helpdesk.selection__helpdesk_ticket_report_analysis__kanban_state__normal
+msgid "Grey"
+msgstr "Màu xám"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_stage__legend_normal
+msgid "Grey Kanban Label"
+msgstr "Nhãn kanban xám"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_team__has_message
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__has_message
+msgid "Has Message"
+msgstr "Có tin nhắn"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__sla_reached
+msgid "Has SLA reached"
+msgstr "SLA đã đạt"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__sla_reached_late
+msgid "Has SLA reached late"
+msgstr "SLA đạt trễ"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.ticket_invitation_follower
+msgid "Hello"
+msgstr "Xin chào"
+
+#. module: im_helpdesk
+#: model:ir.ui.menu,name:im_helpdesk.menu_helpdesk_root
+#: model:res.groups.privilege,name:im_helpdesk.res_groups_privilege_helpdesk
+msgid "Helpdesk"
+msgstr "Hỗ trợ"
+
+#. module: im_helpdesk
+#: model:ir.actions.act_window,name:im_helpdesk.helpdesk_team_dashboard_action_main
+msgid "Helpdesk Overview"
+msgstr "Tổng quan hỗ trợ"
+
+#. module: im_helpdesk
+#: model:ir.model,name:im_helpdesk.model_helpdesk_sla
+msgid "Helpdesk SLA Policies"
+msgstr "Chính sách SLA hỗ trợ"
+
+#. module: im_helpdesk
+#: model:ir.model,name:im_helpdesk.model_helpdesk_stage
+msgid "Helpdesk Stage"
+msgstr "Giai đoạn hỗ trợ"
+
+#. module: im_helpdesk
+#: model:ir.model,name:im_helpdesk.model_helpdesk_stage_delete_wizard
+msgid "Helpdesk Stage Delete Wizard"
+msgstr "Trình hướng dẫn xóa giai đoạn hỗ trợ"
+
+#. module: im_helpdesk
+#: model:ir.model,name:im_helpdesk.model_helpdesk_tag_assignment
+msgid "Helpdesk Tag Assignment"
+msgstr "Phân công thẻ hỗ trợ"
+
+#. module: im_helpdesk
+#: model:ir.model,name:im_helpdesk.model_helpdesk_tag
+msgid "Helpdesk Tags"
+msgstr "Thẻ hỗ trợ"
+
+#. module: im_helpdesk
+#. odoo-python
+#: code:addons/im_helpdesk/controllers/portal.py:0
+#: model:ir.model,name:im_helpdesk.model_helpdesk_team
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_sla__team_id
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_sla_report_analysis__team_id
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_team__name
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__team_id
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket_report_analysis__team_id
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_team_view_tree
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_tickets_view_search_base
+msgid "Helpdesk Team"
+msgstr "Đội hỗ trợ"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_team_view_search
+msgid "Helpdesk Team Search"
+msgstr "Tìm kiếm đội hỗ trợ"
+
+#. module: im_helpdesk
+#: model:ir.actions.act_window,name:im_helpdesk.helpdesk_team_action
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_stage__team_ids
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_stage_delete_wizard__team_ids
+#: model:ir.ui.menu,name:im_helpdesk.helpdesk_team_menu
+msgid "Helpdesk Teams"
+msgstr "Đội hỗ trợ"
+
+#. module: im_helpdesk
+#: model:ir.model,name:im_helpdesk.model_helpdesk_ticket
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_ticket_view_form
+msgid "Helpdesk Ticket"
+msgstr "Phiếu hỗ trợ"
+
+#. module: im_helpdesk
+#: model:ir.actions.server,name:im_helpdesk.ir_cron_auto_close_ticket_ir_actions_server
+msgid "Helpdesk Ticket: Automatically close the tickets"
+msgstr "Phiếu hỗ trợ: Tự động đóng phiếu"
+
+#. module: im_helpdesk
+#: model:mail.template,name:im_helpdesk.solved_ticket_request_email_template
+msgid "Helpdesk: Ticket Closed"
+msgstr "Hỗ trợ: Phiếu đã đóng"
+
+#. module: im_helpdesk
+#: model:mail.template,name:im_helpdesk.rating_ticket_request_email_template
+msgid "Helpdesk: Ticket Rating Request"
+msgstr "Hỗ trợ: Yêu cầu đánh giá phiếu"
+
+#. module: im_helpdesk
+#: model:mail.template,name:im_helpdesk.new_ticket_request_email_template
+msgid "Helpdesk: Ticket Received"
+msgstr "Hỗ trợ: Đã nhận phiếu"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_tickets_view_search_base
+msgid "High Priority"
+msgstr "Ưu tiên cao"
+
+#. module: im_helpdesk
+#: model:ir.model.fields.selection,name:im_helpdesk.selection__helpdesk_sla__priority__2
+#: model:ir.model.fields.selection,name:im_helpdesk.selection__helpdesk_sla_report_analysis__priority__2
+#: model:ir.model.fields.selection,name:im_helpdesk.selection__helpdesk_ticket__priority__2
+#: model:ir.model.fields.selection,name:im_helpdesk.selection__helpdesk_ticket_report_analysis__priority__2
+msgid "High priority"
+msgstr "Mức độ ưu tiên cao"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_sla_report_analysis__ticket_open_hours
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket_report_analysis__ticket_open_hours
+msgid "Hours Open"
+msgstr "Giờ mở"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_sla__id
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_sla_report_analysis__id
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_sla_status__id
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_stage__id
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_stage_delete_wizard__id
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_tag__id
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_tag_assignment__id
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_team__id
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__id
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket_report_analysis__id
+#: model:ir.model.fields,field_description:im_helpdesk.field_res_company__id
+#: model:ir.model.fields,field_description:im_helpdesk.field_res_partner__id
+#: model:ir.model.fields,field_description:im_helpdesk.field_res_users__id
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_tickets_view_tree
+msgid "ID"
+msgstr "Mã"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,help:im_helpdesk.field_helpdesk_team__alias_parent_thread_id
+msgid ""
+"ID of the parent record holding the alias (example: project holding the task"
+" creation alias)"
+msgstr ""
+"ID của bản ghi chính chứa bí danh (ví dụ: dự án chứa bí danh tạo nhiệm vụ)"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__activity_exception_icon
+msgid "Icon"
+msgstr "Biểu tượng"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,help:im_helpdesk.field_helpdesk_ticket__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr "Biểu tượng cho thấy một hoạt động ngoại lệ."
+
+#. module: im_helpdesk
+#: model:ir.model.fields,help:im_helpdesk.field_helpdesk_team__message_needaction
+#: model:ir.model.fields,help:im_helpdesk.field_helpdesk_ticket__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr "Nếu chọn, bạn cần chú ý tới các tin nhắn mới."
+
+#. module: im_helpdesk
+#: model:ir.model.fields,help:im_helpdesk.field_helpdesk_team__message_has_error
+#: model:ir.model.fields,help:im_helpdesk.field_helpdesk_team__message_has_sms_error
+#: model:ir.model.fields,help:im_helpdesk.field_helpdesk_ticket__message_has_error
+#: model:ir.model.fields,help:im_helpdesk.field_helpdesk_ticket__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr "Nếu chọn, một số tin nhắn sẽ có lỗi gửi."
+
+#. module: im_helpdesk
+#: model:ir.model.fields,help:im_helpdesk.field_helpdesk_team__alias_bounced_content
+msgid ""
+"If set, this content will automatically be sent out to unauthorized users "
+"instead of the default message."
+msgstr ""
+"Nếu được cài đặt, nội dung này sẽ tự động được gửi đến người dùng chưa được "
+"cấp quyền thay vì tin nhắn mặc định."
+
+#. module: im_helpdesk
+#. odoo-python
+#: code:addons/im_helpdesk/models/helpdesk_stage.py:0
+#: model:helpdesk.stage,legend_normal:im_helpdesk.stage_cancelled
+#: model:helpdesk.stage,legend_normal:im_helpdesk.stage_in_progress
+#: model:helpdesk.stage,legend_normal:im_helpdesk.stage_new
+#: model:helpdesk.stage,legend_normal:im_helpdesk.stage_on_hold
+#: model:helpdesk.stage,legend_normal:im_helpdesk.stage_solved
+#: model:helpdesk.stage,name:im_helpdesk.stage_in_progress
+msgid "In Progress"
+msgstr "Đang thực hiện"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_team__from_stage_ids
+msgid "In Stages"
+msgstr "Trong các giai đoạn"
+
+#. module: im_helpdesk
+#: model:ir.model.fields.selection,name:im_helpdesk.selection__helpdesk_ticket__kanban_state__normal
+msgid "In progress"
+msgstr "Đang thực hiện"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_team__auto_close_day
+msgid "Inactive Period(days)"
+msgstr "Thời gian không hoạt động (ngày)"
+
+#. module: im_helpdesk
+#: model:ir.model.fields.selection,name:im_helpdesk.selection__helpdesk_team__privacy_visibility__invited_internal
+msgid "Invited internal users (private)"
+msgstr "Người dùng nội bộ được mời (riêng tư)"
+
+#. module: im_helpdesk
+#: model:ir.model.fields.selection,name:im_helpdesk.selection__helpdesk_team__privacy_visibility__portal
+msgid "Invited portal users and all internal users (public)"
+msgstr ""
+"Người dùng cổng thông tin được mời và tất cả người dùng nội bộ (công khai)"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_team__message_is_follower
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__message_is_follower
+msgid "Is Follower"
+msgstr "Là người theo dõi"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,help:im_helpdesk.field_helpdesk_ticket__duration_tracking
+msgid "JSON that maps ids from a many2one field to seconds spent"
+msgstr "JSON ánh xạ id từ trường many2one tới số giây đã sử dụng"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__legend_blocked
+msgid "Kanban Blocked Explanation"
+msgstr "Giải thích kanban bị chặn"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_stage_view_form
+msgid "Kanban Labels"
+msgstr "Nhãn Kanban"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__legend_normal
+msgid "Kanban Ongoing Explanation"
+msgstr "Giải thích kanban đang tiến hành"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_sla_report_analysis__kanban_state
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__kanban_state
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket_report_analysis__kanban_state
+msgid "Kanban State"
+msgstr "Trạng thái kanban"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__kanban_state_label
+msgid "Kanban State Label"
+msgstr "Nhãn trạng thái kanban"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__legend_done
+msgid "Kanban Valid Explanation"
+msgstr "Giải thích kanban hợp lệ"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_tickets_view_search_base
+msgid "Last 7 Days"
+msgstr "7 ngày qua"
+
+#. module: im_helpdesk
+#. odoo-python
+#: code:addons/im_helpdesk/controllers/portal.py:0
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__date_last_stage_update
+msgid "Last Stage Update"
+msgstr "Cập nhật giai đoạn lần cuối"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_sla__write_uid
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_sla_status__write_uid
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_stage__write_uid
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_stage_delete_wizard__write_uid
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_tag__write_uid
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_tag_assignment__write_uid
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_team__write_uid
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__write_uid
+msgid "Last Updated by"
+msgstr "Cập nhật lần cuối bởi"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_sla__write_date
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_sla_status__write_date
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_stage__write_date
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_stage_delete_wizard__write_date
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_tag__write_date
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_tag_assignment__write_date
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_team__write_date
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__write_date
+msgid "Last Updated on"
+msgstr "Cập nhật lần cuối vào"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_team__alias_incoming_local
+msgid "Local-part based incoming detection"
+msgstr "Phát hiện gửi đến dựa trên phần cục bộ"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_tickets_view_search_base
+msgid "Low Priority"
+msgstr "Ưu tiên thấp"
+
+#. module: im_helpdesk
+#: model:ir.model.fields.selection,name:im_helpdesk.selection__helpdesk_sla__priority__0
+#: model:ir.model.fields.selection,name:im_helpdesk.selection__helpdesk_sla_report_analysis__priority__0
+#: model:ir.model.fields.selection,name:im_helpdesk.selection__helpdesk_ticket__priority__0
+#: model:ir.model.fields.selection,name:im_helpdesk.selection__helpdesk_ticket_report_analysis__priority__0
+msgid "Low priority"
+msgstr "Mức độ ưu tiên thấp"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_team_view_form
+msgid "Make sure tickets are handled on time"
+msgstr "Đảm bảo phiếu được xử lý đúng hạn"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,help:im_helpdesk.field_helpdesk_sla__time
+msgid ""
+"Maximum number of working hours a ticket should take to reach the target "
+"stage."
+msgstr "Số giờ làm việc tối đa để một phiếu đạt đến giai đoạn mục tiêu."
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__medium_id
+msgid "Medium"
+msgstr "Phương tiện"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_tickets_view_search_base
+msgid "Medium Priority"
+msgstr "Ưu tiên trung bình"
+
+#. module: im_helpdesk
+#: model:ir.model.fields.selection,name:im_helpdesk.selection__helpdesk_sla__priority__1
+#: model:ir.model.fields.selection,name:im_helpdesk.selection__helpdesk_sla_report_analysis__priority__1
+#: model:ir.model.fields.selection,name:im_helpdesk.selection__helpdesk_ticket__priority__1
+#: model:ir.model.fields.selection,name:im_helpdesk.selection__helpdesk_ticket_report_analysis__priority__1
+msgid "Medium priority"
+msgstr "Ưu tiên trung bình"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_team_view_form
+msgid ""
+"Members will be selected from the team members list above based on the "
+"chosen method."
+msgstr ""
+"Thành viên sẽ được chọn từ danh sách thành viên đội ở trên dựa trên phương "
+"thức đã chọn."
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_team__message_has_error
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__message_has_error
+msgid "Message Delivery error"
+msgstr "Lỗi gửi tin nhắn"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_team__message_ids
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__message_ids
+msgid "Messages"
+msgstr "Tin nhắn"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_sla_report_analysis__priority
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket_report_analysis__priority
+msgid "Minimum Priority"
+msgstr "Mức ưu tiên tối thiểu"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,help:im_helpdesk.field_helpdesk_sla__stage_id
+#: model:ir.model.fields,help:im_helpdesk.field_helpdesk_sla_status__sla_stage_id
+msgid "Minimum stage a ticket needs to reach in order to satisfy this SLA."
+msgstr "Giai đoạn tối thiểu mà phiếu cần đạt để đáp ứng SLA này."
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_team__to_stage_id
+msgid "Move to Stage"
+msgstr "Chuyển đến giai đoạn"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr "Thời hạn hoạt động của tôi"
+
+#. module: im_helpdesk
+#: model:ir.actions.act_window,name:im_helpdesk.helpdesk_ticket_action_main_my
+#: model:ir.ui.menu,name:im_helpdesk.helpdesk_ticket_menu_my
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_tickets_view_search_base
+msgid "My Tickets"
+msgstr "Phiếu của tôi"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_sla__name
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_stage__name
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_tag__name
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_team_view_form
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_team_view_tree
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_tickets_view_tree
+msgid "Name"
+msgstr "Tên"
+
+#. module: im_helpdesk
+#. odoo-python
+#: code:addons/im_helpdesk/models/helpdesk_team.py:0
+#: model:helpdesk.stage,name:im_helpdesk.stage_new
+msgid "New"
+msgstr "Mới"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,help:im_helpdesk.field_helpdesk_team__assign_method
+msgid ""
+"New tickets will automatically be assigned to the team members that are "
+"available, according to their working hours and their time off."
+msgstr ""
+"Phiếu mới sẽ tự động được phân công cho các thành viên đội đang sẵn sàng, "
+"theo giờ làm việc và thời gian nghỉ của họ."
+
+#. module: im_helpdesk
+#. odoo-python
+#: code:addons/im_helpdesk/controllers/portal.py:0
+msgid "Newest"
+msgstr "Mới nhất"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__activity_calendar_event_id
+msgid "Next Activity Calendar Event"
+msgstr "Sự kiện trên lịch cho hoạt động tiếp theo"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr "Thời hạn cho hoạt động tiếp theo"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__activity_summary
+msgid "Next Activity Summary"
+msgstr "Tóm tắt hoạt động tiếp theo"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__activity_type_id
+msgid "Next Activity Type"
+msgstr "Loại hoạt động tiếp theo"
+
+#. module: im_helpdesk
+#: model_terms:ir.actions.act_window,help:im_helpdesk.helpdesk_sla_report_analysis_action
+#: model_terms:ir.actions.act_window,help:im_helpdesk.helpdesk_ticket_analysis_action
+msgid "No data yet!"
+msgstr "Chưa có dữ liệu nào!"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.portal_create_ticket
+msgid "No helpdesk team available"
+msgstr "Không có đội hỗ trợ nào khả dụng"
+
+#. module: im_helpdesk
+#. odoo-python
+#: code:addons/im_helpdesk/models/helpdesk_ticket.py:0
+msgid ""
+"No preview available. The ticket belongs to a non-public team, or there is "
+"no customer."
+msgstr ""
+"Không có bản xem trước. Phiếu thuộc một đội không công khai hoặc chưa có "
+"khách hàng."
+
+#. module: im_helpdesk
+#. odoo-python
+#: code:addons/im_helpdesk/controllers/portal.py:0
+msgid "No public helpdesk team is available. Please contact an administrator."
+msgstr "Không có đội hỗ trợ công khai nào khả dụng. Vui lòng liên hệ quản trị viên."
+
+#. module: im_helpdesk
+#: model_terms:ir.actions.act_window,help:im_helpdesk.helpdesk_ticket_action_main_my
+#: model_terms:ir.actions.act_window,help:im_helpdesk.helpdesk_ticket_action_main_tree
+#: model_terms:ir.actions.act_window,help:im_helpdesk.helpdesk_ticket_action_team
+msgid "No tickets found. Let's create one!"
+msgstr "Không tìm thấy phiếu nào. Hãy tạo một phiếu!"
+
+#. module: im_helpdesk
+#. odoo-python
+#: code:addons/im_helpdesk/controllers/portal.py:0
+msgid "None"
+msgstr "Không"
+
+#. module: im_helpdesk
+#: model:mail.template,description:im_helpdesk.new_ticket_request_email_template
+msgid "Notify customer that their helpdesk ticket has been received."
+msgstr "Thông báo cho khách hàng rằng phiếu hỗ trợ của họ đã được tiếp nhận."
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_team__message_needaction_counter
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__message_needaction_counter
+msgid "Number of Actions"
+msgstr "Số lượng tác vụ"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_sla_report_analysis__sla_status_failed
+msgid "Number of SLAs Failed"
+msgstr "Số SLA không đạt"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_stage_delete_wizard__ticket_count
+msgid "Number of Tickets"
+msgstr "Số phiếu"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_team__message_has_error_counter
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__message_has_error_counter
+msgid "Number of errors"
+msgstr "Số lượng lỗi"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,help:im_helpdesk.field_helpdesk_team__message_needaction_counter
+#: model:ir.model.fields,help:im_helpdesk.field_helpdesk_ticket__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr "Số tin nhắn cần xử lý"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,help:im_helpdesk.field_helpdesk_team__message_has_error_counter
+#: model:ir.model.fields,help:im_helpdesk.field_helpdesk_ticket__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "Số tin nhắn bị gửi lỗi"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__partner_open_ticket_count
+msgid "Number of other open tickets from the same partner"
+msgstr "Số phiếu đang mở khác từ cùng một đối tác"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__partner_ticket_count
+msgid "Number of other tickets from the same partner"
+msgstr "Số phiếu khác từ cùng một đối tác"
+
+#. module: im_helpdesk
+#: model:helpdesk.stage,name:im_helpdesk.stage_on_hold
+msgid "On Hold"
+msgstr "Tạm dừng"
+
+#. module: im_helpdesk
+#: model:ir.model.fields.selection,name:im_helpdesk.selection__helpdesk_sla_status__status__ongoing
+msgid "Ongoing"
+msgstr "Đang diễn ra"
+
+#. module: im_helpdesk
+#. odoo-python
+#: code:addons/im_helpdesk/controllers/portal.py:0
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_tickets_view_search_base
+msgid "Open"
+msgstr "Mở"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__open_hours
+msgid "Open Time (hours)"
+msgstr "Thời gian mở (giờ)"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,help:im_helpdesk.field_helpdesk_team__alias_force_thread_id
+msgid ""
+"Optional ID of a thread (record) to which all incoming messages will be "
+"attached, even if they did not reply to it. If set, this will disable the "
+"creation of new records completely."
+msgstr ""
+"ID tùy chọn của một luồng (bản ghi) tập hợp tất cả tin nhắn nhận được, thậm "
+"chí nếu đó là tin nhắn không có phản hồi. Nếu cài đặt, điều này sẽ tắt hoàn "
+"toàn việc tạo các bản ghi mới."
+
+#. module: im_helpdesk
+#: model:ir.ui.menu,name:im_helpdesk.helpdesk_menu_team_dashboard
+msgid "Overview"
+msgstr "Tổng quan"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_team__alias_parent_model_id
+msgid "Parent Model"
+msgstr "Mô hình chính"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_team__alias_parent_thread_id
+msgid "Parent Record Thread ID"
+msgstr "ID luồng bản ghi chính"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,help:im_helpdesk.field_helpdesk_team__alias_parent_model_id
+msgid ""
+"Parent model holding the alias. The model holding the alias reference is not"
+" necessarily the model given by alias_model_id (example: project "
+"(parent_model) and task (model))"
+msgstr ""
+"Mô hình chính chứa bí danh này. Mô hình chứa tham chiếu bí danh không nhất "
+"thiết phải là mô hình được đưa ra bởi alias_model_id (Ví dụ: dự án "
+"(parent_model) và nhiệm vụ (model))"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__partner_ticket_ids
+msgid "Partner Tickets"
+msgstr "Phiếu của đối tác"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_team_view_form
+msgid "People to whom this team and its tickets will be visible"
+msgstr "Những người có thể thấy đội này và các phiếu của đội"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,help:im_helpdesk.field_helpdesk_team__rating_percentage_satisfaction
+msgid "Percentage of happy ratings"
+msgstr "Phần trăm đánh giá mức độ hài lòng"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_team_view_form
+msgid "Performance"
+msgstr "Hiệu suất"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,help:im_helpdesk.field_helpdesk_team__auto_close_day
+msgid "Period of inactivity after which tickets will be automatically closed."
+msgstr "Khoảng thời gian không hoạt động sau đó phiếu sẽ được tự động đóng."
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_ticket_view_form
+msgid "Phone"
+msgstr "Điện thoại"
+
+#. module: im_helpdesk
+#. odoo-python
+#: code:addons/im_helpdesk/controllers/portal.py:0
+msgid "Please select a valid helpdesk team."
+msgstr "Vui lòng chọn một đội hỗ trợ hợp lệ."
+
+#. module: im_helpdesk
+#: model:ir.model.fields,help:im_helpdesk.field_helpdesk_team__alias_contact
+msgid ""
+"Policy to post a message on the document using the mailgateway.\n"
+"- everyone: everyone can post\n"
+"- partners: only authenticated partners\n"
+"- followers: only followers of the related document or members of following channels\n"
+msgstr ""
+"Chính sách cho phép đăng thông báo lên tài liệu sử dụng cổng email.\n"
+"- mọi người: mọi người có thể đăng\n"
+"- đối tác: chỉ các đối tác đã xác thực\n"
+"- người theo dõi: chỉ những người theo dõi của tài liệu liên quan hoặc thành viên của kênh đang theo dõi\n"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__access_url
+msgid "Portal Access URL"
+msgstr "URL truy cập cổng thông tin"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_ticket_view_form
+msgid "Portal Link"
+msgstr "Liên kết portal"
+
+#. module: im_helpdesk
+#. odoo-python
+#: code:addons/im_helpdesk/models/helpdesk_ticket.py:0
+msgid "Portal link generated. Copy it from the Portal Link field."
+msgstr "Đã tạo liên kết portal. Hãy sao chép liên kết ở trường Liên kết portal."
+
+#. module: im_helpdesk
+#. odoo-python
+#: code:addons/im_helpdesk/models/helpdesk_team.py:0
+msgid ""
+"Portal users will be removed from the followers of the team and its tickets."
+msgstr ""
+"Người dùng cổng thông tin sẽ bị xóa khỏi danh sách người theo dõi của đội và"
+" các phiếu của đội."
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_sla__priority
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__priority
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_sla_view_search
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_tickets_view_search_base
+msgid "Priority"
+msgstr "Mức độ ưu tiên"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_tickets_view_tree
+msgid "Rating"
+msgstr "Đánh giá"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_sla_report_analysis__rating_last_value
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket_report_analysis__rating_last_value
+msgid "Rating (1-5)"
+msgstr "Đánh giá (1-5)"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__rating_avg_text
+msgid "Rating Avg Text"
+msgstr "Nội dung đánh giá trung bình"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__rating_last_feedback
+msgid "Rating Last Feedback"
+msgstr "Đánh giá phản hồi cuối cùng"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__rating_last_image
+msgid "Rating Last Image"
+msgstr "Đánh giá ảnh cuối cùng"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__rating_last_value
+msgid "Rating Last Value"
+msgstr "Đánh giá giá trị cuối cùng"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_team__rating_percentage_satisfaction
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__rating_percentage_satisfaction
+msgid "Rating Satisfaction"
+msgstr "Đánh giá mức độ hài lòng"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__rating_last_text
+msgid "Rating Text"
+msgstr "Nội dung đánh giá"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__rating_count
+msgid "Rating count"
+msgstr "Số đánh giá"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_team__rating_ids
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__rating_ids
+msgid "Ratings"
+msgstr "Đánh giá"
+
+#. module: im_helpdesk
+#: model:ir.model.fields.selection,name:im_helpdesk.selection__helpdesk_sla_status__status__reached
+msgid "Reached"
+msgstr "Đã đạt"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_sla_status__reached_datetime
+msgid "Reached Date"
+msgstr "Ngày đạt"
+
+#. module: im_helpdesk
+#. odoo-python
+#: code:addons/im_helpdesk/models/helpdesk_stage.py:0
+#: model:helpdesk.stage,legend_done:im_helpdesk.stage_cancelled
+#: model:helpdesk.stage,legend_done:im_helpdesk.stage_in_progress
+#: model:helpdesk.stage,legend_done:im_helpdesk.stage_new
+#: model:helpdesk.stage,legend_done:im_helpdesk.stage_on_hold
+#: model:helpdesk.stage,legend_done:im_helpdesk.stage_solved
+#: model:ir.model.fields.selection,name:im_helpdesk.selection__helpdesk_ticket__kanban_state__done
+msgid "Ready"
+msgstr "Sẵn sàng"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_team_view_form
+msgid "Receive notifications for tickets in this team"
+msgstr "Nhận thông báo cho các phiếu trong đội này"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_team__alias_force_thread_id
+msgid "Record Thread ID"
+msgstr "ID luồng bản ghi"
+
+#. module: im_helpdesk
+#: model:ir.model.fields.selection,name:im_helpdesk.selection__helpdesk_sla_report_analysis__kanban_state__blocked
+#: model:ir.model.fields.selection,name:im_helpdesk.selection__helpdesk_ticket_report_analysis__kanban_state__blocked
+msgid "Red"
+msgstr "Đỏ"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_stage__legend_blocked
+msgid "Red Kanban Label"
+msgstr "Nhãn kanban đỏ"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.portal_helpdesk_ticket
+msgid "Reported on"
+msgstr "Báo cáo vào"
+
+#. module: im_helpdesk
+#: model:ir.ui.menu,name:im_helpdesk.helpdesk_ticket_report_menu_main
+msgid "Reporting"
+msgstr "Báo cáo"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__activity_user_id
+msgid "Responsible User"
+msgstr "Người phụ trách"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_ticket_view_kanban
+msgid "Restore"
+msgstr "Khôi phục"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__is_rotting
+msgid "Rotting"
+msgstr "Tồn đọng"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_sla_report_analysis__sla_id
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_tickets_view_search_base
+msgid "SLA"
+msgstr "SLA"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_sla_report_analysis__sla_deadline
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__sla_deadline
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_tickets_view_search_base
+msgid "SLA Deadline"
+msgstr "Hạn SLA"
+
+#. module: im_helpdesk
+#: model:ir.model.fields.selection,name:im_helpdesk.selection__helpdesk_sla_report_analysis__sla_status__failed
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_tickets_view_search_base
+msgid "SLA Failed"
+msgstr "SLA không đạt"
+
+#. module: im_helpdesk
+#: model:ir.actions.act_window,name:im_helpdesk.helpdesk_sla_action
+#: model:ir.actions.act_window,name:im_helpdesk.helpdesk_sla_action_main
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_team__use_sla
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__use_sla
+#: model:ir.model.fields,field_description:im_helpdesk.field_res_partner__sla_ids
+#: model:ir.model.fields,field_description:im_helpdesk.field_res_users__sla_ids
+#: model:ir.ui.menu,name:im_helpdesk.helpdesk_sla_menu_main
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_sla_view_search
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_sla_view_tree
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_team_view_form
+msgid "SLA Policies"
+msgstr "Chính sách SLA"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,help:im_helpdesk.field_res_partner__sla_ids
+#: model:ir.model.fields,help:im_helpdesk.field_res_users__sla_ids
+msgid ""
+"SLA Policies that will automatically apply to the tickets submitted by this "
+"customer."
+msgstr ""
+"Các chính sách SLA sẽ tự động áp dụng cho phiếu do khách hàng này gửi."
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_sla_view_form
+msgid "SLA Policy"
+msgstr "Chính sách SLA"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_sla__description
+msgid "SLA Policy Description"
+msgstr "Mô tả chính sách SLA"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_sla_report_analysis__sla_stage_id
+msgid "SLA Stage"
+msgstr "Giai đoạn SLA"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_sla_report_analysis__sla_status_ids
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__sla_status_ids
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket_report_analysis__sla_status_ids
+msgid "SLA Status"
+msgstr "Trạng thái SLA"
+
+#. module: im_helpdesk
+#: model:ir.actions.act_window,name:im_helpdesk.helpdesk_sla_report_analysis_action
+#: model:ir.model,name:im_helpdesk.model_helpdesk_sla_report_analysis
+#: model:ir.ui.menu,name:im_helpdesk.helpdesk_ticket_report_menu_sla_analysis
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_sla_report_analysis_view_graph
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_sla_report_analysis_view_pivot
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_team_view_kanban
+msgid "SLA Status Analysis"
+msgstr "Phân tích trạng thái SLA"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_sla_report_analysis__sla_fail
+msgid "SLA Status Failed"
+msgstr "Trạng thái SLA không đạt"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_sla_report_analysis__sla_success
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket_report_analysis__sla_success
+msgid "SLA Status Success"
+msgstr "Trạng thái SLA đạt"
+
+#. module: im_helpdesk
+#: model:ir.model.fields.selection,name:im_helpdesk.selection__helpdesk_sla_report_analysis__sla_status__reached
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_tickets_view_search_base
+msgid "SLA Success"
+msgstr "SLA đạt"
+
+#. module: im_helpdesk
+#: model:ir.model.fields.selection,name:im_helpdesk.selection__helpdesk_sla_report_analysis__sla_status__ongoing
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_tickets_view_search_base
+msgid "SLA in Progress"
+msgstr "SLA đang xử lý"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_sla_report_analysis__sla_ids
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__sla_ids
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket_report_analysis__sla_ids
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_tickets_view_tree
+msgid "SLAs"
+msgstr "SLA"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_team__message_has_sms_error
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr "Lỗi gửi SMS"
+
+#. module: im_helpdesk
+#. odoo-python
+#: code:addons/im_helpdesk/controllers/portal.py:0
+msgid "Search in Assigned to"
+msgstr "Tìm trong người được phân công"
+
+#. module: im_helpdesk
+#. odoo-python
+#: code:addons/im_helpdesk/controllers/portal.py:0
+msgid "Search in Customer"
+msgstr "Tìm trong khách hàng"
+
+#. module: im_helpdesk
+#. odoo-python
+#: code:addons/im_helpdesk/controllers/portal.py:0
+msgid "Search in Helpdesk Team"
+msgstr "Tìm trong đội hỗ trợ"
+
+#. module: im_helpdesk
+#. odoo-python
+#: code:addons/im_helpdesk/controllers/portal.py:0
+msgid "Search in Stage"
+msgstr "Tìm trong giai đoạn"
+
+#. module: im_helpdesk
+#. odoo-python
+#: code:addons/im_helpdesk/controllers/portal.py:0
+msgid "Search%(left)s Tickets%(right)s"
+msgstr "Tìm kiếm%(left)s phiếu%(right)s"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__access_token
+msgid "Security Token"
+msgstr "Token bảo mật"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_team_view_form
+msgid "Self-Service"
+msgstr "Tự phục vụ"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_team_view_form
+msgid "Set an Email Template on Stages"
+msgstr "Thiết lập mẫu email cho các giai đoạn"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_team_view_kanban
+msgid "Settings"
+msgstr "Cài đặt"
+
+#. module: im_helpdesk
+#: model:ir.actions.act_window,name:im_helpdesk.portal_share_action
+msgid "Share Ticket"
+msgstr "Chia sẻ phiếu"
+
+#. module: im_helpdesk
+#: model:res.groups,name:im_helpdesk.group_use_rating
+msgid "Show Customer Ratings"
+msgstr "Hiển thị đánh giá khách hàng"
+
+#. module: im_helpdesk
+#: model:res.groups,name:im_helpdesk.group_use_sla
+msgid "Show SLA Policies"
+msgstr "Hiển thị chính sách SLA"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.view_helpdesk_stage_unarchive_wizard
+msgid "Skip"
+msgstr "Bỏ qua"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_sla_status__sla_id
+msgid "Sla"
+msgstr "SLA"
+
+#. module: im_helpdesk
+#: model:helpdesk.stage,name:im_helpdesk.stage_solved
+msgid "Solved"
+msgstr "Đã xử lý"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__source_id
+msgid "Source"
+msgstr "Nguồn"
+
+#. module: im_helpdesk
+#. odoo-python
+#: code:addons/im_helpdesk/controllers/portal.py:0
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_sla_report_analysis__stage_id
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__stage_id
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket_report_analysis__stage_id
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_stage_view_form
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_tickets_view_search_base
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.portal_helpdesk_ticket
+msgid "Stage"
+msgstr "Giai đoạn"
+
+#. module: im_helpdesk
+#: model:mail.message.subtype,description:im_helpdesk.mt_ticket_stage
+#: model:mail.message.subtype,name:im_helpdesk.mt_ticket_stage
+msgid "Stage Changed"
+msgstr "Giai đoạn đã thay đổi"
+
+#. module: im_helpdesk
+#: model:ir.actions.act_window,name:im_helpdesk.helpdesk_stage_action
+#: model:ir.actions.act_window,name:im_helpdesk.helpdesk_stage_team_action
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_team__stage_ids
+#: model:ir.ui.menu,name:im_helpdesk.helpdesk_stage_menu
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_stage_view_search
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_stage_view_tree
+msgid "Stages"
+msgstr "Giai đoạn"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_stage_delete_wizard__stage_ids
+msgid "Stages To Delete"
+msgstr "Các giai đoạn cần xóa"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,help:im_helpdesk.field_helpdesk_team__stage_ids
+msgid ""
+"Stages the team will use. This team's tickets will only be able to be in "
+"these stages."
+msgstr ""
+"Các giai đoạn đội sẽ sử dụng. Phiếu của đội này chỉ có thể nằm trong các "
+"giai đoạn này."
+
+#. module: im_helpdesk
+#. odoo-python
+#: code:addons/im_helpdesk/controllers/portal.py:0
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_sla_report_analysis__sla_status
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_sla_status__status
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_tickets_view_search_base
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,help:im_helpdesk.field_helpdesk_ticket__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+"Trạng thái dựa trên hoạt động\n"
+"Quá hạn: Hạn chót hạn đã qua\n"
+"Hôm nay: Hôm nay là ngày phải thực hiện\n"
+"Kế hoạch: Cần thực hiện trong tương lai."
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__duration_tracking
+msgid "Status time"
+msgstr "Thời gian của trạng thái"
+
+#. module: im_helpdesk
+#. odoo-python
+#: code:addons/im_helpdesk/controllers/portal.py:0
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_sla_report_analysis__name
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__name
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket_report_analysis__name
+msgid "Subject"
+msgstr "Tiêu đề"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_team__success_rate
+msgid "Success Rate"
+msgstr "Tỷ lệ thành công"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__sla_success
+msgid "Success SLA Policy"
+msgstr "Chính sách SLA đạt"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_tag_view_form
+msgid "Tag"
+msgstr "Thẻ"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_tag_assignment_view_form
+msgid "Tag Assignment"
+msgstr "Phân công thẻ"
+
+#. module: im_helpdesk
+#: model:ir.actions.act_window,name:im_helpdesk.action_helpdesk_tag_assignment
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_tag_assignment_view_list
+msgid "Tag Assignments"
+msgstr "Phân công thẻ"
+
+#. module: im_helpdesk
+#: model:ir.actions.act_window,name:im_helpdesk.helpdesk_tag_action
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_sla__tag_ids
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_sla_report_analysis__tag_ids
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__tag_ids
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket_report_analysis__tag_ids
+#: model:ir.ui.menu,name:im_helpdesk.helpdesk_tag_menu
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_tag_view_list
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_tickets_view_search_base
+msgid "Tags"
+msgstr "Thẻ"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_sla__stage_id
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_sla_view_search
+msgid "Target Stage"
+msgstr "Giai đoạn mục tiêu"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_sla_view_search
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_stage_view_search
+msgid "Team"
+msgstr "Bộ phận"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_tag_assignment__user_ids
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_team__member_ids
+msgid "Team Members"
+msgstr "Thành viên"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_team_view_form
+msgid "Team members who can handle tickets"
+msgstr "Thành viên đội có thể xử lý phiếu"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,help:im_helpdesk.field_helpdesk_team__alias_model_id
+msgid ""
+"The model (Odoo Document Kind) to which this alias corresponds. Any incoming"
+" email that does not reply to an existing record will cause the creation of "
+"a new record of this model (e.g. a Project Task)"
+msgstr ""
+"Mô hình (Loại tài liệu Odoo) mà bí danh này tương tác. Mọi email đến mà "
+"không phải là email trả lời một bản ghi hiện có sẽ tạo ra một bản ghi mới "
+"trong mô hình này. (ví dụ: Nhiệm vụ dự án)"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,help:im_helpdesk.field_helpdesk_team__alias_name
+msgid ""
+"The name of the email alias, e.g. 'jobs' if you want to catch emails for "
+"<jobs@example.odoo.com>"
+msgstr ""
+"Tên của bí danh email, ví dụ: 'jobs' nếu bạn muốn nhận email gửi đến địa chỉ"
+" <jobs@example.odoo.com>"
+
+#. module: im_helpdesk
+#. odoo-python
+#: code:addons/im_helpdesk/controllers/portal.py:0
+msgid "The team does not allow ticket closing through portal"
+msgstr "Đội này không cho phép đóng phiếu qua cổng thông tin"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,help:im_helpdesk.field_helpdesk_sla__exclude_stage_ids
+msgid ""
+"The time spent in these stages won't be taken into account in the "
+"calculation of the SLA."
+msgstr "Thời gian ở các giai đoạn này sẽ không được tính vào SLA."
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.portal_helpdesk_ticket
+msgid "There are currently no Ticket for your account."
+msgstr "Hiện không có phiếu nào cho tài khoản của bạn."
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.ticket_creation
+msgid "This"
+msgstr "Đây"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,help:im_helpdesk.field_helpdesk_ticket__campaign_id
+msgid ""
+"This is a name that helps you keep track of your different campaign efforts,"
+" e.g. Fall_Drive, Christmas_Special"
+msgstr ""
+"Đây là tên giúp bạn theo dõi các chiến dịch marketing khác nhau: ví dụ "
+"Fall_Drive, Christmas_Special"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,help:im_helpdesk.field_helpdesk_ticket__medium_id
+msgid "This is the method of delivery, e.g. Postcard, Email, or Banner Ad"
+msgstr ""
+"Đây là phương thức truyền đạt, ví dụ như bưu thiếp, email hoặc banner quảng "
+"cáo"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,help:im_helpdesk.field_helpdesk_ticket__source_id
+msgid ""
+"This is the source of the link, e.g. Search Engine, another domain, or name "
+"of email list"
+msgstr ""
+"Đây là nguồn của liên kết, ví dụ: công cụ tìm kiếm, miền khác hoặc tên của "
+"danh sách email"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.view_helpdesk_stage_delete_confirmation_wizard
+msgid "This operation will archive the selected stages and their tickets."
+msgstr "Thao tác này sẽ lưu trữ các giai đoạn đã chọn và các phiếu của chúng."
+
+#. module: im_helpdesk
+#. odoo-python
+#: code:addons/im_helpdesk/models/helpdesk_ticket.py:0
+msgid "This ticket was closed %s hours after its SLA deadline."
+msgstr "Phiếu này đã được đóng trễ %s giờ so với hạn SLA."
+
+#. module: im_helpdesk
+#. odoo-python
+#: code:addons/im_helpdesk/models/helpdesk_ticket.py:0
+msgid "This ticket was successfully closed %s hours before its SLA deadline."
+msgstr "Phiếu này đã được đóng thành công trước hạn SLA %s giờ."
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_sla_report_analysis__ticket_id
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_sla_status__ticket_id
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket_report_analysis__ticket_id
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_tickets_view_search_base
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.portal_helpdesk_ticket
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.rating_rating_view_search_inherit_helpdesk
+msgid "Ticket"
+msgstr "Phiếu hỗ trợ"
+
+#. module: im_helpdesk
+#: model:ir.model,name:im_helpdesk.model_helpdesk_ticket_report_analysis
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_ticket_view_pivot_analysis
+msgid "Ticket Analysis"
+msgstr "Phân tích phiếu"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_sla_report_analysis__ticket_closed
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_team__ticket_closed
+msgid "Ticket Closed"
+msgstr "Phiếu đã đóng"
+
+#. module: im_helpdesk
+#: model:mail.template,subject:im_helpdesk.solved_ticket_request_email_template
+msgid "Ticket Closed - Reference {{ object.id if object.id else 15 }}"
+msgstr "Phiếu đã đóng - Tham chiếu {{ object.id if object.id else 15 }}"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_sla__ticket_count
+msgid "Ticket Count"
+msgstr "Số phiếu"
+
+#. module: im_helpdesk
+#: model:mail.message.subtype,name:im_helpdesk.mt_team_ticket_new
+#: model:mail.message.subtype,name:im_helpdesk.mt_ticket_new
+msgid "Ticket Created"
+msgstr "Phiếu đã tạo"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_sla_report_analysis__create_date
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket_report_analysis__create_date
+msgid "Ticket Creation Date"
+msgstr "Ngày tạo phiếu"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket_report_analysis__sla_deadline
+msgid "Ticket Deadline"
+msgstr "Hạn phiếu"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_sla_report_analysis__ticket_ref
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__ticket_ref
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket_report_analysis__ticket_ref
+msgid "Ticket IDs Sequence"
+msgstr "Dãy mã phiếu"
+
+#. module: im_helpdesk
+#: model:mail.message.subtype,name:im_helpdesk.mt_team_ticket_rated
+#: model:mail.message.subtype,name:im_helpdesk.mt_ticket_rated
+msgid "Ticket Rated"
+msgstr "Phiếu đã được đánh giá"
+
+#. module: im_helpdesk
+#: model:ir.model,name:im_helpdesk.model_helpdesk_sla_status
+msgid "Ticket SLA Status"
+msgstr "Trạng thái SLA của phiếu"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_tag_assignment__tag_id
+msgid "Ticket Tag"
+msgstr "Thẻ phiếu"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.quick_create_ticket_form
+msgid "Ticket Title"
+msgstr "Tiêu đề phiếu"
+
+#. module: im_helpdesk
+#. odoo-python
+#: code:addons/im_helpdesk/controllers/portal.py:0
+msgid "Ticket closed by the customer"
+msgstr "Phiếu được khách hàng đóng"
+
+#. module: im_helpdesk
+#: model:mail.message.subtype,description:im_helpdesk.mt_ticket_new
+msgid "Ticket created"
+msgstr "Phiếu đã tạo"
+
+#. module: im_helpdesk
+#. odoo-python
+#: code:addons/im_helpdesk/controllers/portal.py:0
+msgid "Ticket subject is required."
+msgstr "Bắt buộc nhập tiêu đề phiếu."
+
+#. module: im_helpdesk
+#. odoo-python
+#: code:addons/im_helpdesk/models/helpdesk_team.py:0
+#: model:ir.actions.act_window,name:im_helpdesk.helpdesk_ticket_action_team
+#: model:ir.actions.act_window,name:im_helpdesk.helpdesk_ticket_action_unassigned
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_team__ticket_ids
+#: model:ir.model.fields,field_description:im_helpdesk.field_res_partner__ticket_count
+#: model:ir.model.fields,field_description:im_helpdesk.field_res_users__ticket_count
+#: model:ir.ui.menu,name:im_helpdesk.helpdesk_ticket_menu_main
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_sla_view_form
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_stage_view_form
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_team_view_form
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_team_view_kanban
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_tickets_view_tree
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.portal_helpdesk_ticket
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.portal_my_home_helpdesk_ticket
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.portal_my_home_menu_helpdesk
+msgid "Tickets"
+msgstr "Phiếu hỗ trợ"
+
+#. module: im_helpdesk
+#: model:ir.actions.act_window,name:im_helpdesk.helpdesk_ticket_analysis_action
+#: model:ir.ui.menu,name:im_helpdesk.helpdesk_ticket_report_menu
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_team_view_kanban
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_ticket_view_graph_analysis
+msgid "Tickets Analysis"
+msgstr "Phân tích phiếu"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_tickets_view_search_base
+msgid "Tickets Search"
+msgstr "Tìm kiếm phiếu"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,help:im_helpdesk.field_helpdesk_stage__fold
+#: model:ir.model.fields,help:im_helpdesk.field_helpdesk_ticket__fold
+msgid "Tickets in a folded stage are considered as closed."
+msgstr "Phiếu ở giai đoạn được gập sẽ được xem là đã đóng."
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__close_hours
+msgid "Time to close (hours)"
+msgstr "Thời gian đến khi đóng (giờ)"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__assign_hours
+msgid "Time to first assignment (hours)"
+msgstr "Thời gian đến khi phân công đầu tiên (giờ)"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_team_view_form
+msgid "Track customer satisfaction on tickets"
+msgstr "Theo dõi mức độ hài lòng của khách hàng trên phiếu"
+
+#. module: im_helpdesk
+#: model_terms:ir.actions.act_window,help:im_helpdesk.helpdesk_sla_report_analysis_action
+msgid "Track the performance of your teams and SLA success rates."
+msgstr "Theo dõi hiệu suất của các đội và tỷ lệ SLA đạt."
+
+#. module: im_helpdesk
+#: model:ir.model.fields,help:im_helpdesk.field_helpdesk_ticket__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr "Loại hoạt động ngoại lệ trong bản ghi."
+
+#. module: im_helpdesk
+#. odoo-python
+#: code:addons/im_helpdesk/models/helpdesk_stage.py:0
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.view_helpdesk_stage_unarchive_wizard
+msgid "Unarchive Tickets"
+msgstr "Bỏ lưu trữ phiếu"
+
+#. module: im_helpdesk
+#. odoo-python
+#: code:addons/im_helpdesk/controllers/portal.py:0
+#: code:addons/im_helpdesk/models/helpdesk_ticket.py:0
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_tickets_view_search_base
+msgid "Unassigned"
+msgstr "Chưa phân công"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_team__unassigned_tickets
+msgid "Unassigned Tickets"
+msgstr "Phiếu chưa phân công"
+
+#. module: im_helpdesk
+#: model:ir.model.fields.selection,name:im_helpdesk.selection__helpdesk_sla__priority__3
+#: model:ir.model.fields.selection,name:im_helpdesk.selection__helpdesk_sla_report_analysis__priority__3
+#: model:ir.model.fields.selection,name:im_helpdesk.selection__helpdesk_ticket__priority__3
+#: model:ir.model.fields.selection,name:im_helpdesk.selection__helpdesk_ticket_report_analysis__priority__3
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_tickets_view_search_base
+msgid "Urgent"
+msgstr "Khẩn cấp"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_team__use_alias
+msgid "Use Alias"
+msgstr "Dùng bí danh"
+
+#. module: im_helpdesk
+#: model:ir.model,name:im_helpdesk.model_res_users
+#: model:res.groups,name:im_helpdesk.group_helpdesk_user
+msgid "User"
+msgstr "Người dùng"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_team__privacy_visibility
+msgid "Visibility"
+msgstr "Hiển thị"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_team_view_form
+msgid "Visibility &amp; Assignment"
+msgstr "Hiển thị &amp; Phân công"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_team__website_message_ids
+msgid "Website Messages"
+msgstr "Thông báo trên trang web"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,help:im_helpdesk.field_helpdesk_team__website_message_ids
+#: model:ir.model.fields,help:im_helpdesk.field_helpdesk_ticket__website_message_ids
+msgid "Website communication history"
+msgstr "Lịch sử trao đổi qua trang web"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_sla__time
+msgid "Within"
+msgstr "Trong vòng"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_team__resource_calendar_id
+msgid "Working Hours"
+msgstr "Giờ làm việc"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_sla_report_analysis__ticket_assignation_hours
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket_report_analysis__ticket_assignation_hours
+msgid "Working Hours to Assign"
+msgstr "Giờ làm việc để phân công"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_sla_report_analysis__ticket_close_hours
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket_report_analysis__ticket_close_hours
+msgid "Working Hours to Close"
+msgstr "Giờ làm việc để đóng"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_sla_report_analysis__sla_exceeded_hours
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket__sla_deadline_hours
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_ticket_report_analysis__ticket_deadline_hours
+msgid "Working Hours until SLA Deadline"
+msgstr "Giờ làm việc đến hạn SLA"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,help:im_helpdesk.field_helpdesk_sla_status__exceeded_hours
+msgid "Working hours exceeded for reached SLAs compared with deadline."
+msgstr "Số giờ làm việc vượt quá hạn so với hạn chót đối với các SLA đã đạt."
+
+#. module: im_helpdesk
+#: model:ir.model.fields,help:im_helpdesk.field_helpdesk_team__resource_calendar_id
+msgid "Working hours used to determine the deadline of SLA Policies."
+msgstr "Giờ làm việc dùng để xác định hạn chót của các chính sách SLA."
+
+#. module: im_helpdesk
+#: model:ir.model.constraint,message:im_helpdesk.constraint_res_users_target_closed_not_zero
+#: model:ir.model.constraint,message:im_helpdesk.constraint_res_users_target_rating_not_zero
+#: model:ir.model.constraint,message:im_helpdesk.constraint_res_users_target_success_not_zero
+msgid "You cannot have negative targets"
+msgstr "Bạn không thể đặt mục tiêu âm"
+
+#. module: im_helpdesk
+#. odoo-python
+#: code:addons/im_helpdesk/models/helpdesk_ticket.py:0
+msgid "You have been invited to follow %s"
+msgstr "Bạn đã được mời theo dõi %s"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_team_view_form
+msgid "alias"
+msgstr "bí danh"
+
+#. module: im_helpdesk
+#. odoo-python
+#: code:addons/im_helpdesk/controllers/portal.py:0
+msgid "close_date"
+msgstr "close_date"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_team_view_form
+msgid "e.g. Customer Care"
+msgstr "VD: Chăm sóc khách hàng"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_team_view_form
+msgid "e.g. My Company"
+msgstr "VD: Công ty của tôi"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_stage_view_form
+msgid "e.g. New"
+msgstr "VD: Mới"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_ticket_view_form
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.quick_create_ticket_form
+msgid "e.g. Product arrived damaged"
+msgstr "VD: Sản phẩm giao đến bị hỏng"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_sla_view_form
+msgid "e.g. Urgent tickets"
+msgstr "VD: Phiếu khẩn cấp"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_team_view_form
+msgid "e.g. mycompany.com"
+msgstr "VD: mycompany.com"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.ticket_creation
+msgid "has been created from ticket:"
+msgstr "đã được tạo từ phiếu:"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_team_view_form
+msgid "team search"
+msgstr "Tìm kiếm đội"
+
+#. module: im_helpdesk
+#. odoo-python
+#: code:addons/im_helpdesk/models/helpdesk_team.py:0
+msgid "team_id"
+msgstr "team_id"
+
+#. module: im_helpdesk
+#. odoo-python
+#: code:addons/im_helpdesk/models/helpdesk_ticket.py:0
+msgid "tickets"
+msgstr "phiếu"
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_sla_view_kanban
+msgid "to reach"
+msgstr "để đạt đến"
+
+#. module: im_helpdesk
+#. odoo-python
+#: code:addons/im_helpdesk/controllers/portal.py:0
+msgid "user_id"
+msgstr "user_id"
+
+#. module: im_helpdesk
+#: model:mail.template,subject:im_helpdesk.rating_ticket_request_email_template
+msgid "{{ object.company_id.name or 'Helpdesk' }}: Service Rating Request"
+msgstr "{{ object.company_id.name or 'Hỗ trợ' }}: Yêu cầu đánh giá dịch vụ"
+
+#. module: im_helpdesk
+#: model:mail.template,subject:im_helpdesk.new_ticket_request_email_template
+msgid "{{ object.name }}"
+msgstr "{{ object.name }}"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,field_description:im_helpdesk.field_helpdesk_tag__auto_apply_keywords
+msgid "Auto Tag Keywords"
+msgstr "Từ khóa tự gắn thẻ"
+
+#. module: im_helpdesk
+#: model:ir.model.fields,help:im_helpdesk.field_helpdesk_tag__auto_apply_keywords
+msgid ""
+"Comma or newline separated keywords. If any keyword appears in a ticket "
+"subject or description, this tag is added automatically."
+msgstr ""
+"Các từ khóa phân tách bằng dấu phẩy hoặc xuống dòng. Nếu bất kỳ từ khóa nào "
+"xuất hiện trong tiêu đề hoặc mô tả phiếu, thẻ này sẽ được tự động thêm."
+
+#. module: im_helpdesk
+#: model_terms:ir.ui.view,arch_db:im_helpdesk.helpdesk_tag_view_form
+msgid "e.g. bug, error, invoice, payment"
+msgstr "VD: lỗi, error, hóa đơn, thanh toán"

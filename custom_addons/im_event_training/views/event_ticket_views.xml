@@ -1,0 +1,40 @@
+<odoo>
+    <record id="event_offer_ticket_view_tree_inherit_early_bird" model="ir.ui.view">
+        <field name="name">event.event.ticket.list.inherit.early_bird</field>
+        <field name="model">event.event.ticket</field>
+        <field name="inherit_id" ref="event.event_event_ticket_view_tree_from_event"/>
+        <field name="arch" type="xml">
+            <xpath expr="//list" position="inside">
+                <field name="is_early_bird" widget="boolean_toggle" string="Vé Early-Bird" optional="show"/>
+                <field name="price_early_bird" string="Giá Early-Bird" optional="show" invisible="not is_early_bird"/>
+                <field name="price_standard" string="Giá Tiêu chuẩn" optional="show" invisible="not is_early_bird"/>
+                <field name="early_bird_deadline" string="Hạn Early-Bird" optional="hide" invisible="not is_early_bird"/>
+                <field name="early_bird_max_qty" string="SL Early-Bird Tối đa" optional="hide" invisible="not is_early_bird"/>
+                <field name="is_early_bird_active" widget="boolean_toggle" string="Early-Bird Đang chạy" optional="show" readonly="1"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="event_offer_ticket_view_form_inherit_early_bird" model="ir.ui.view">
+        <field name="name">event.event.ticket.form.inherit.early_bird</field>
+        <field name="model">event.event.ticket</field>
+        <field name="inherit_id" ref="event.event_event_ticket_view_form_from_event"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="inside">
+                <group string="Cấu hình vé Early-Bird">
+                    <group>
+                        <field name="is_early_bird" widget="boolean_toggle"/>
+                        <field name="price_early_bird" invisible="not is_early_bird"/>
+                        <field name="price_standard" invisible="not is_early_bird"/>
+                    </group>
+                    <group invisible="not is_early_bird">
+                        <field name="early_bird_deadline"/>
+                        <field name="early_bird_max_qty"/>
+                        <field name="early_bird_sold_qty" readonly="1"/>
+                        <field name="is_early_bird_active" widget="boolean_toggle" readonly="1"/>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- The four mails, all wrapped in the layout from mail_layout.xml. Not noupdate:
+         edit here and upgrade the module; edits made in the UI are overwritten. -->
+    <data>
+        <record id="mail_template_assignment_reminder" model="mail.template">
+            <field name="name">eLearning: nhắc trước hạn khoá học được giao</field>
+            <field name="model_id" ref="im_elearning.model_im_course_assignment"/>
+            <field name="subject">Nhắc hạn: khoá học "{{ object.channel_id.name }}"</field>
+            <field name="email_from">{{ (object.create_uid.email_formatted or user.email_formatted) }}</field>
+            <!-- use_default_to would take partner_id and silently ignore To/Cc. -->
+            <field name="use_default_to" eval="False"/>
+            <field name="partner_to">{{ object.partner_id.id }}</field>
+            <field name="body_html" type="html">
+                <div style="margin:0px;padding:0px;font-size:13px;">
+                    <p>Xin chào <t t-out="object.employee_id.name or ''"/>,</p>
+                    <p>
+                        Khoá học <strong t-out="object.channel_id.name or ''"/> được giao cho bạn
+                        sẽ đến hạn vào <strong t-out="format_date(object.date_deadline) or ''"/>.
+                    </p>
+                    <p>
+                        Tiến độ hiện tại của bạn: <strong t-out="object.completion or 0"/>%.
+                    </p>
+                    <div style="margin:16px 0px;">
+                        <a t-attf-href="/slides/{{ object.channel_id.id }}"
+                           style="background-color:#714B67;padding:8px 16px;text-decoration:none;color:#fff;border-radius:5px;">
+                            Vào học tiếp
+                        </a>
+                    </div>
+                </div>
+            </field>
+            <field name="email_layout_xmlid">im_theme.mail_layout</field>
+            <field name="lang">{{ object.partner_id.lang }}</field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+
+        <record id="mail_template_assignment_overdue" model="mail.template">
+            <field name="name">eLearning: báo quá hạn khoá học được giao</field>
+            <field name="model_id" ref="im_elearning.model_im_course_assignment"/>
+            <field name="subject">Quá hạn: khoá học "{{ object.channel_id.name }}"</field>
+            <field name="email_from">{{ (object.create_uid.email_formatted or user.email_formatted) }}</field>
+            <!-- use_default_to would take partner_id and silently drop the manager's cc. -->
+            <field name="use_default_to" eval="False"/>
+            <field name="partner_to">{{ object.partner_id.id }}</field>
+            <field name="email_cc">{{ object.manager_id.work_email or '' }}</field>
+            <field name="body_html" type="html">
+                <div style="margin:0px;padding:0px;font-size:13px;">
+                    <p>Xin chào <t t-out="object.employee_id.name or ''"/>,</p>
+                    <p>
+                        Khoá học <strong t-out="object.channel_id.name or ''"/> đã quá hạn
+                        ngày <strong t-out="format_date(object.date_deadline) or ''"/>
+                        và mới hoàn thành <strong t-out="object.completion or 0"/>%.
+                    </p>
+                    <p t-if="object.manager_id">
+                        Thư này cũng được gửi tới quản lý trực tiếp
+                        (<t t-out="object.manager_id.name or ''"/>).
+                    </p>
+                    <div style="margin:16px 0px;">
+                        <a t-attf-href="/slides/{{ object.channel_id.id }}"
+                           style="background-color:#714B67;padding:8px 16px;text-decoration:none;color:#fff;border-radius:5px;">
+                            Hoàn thành ngay
+                        </a>
+                    </div>
+                </div>
+            </field>
+            <field name="email_layout_xmlid">im_theme.mail_layout</field>
+            <field name="lang">{{ object.partner_id.lang }}</field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+
+        <record id="mail_template_certificate_issued" model="mail.template">
+            <field name="name">eLearning: gửi chứng chỉ cho học viên</field>
+            <field name="model_id" ref="im_elearning.model_slide_certificate"/>
+            <field name="subject">Chứng chỉ khoá học "{{ object.channel_id.name }}"</field>
+            <field name="email_from">{{ (object.channel_id.user_id.email_formatted or user.company_id.email_formatted or user.company_id.catchall_formatted or '') }}</field>
+            <field name="email_to">{{ object.partner_id.email_formatted }}</field>
+            <field name="body_html" type="html">
+                <div style="margin:0px;padding:0px;font-size:13px;">
+                    <p>Xin chào <t t-out="object.partner_id.name or ''"/>,</p>
+                    <p>
+                        Chúc mừng bạn đã hoàn thành khoá học
+                        <strong t-out="object.channel_id.name or ''"/>.
+                        Bản chứng chỉ được đính kèm trong thư này.
+                    </p>
+                    <table style="margin:16px 0px;border-collapse:collapse;">
+                        <tr>
+                            <td style="padding:8px 12px;background:#f6f6f6;border:1px solid #e1e1e1;">Mã chứng chỉ</td>
+                            <td style="padding:8px 12px;border:1px solid #e1e1e1;font-size:16px;">
+                                <strong t-out="object.code or ''">CERT/2026/00042-K7M2QX</strong>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding:8px 12px;background:#f6f6f6;border:1px solid #e1e1e1;">Ngày cấp</td>
+                            <td style="padding:8px 12px;border:1px solid #e1e1e1;">
+                                <t t-out="format_date(object.date_issued) or ''"/>
+                            </td>
+                        </tr>
+                        <tr t-if="object.scoring_percentage">
+                            <td style="padding:8px 12px;background:#f6f6f6;border:1px solid #e1e1e1;">Điểm bài thi</td>
+                            <td style="padding:8px 12px;border:1px solid #e1e1e1;">
+                                <t t-out="object.scoring_percentage or 0"/>%
+                            </td>
+                        </tr>
+                    </table>
+                    <p>
+                        Giữ lại mã này. Bất kỳ ai cũng dùng được nó để kiểm tra chứng chỉ
+                        có thật hay không, không cần tài khoản.
+                    </p>
+                    <div style="margin:16px 0px;">
+                        <a t-att-href="object.verify_url"
+                           style="background-color:#714B67;padding:8px 16px;text-decoration:none;color:#fff;border-radius:5px;">
+                            Trang tra cứu chứng chỉ
+                        </a>
+                    </div>
+                </div>
+            </field>
+            <field name="report_template_ids" eval="[(4, ref('im_theme.action_report_certificate'))]"/>
+            <field name="email_layout_xmlid">im_theme.mail_layout</field>
+            <field name="lang">{{ object.partner_id.lang }}</field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+
+        <record id="mail_template_exam_failed" model="mail.template">
+            <field name="name">eLearning: báo kết quả bài thi chưa đạt</field>
+            <field name="model_id" ref="survey.model_survey_user_input"/>
+            <field name="subject">Kết quả bài thi khoá "{{ object.slide_partner_id.channel_id.name }}": chưa đạt</field>
+            <field name="email_from">{{ (object.slide_partner_id.channel_id.user_id.email_formatted or user.company_id.email_formatted or user.company_id.catchall_formatted or '') }}</field>
+            <field name="email_to">{{ object.partner_id.email_formatted or object.email }}</field>
+            <field name="body_html" type="html">
+                <div style="margin:0px;padding:0px;font-size:13px;">
+                    <p>Xin chào <t t-out="object.partner_id.name or object.nickname or ''"/>,</p>
+                    <p>
+                        Bạn vừa nộp bài thi
+                        <strong t-out="object.survey_id.title or ''"/>
+                        của khoá học
+                        <strong t-out="object.slide_partner_id.channel_id.name or ''"/>
+                        nhưng chưa đạt.
+                    </p>
+                    <table style="margin:16px 0px;border-collapse:collapse;">
+                        <tr>
+                            <td style="padding:8px 12px;background:#f6f6f6;border:1px solid #e1e1e1;">Điểm của bạn</td>
+                            <td style="padding:8px 12px;border:1px solid #e1e1e1;">
+                                <strong t-out="'%.0f' % (object.scoring_percentage or 0)">40</strong>%
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding:8px 12px;background:#f6f6f6;border:1px solid #e1e1e1;">Điểm cần đạt</td>
+                            <td style="padding:8px 12px;border:1px solid #e1e1e1;">
+                                <t t-out="'%.0f' % (object.survey_id.scoring_success_min or 0)">80</t>%
+                            </td>
+                        </tr>
+                    </table>
+                    <p>
+                        Bạn có thể xem lại bài giảng rồi thi lại. Khoá học vẫn mở cho bạn.
+                    </p>
+                    <div style="margin:16px 0px;">
+                        <a t-att-href="object.get_base_url() + (object.slide_partner_id.channel_id.website_url or '')"
+                           style="background-color:#714B67;padding:8px 16px;text-decoration:none;color:#fff;border-radius:5px;">
+                            Quay lại khoá học
+                        </a>
+                    </div>
+                </div>
+            </field>
+            <field name="email_layout_xmlid">im_theme.mail_layout</field>
+            <field name="lang">{{ object.partner_id.lang }}</field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+    </data>
+</odoo>

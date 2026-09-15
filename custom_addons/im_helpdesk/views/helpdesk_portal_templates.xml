@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Template website portal để liệt kê, xem, tạo và đóng ticket. -->
+<odoo>
+<data noupdate="0">
+    <template id="portal_my_home_menu_helpdesk" name="Portal: helpdesk breadcrumbs" inherit_id="portal.portal_breadcrumbs" priority="50">
+        <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+            <t t-set="rating_page" t-value="page_name == 'rating'"/>
+            <li t-if="page_name in ('ticket', 'ticket_create') or ticket or rating_page" t-attf-class="breadcrumb-item #{'active ' if page_name == 'ticket' and not ticket else ''}">
+                <a t-if="ticket or rating_page or page_name == 'ticket_create'" t-attf-href="/my/tickets?{{ keep_query() }}">Tickets</a>
+                <t t-else="">Tickets</t>
+            </li>
+            <li t-if="page_name == 'ticket_create'" class="breadcrumb-item active">
+                Create Ticket
+            </li>
+            <li t-if="ticket" class="breadcrumb-item active text-truncate">
+                <span t-field="ticket.name"/> (#<span t-field="ticket.ticket_ref"/>)
+            </li>
+        </xpath>
+    </template>
+
+    <template id="portal_my_home_helpdesk_ticket" name="Helpdesk Tickets" customize_show="True" inherit_id="portal.portal_my_home" priority="50">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="before">
+            <t t-set="portal_service_category_enable" t-value="True"/>
+        </xpath>
+        <div id="portal_service_category" position="inside">
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="title">Tickets</t>
+                <t t-set="text">Follow all your helpdesk tickets</t>
+                <t t-set="url" t-value="'/my/tickets'"/>
+                <t t-set="placeholder_count" t-value="'ticket_count'"/>
+            </t>
+        </div>
+    </template>
+
+    <template id="portal_helpdesk_ticket" name="My Tickets">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+            <t t-call="portal.portal_searchbar">
+                <t t-set="title">Tickets</t>
+            </t>
+            <div class="d-flex justify-content-end mb-3">
+                <a href="/my/tickets/new" class="btn btn-primary">Create Ticket</a>
+            </div>
+            <div t-if="not grouped_tickets" class="alert alert-info">
+                There are currently no Ticket for your account.
+            </div>
+            <t t-else="">
+                <t t-call="portal.portal_table">
+                    <thead>
+                        <tr>
+                            <th>Ticket</th>
+                            <th class="text-end" t-if="groupby != 'create_date'">Reported on</th>
+                            <th t-if="groupby != 'user_id'" class="ps-5">Assigned to</th>
+                            <th t-if="groupby != 'stage_id'" class="text-end">Stage</th>
+                        </tr>
+                    </thead>
+                    <t t-foreach="grouped_tickets" t-as="tickets">
+                        <t t-foreach="tickets" t-as="ticket">
+                            <tr>
+                                <td><a t-attf-href="/my/ticket/#{ticket.id}/#{ticket.access_token}"><small>#</small><t t-out="ticket.ticket_ref"/> <span t-field="ticket.name"/></a></td>
+                                <td class="text-end" t-if="groupby != 'create_date'"><span t-field="ticket.create_date" t-options='{"widget": "datetime", "hide_seconds": True}'/></td>
+                                <td t-if="groupby != 'user_id'" class="ps-5"><span t-field="ticket.user_id"/></td>
+                                <td t-if="groupby != 'stage_id'" class="text-end"><span t-field="ticket.stage_id.name"/></td>
+                            </tr>
+                        </t>
+                    </t>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <template id="portal_create_ticket" name="Create Helpdesk Ticket">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+            <div class="row justify-content-center">
+                <div class="col-12 col-lg-8 col-xl-7">
+                    <h3 class="mb-4">Create Ticket</h3>
+                    <div t-if="error" class="alert alert-danger" role="alert">
+                        <t t-out="error"/>
+                    </div>
+                    <form action="/my/tickets/create" method="post" class="o_portal_create_ticket">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <div class="mb-3">
+                            <label for="ticket_team_id" class="form-label">Helpdesk Team</label>
+                            <select id="ticket_team_id" name="team_id" class="form-select" t-att-disabled="'disabled' if not teams else None" required="required">
+                                <option t-if="not teams" value="">No helpdesk team available</option>
+                                <t t-foreach="teams" t-as="team">
+                                    <option t-att-value="team.id" t-att-selected="'selected' if default_team_id == team.id else None">
+                                        <t t-out="team.name"/>
+                                    </option>
+                                </t>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="ticket_name" class="form-label">Subject</label>
+                            <input id="ticket_name" type="text" name="name" class="form-control" required="required" maxlength="200" t-att-value="post.get('name', '')"/>
+                        </div>
+                        <div class="mb-3">
+                            <label for="ticket_description" class="form-label">Description</label>
+                            <textarea id="ticket_description" name="description" class="form-control" rows="6"><t t-out="post.get('description', '')"/></textarea>
+                        </div>
+                        <div class="mb-4">
+                            <label for="ticket_phone" class="form-label">Phone</label>
+                            <input id="ticket_phone" type="tel" name="phone" class="form-control" t-att-value="post.get('phone') or partner.phone or partner.mobile or ''"/>
+                        </div>
+                        <div class="d-flex gap-2 justify-content-end">
+                            <a href="/my/tickets" class="btn btn-light">Cancel</a>
+                            <button t-if="teams" type="submit" class="btn btn-primary">Create Ticket</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="tickets_followup" name="Helpdesk Ticket Detail">
+        <t t-call="portal.portal_layout">
+            <t t-set="title" t-value="ticket.name"/>
+            <t t-set="wrapwrap_classes" t-value="'o_portal_bg_dark'"/>
+            <div class="row mt16">
+                <div id="ticket_content" class="col-12 col-lg-8 col-xxl-9 mt-5 mt-lg-0">
+                    <div t-if="ticket_closed" class="alert alert-success alert-dismissible" role="status">
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"/>
+                        <span>Your ticket has successfully been closed.</span>
+                    </div>
+                    <div id="card">
+                        <div id="card_header" class="container">
+                            <h5 class="row justify-content-between">
+                                <div class="col-md-9 text-truncate">
+                                    <span t-field="ticket.name" class="h3"/>
+                                    <small class="text-muted"> (#<span t-field="ticket.ticket_ref"/>)</small>
+                                </div>
+                                <div class="col col-auto">
+                                    <small>Stage:</small> <span t-field="ticket.stage_id.name"/>
+                                </div>
+                            </h5>
+                        </div>
+                        <div id="card_body">
+                            <div class="row mb-4">
+                                <strong class="col-lg-3">Reported on</strong>
+                                <span class="col-lg-9" t-field="ticket.create_date" t-options='{"widget": "datetime", "hide_seconds": True}'/>
+                            </div>
+                            <div t-if="not is_html_empty(ticket.description)" class="row mt-3">
+                                <div class="col-lg-12" t-field="ticket.description"/>
+                            </div>
+                        </div>
+                    </div>
+                    <hr/>
+                    <div id="ticket_chat">
+                        <h3>Communication history</h3>
+                        <t t-call="portal.message_thread">
+                            <t t-set="token" t-value="ticket.access_token"/>
+                            <t t-set="disable_composer" t-value="ticket.stage_id.fold"/>
+                        </t>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+</data>
+</odoo>

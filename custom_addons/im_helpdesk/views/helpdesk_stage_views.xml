@@ -1,0 +1,99 @@
+<?xml version="1.0"?>
+<!-- Giao diện và hành động backend để quản lý stage của ticket helpdesk. -->
+<odoo>
+
+    <record id="helpdesk_stage_view_tree" model="ir.ui.view">
+        <field name="name">helpdesk.stage.list</field>
+        <field name="model">helpdesk.stage</field>
+        <field name="arch" type="xml">
+            <list string="Stages" default_order="sequence,id" multi_edit="1">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="team_ids" widget="many2many_tags"/>
+                <field name="fold"/>
+                <field name="template_id"/>
+                <field name="ticket_count" readonly="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="helpdesk_stage_view_form" model="ir.ui.view">
+        <field name="name">helpdesk.stage.form</field>
+        <field name="model">helpdesk.stage</field>
+        <field name="arch" type="xml">
+            <form string="Stage">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_open_helpdesk_ticket" type="object" class="oe_stat_button" icon="fa-life-ring">
+                            <field name="ticket_count" string="Tickets" widget="statinfo"/>
+                        </button>
+                    </div>
+                    <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active"/>
+                    <field name="active" invisible="1"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="e.g. New"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="sequence"/>
+                            <field name="team_ids" widget="many2many_tags" required="1"/>
+                            <field name="fold"/>
+                            <field name="color" widget="color_picker"/>
+                        </group>
+                        <group>
+                            <field name="template_id" context="{'default_model': 'helpdesk.ticket'}"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Description" name="description">
+                            <field name="description"/>
+                        </page>
+                        <page string="Kanban Labels" name="kanban_labels">
+                            <group>
+                                <field name="legend_normal"/>
+                                <field name="legend_blocked"/>
+                                <field name="legend_done"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="helpdesk_stage_view_search" model="ir.ui.view">
+        <field name="name">helpdesk.stage.search</field>
+        <field name="model">helpdesk.stage</field>
+        <field name="arch" type="xml">
+            <search string="Stages">
+                <field name="name"/>
+                <field name="team_ids"/>
+                <filter string="Folded" name="folded" domain="[('fold', '=', True)]"/>
+                <filter string="Archived" name="archived" domain="[('active', '=', False)]"/>
+                <group>
+                    <filter string="Team" name="team_ids" context="{'group_by': 'team_ids'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="helpdesk_stage_action" model="ir.actions.act_window">
+        <field name="name">Stages</field>
+        <field name="res_model">helpdesk.stage</field>
+        <field name="path">helpdesk-stages</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="helpdesk_stage_view_search"/>
+        <field name="context">{'active_test': False}</field>
+    </record>
+
+    <record id="helpdesk_stage_team_action" model="ir.actions.act_window">
+        <field name="name">Stages</field>
+        <field name="res_model">helpdesk.stage</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="helpdesk_stage_view_search"/>
+        <field name="domain">[('team_ids', 'in', active_id)]</field>
+        <field name="context">{'default_team_id': active_id, 'active_test': False}</field>
+    </record>
+
+</odoo>

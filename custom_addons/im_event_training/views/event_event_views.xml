@@ -1,0 +1,72 @@
+<odoo>
+    <record id="view_event_form_inherit_training" model="ir.ui.view">
+        <field name="name">event.event.form.inherit.training</field>
+        <field name="model">event.event</field>
+        <field name="inherit_id" ref="event.view_event_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_generate_attendance" 
+                        string="Sinh bản ghi điểm danh" 
+                        type="object" 
+                        class="btn-primary"
+                        invisible="not is_training"
+                        help="Sinh bản ghi điểm danh cho tất cả học viên đã đăng ký trong tất cả các buổi học."/>
+                <button name="action_issue_certificates_bulk" 
+                        string="Cấp chứng chỉ hàng loạt" 
+                        type="object" 
+                        class="btn-secondary"
+                        invisible="not is_training"
+                        help="Cấp chứng chỉ cho tất cả học viên đủ điều kiện đạt ngưỡng chuyên cần."/>
+            </xpath>
+
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_sessions"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-graduation-cap"
+                        invisible="not is_training">
+                    <field name="session_count" widget="statinfo" string="Buổi học"/>
+                </button>
+            </xpath>
+
+            <xpath expr="//field[@name='event_type_id']" position="after">
+                <field name="is_training" widget="boolean_toggle"/>
+            </xpath>
+
+            <xpath expr="//notebook" position="inside">
+                <page string="Khóa học đào tạo &amp; Buổi học" name="training_sessions" invisible="not is_training">
+                    <group>
+                        <group string="Cấu hình chứng chỉ">
+                            <field name="certificate_threshold" help="Ví dụ: 80% nghĩa là phải tham gia ít nhất 80% tổng số buổi học."/>
+                        </group>
+                    </group>
+                    <separator string="Lịch trình các buổi học"/>
+                    <field name="session_ids">
+                        <list editable="bottom">
+                            <field name="sequence" widget="handle"/>
+                            <field name="name"/>
+                            <field name="date_start"/>
+                            <field name="date_end"/>
+                            <field name="present_count" string="Có mặt"/>
+                            <field name="total_attendance_count" string="Tổng số đăng ký"/>
+                            <field name="description"/>
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="event_type_view_form_inherit_training" model="ir.ui.view">
+        <field name="name">event.type.form.inherit.training</field>
+        <field name="model">event.type</field>
+        <field name="inherit_id" ref="event.view_event_type_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="inside">
+                <group string="Cấu hình đào tạo">
+                    <field name="is_training" widget="boolean_toggle"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

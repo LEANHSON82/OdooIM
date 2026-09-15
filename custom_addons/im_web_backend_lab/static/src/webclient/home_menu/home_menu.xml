@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+<t t-name="im_web_backend_lab.HomeMenu">
+    <div class="o_home_menu" role="listbox" aria-label="Applications">
+        <!-- Search Bar -->
+        <div class="o_home_menu_search">
+            <div class="o_home_menu_search_wrap">
+                <i class="fa fa-search o_home_menu_search_icon"/>
+                <input
+                    t-ref="search"
+                    type="text"
+                    class="o_home_menu_search_input"
+                    placeholder="Search..."
+                    t-att-value="state.query"
+                    t-on-input="_onSearchInput"
+                    data-allow-hotkeys="true"
+                    autocomplete="off"
+                />
+                <button
+                    t-if="state.query"
+                    class="o_home_menu_search_clear btn btn-link"
+                    t-on-click="_onSearchClear"
+                >
+                    <i class="fa fa-times"/>
+                </button>
+            </div>
+        </div>
+
+        <!-- App Grid -->
+        <div class="o_home_menu_grid">
+            <t t-foreach="apps" t-as="app" t-key="app.id">
+                <a
+                    class="o_app"
+                    role="option"
+                    t-att-class="{'o_focused': state.focusedIndex === app_index}"
+                    t-att-aria-selected="state.focusedIndex === app_index ? 'true' : 'false'"
+                    t-att-data-menu-xmlid="app.xmlid"
+                    t-on-click.prevent="() => this._onAppClick(app)"
+                    t-attf-href="/odoo/{{app.actionPath || 'action-' + app.actionID}}"
+                >
+                    <div class="o_app_icon">
+                        <img
+                            t-if="app.webIconData"
+                            t-att-src="app.webIconData"
+                            alt=""
+                        />
+                        <t t-elif="app.webIconObj">
+                            <div class="o_app_icon_css d-flex align-items-center justify-content-center"
+                                 t-attf-style="background-color: {{ app.webIconObj.backgroundColor || '#F06050' }};">
+                                <i t-att-class="app.webIconObj.iconClass"
+                                   t-attf-style="color: {{ app.webIconObj.color || '#FFFFFF' }};"/>
+                            </div>
+                        </t>
+                        <span t-else="" class="o_app_icon_placeholder">
+                            <t t-esc="(app.name || '?')[0]"/>
+                        </span>
+                    </div>
+                    <div class="o_caption" t-esc="app.name"/>
+                </a>
+            </t>
+        </div>
+
+        <!-- No results -->
+        <div t-if="apps.length === 0 and state.query" class="o_home_menu_empty">
+            <p>No applications found.</p>
+        </div>
+    </div>
+</t>
+
+</templates>

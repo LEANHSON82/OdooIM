@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+
+    <record id="view_users_form_default_app" model="ir.ui.view">
+        <field name="name">res.users.form.default.app</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//page[@name='preferences']//group[@name='other_preferences']" position="inside">
+                <field name="default_app_id"
+                       options="{'no_create': True, 'no_open': True}"/>
+                <field name="default_menu_id"
+                       invisible="not default_app_id"
+                       options="{'no_create': True, 'no_open': True}"/>
+                <div colspan="2" invisible="not default_app_id">
+                    <button name="action_clear_default_app" type="object"
+                            class="btn btn-link ps-0"
+                            icon="fa-times"
+                            string="Bỏ app mặc định"
+                            help="Quay lại hành vi mặc định của Odoo: đăng nhập vào trang chủ, không mở thẳng app nào."/>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+
+    <record id="view_users_form_simple_modif_default_app" model="ir.ui.view">
+        <field name="name">res.users.preferences.form.default.app</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form_simple_modif"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//page[@name='preferences_page']//group[@name='other_preferences']" position="inside">
+                <field name="default_app_id"
+                       options="{'no_create': True, 'no_open': True}"/>
+                <field name="default_menu_id"
+                       invisible="not default_app_id"
+                       options="{'no_create': True, 'no_open': True}"/>
+                <div colspan="2" invisible="not default_app_id">
+                    <button name="action_clear_default_app" type="object"
+                            class="btn btn-link ps-0"
+                            icon="fa-times"
+                            string="Bỏ app mặc định"
+                            help="Quay lại hành vi mặc định của Odoo: đăng nhập vào trang chủ, không mở thẳng app nào."/>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

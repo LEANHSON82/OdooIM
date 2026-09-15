@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Odoo's light layout, with two changes: the header names the course
+         instead of "Your <model name>", and there is no "Powered by Odoo" row. -->
+    <template id="mail_layout" name="eLearning theme: mail layout"
+              inherit_id="mail.mail_notification_light" primary="True">
+
+        <xpath expr="//tbody/tr[1]" position="replace">
+            <tr>
+                <td align="center" style="min-width: 590px;">
+                    <t t-set="im_model" t-value="message and message.model or ''"/>
+                    <t t-set="im_course"
+                       t-value="(record.channel_id if im_model in ('slide.certificate', 'im.course.assignment')
+                                 else record.slide_partner_id.channel_id if im_model == 'survey.user_input'
+                                 else False) if record else False"/>
+                    <t t-set="im_kicker"
+                       t-value="{'slide.certificate': 'Chứng chỉ khoá học',
+                                 'survey.user_input': 'Kết quả bài thi',
+                                 'im.course.assignment': 'Khoá học được giao'}.get(im_model) or model_description or ''"/>
+                    <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%"
+                           style="background-color: white; padding: 0; border-collapse:separate;">
+                        <tr>
+                            <td valign="middle">
+                                <span style="font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: #8A7F8C;"
+                                      t-out="im_kicker"/>
+                                <br/>
+                                <span style="font-size: 20px; font-weight: bold; color: #2C2630;"
+                                      t-out="im_course.name if im_course else (record_name or '')"/>
+                            </td>
+                            <td valign="middle" align="right" t-if="company and not company.uses_default_logo">
+                                <img t-att-src="'/logo.png?company=%s' % company.id"
+                                     style="padding: 0px; margin: 0px; height: 48px;"
+                                     t-att-alt="'%s' % company.name"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" style="text-align:center;">
+                                <hr width="100%" style="background-color:#E2DAE2;border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin:8px 0px 28px 0px;"/>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </xpath>
+
+        <xpath expr="//span[@id='mail_unfollow']/ancestor::tr[1]" position="replace"/>
+
+    </template>
+</odoo>

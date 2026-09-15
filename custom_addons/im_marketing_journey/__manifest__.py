@@ -1,0 +1,21 @@
+{
+    'name': 'InMotion - Marketing Automation Journey Engine',
+    'version': '19.0.1.0.0',
+    'category': 'Marketing/Automation',
+    'summary': 'Hành trình nuôi dưỡng lead nhiều bước qua Zalo ZNS và email',
+    'description': 'Tự động gửi tin nhắn theo kịch bản cho lead CRM.',
+    'author': 'InMotion',
+    'website': 'https://inmotion.vn',
+    'license': 'LGPL-3',
+    'depends': ['base', 'crm', 'mail'],
+    'data': [
+        'security/ir.model.access.csv',
+        'data/ir_cron_data.xml',
+        'views/journey_participant_views.xml',
+        'views/journey_views.xml',
+        'views/journey_log_views.xml',
+        'views/menu_views.xml',
+    ],
+    'installable': True,
+    'application': True,
+}

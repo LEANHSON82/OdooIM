@@ -1,0 +1,93 @@
+// The exam page. CSS only: survey's markup already carries the classes we need
+// (.o_survey_choice_btn, .o_survey_selected), so overriding styles is enough.
+
+$im-accent: #714B67;
+$im-accent-soft: #F8F2F6;
+$im-accent-ink: #4B3145;
+$im-line: #E2DAE2;
+$im-card-ink: #2C2630;
+$im-card-muted: #8A7F8C;
+$im-veil-ink: #F1EBEF;
+
+.o_survey_form {
+
+    // Answer boxes change border and background when picked, not just the tiny
+    // radio dot, which is too small on a phone to see what was chosen.
+    .o_survey_choice_btn {
+        border: 1px solid $im-line;
+        border-radius: 8px;
+        padding-top: .5rem !important;
+        padding-bottom: .5rem !important;
+        transition: border-color .12s ease, background-color .12s ease;
+
+        &:hover {
+            border-color: darken($im-line, 12%);
+            background-color: rgba($im-accent, .04);
+        }
+
+        &.o_survey_selected {
+            border-color: $im-accent;
+            background-color: $im-accent-soft;
+            color: $im-accent-ink;
+            font-weight: 500;
+        }
+    }
+
+    .o_survey_navigation_submit {
+        border-radius: 6px;
+    }
+
+    .o_survey_main_title {
+        font-weight: 700;
+        letter-spacing: -.01em;
+    }
+}
+
+.o_im_exam_course {
+    letter-spacing: .08em;
+}
+
+// Progress bar: thin and rounded instead of the default thick bar.
+.o_survey_progress_wrapper .o_survey_progress {
+    .progress {
+        height: 5px;
+        border-radius: 3px;
+    }
+
+    .progress-bar {
+        background-color: $im-accent;
+        border-radius: 3px;
+    }
+}
+
+// Countdown: fixed-width digits so the number does not jitter every second.
+.o_survey_timer {
+    font-variant-numeric: tabular-nums;
+}
+
+// Courses with a background image. Odoo puts a WHITE veil on the image and
+// black text straight on top, with nothing framing the question. Use a DARK
+// veil instead and float the form in a white card. Courses without an image
+// keep Odoo's behaviour.
+.o_survey_background.o_survey_background_shadow {
+    box-shadow: inset 0 0 0 10000px rgba(35, 24, 31, .62);
+    color: $im-veil-ink !important;
+
+    // Text outside the card (progress, timer) sits on the dark veil.
+    .text-muted {
+        color: rgba($im-veil-ink, .72) !important;
+    }
+
+    .o_survey_form {
+        background-color: #FFFFFF;
+        color: $im-card-ink;
+        border-radius: 12px;
+        padding: 1.75rem 2rem 2rem;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, .35);
+
+        // Inside the card muted text is grey again; longer selector wins.
+        .text-muted {
+            color: $im-card-muted !important;
+        }
+    }
+}

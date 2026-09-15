@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_slide_certificate_list" model="ir.ui.view">
+        <field name="name">slide.certificate.list</field>
+        <field name="model">slide.certificate</field>
+        <field name="arch" type="xml">
+            <list string="Chứng chỉ" decoration-muted="is_revoked">
+                <field name="code"/>
+                <field name="partner_id"/>
+                <field name="channel_id"/>
+                <field name="date_issued"/>
+                <field name="mail_sent_date" optional="show"/>
+                <field name="scoring_percentage" optional="show"/>
+                <field name="is_revoked" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_slide_certificate_form" model="ir.ui.view">
+        <field name="name">slide.certificate.form</field>
+        <field name="model">slide.certificate</field>
+        <field name="arch" type="xml">
+            <form string="Chứng chỉ">
+                <header>
+                    <button name="action_revoke" type="object" string="Thu hồi"
+                            class="btn-danger" invisible="is_revoked"
+                            groups="website_slides.group_website_slides_officer"/>
+                    <button name="action_restore" type="object" string="Khôi phục"
+                            invisible="not is_revoked"
+                            groups="website_slides.group_website_slides_manager"/>
+                    <button name="action_send_email" type="object"
+                            string="Gửi cho học viên" invisible="is_revoked"
+                            groups="website_slides.group_website_slides_officer"/>
+                </header>
+                <sheet>
+                    <widget name="web_ribbon" title="Đã thu hồi" bg_color="text-bg-danger"
+                            invisible="not is_revoked"/>
+                    <div class="oe_title">
+                        <h1><field name="code"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="partner_id"/>
+                            <field name="channel_id"/>
+                            <field name="date_issued"/>
+                        </group>
+                        <group>
+                            <field name="user_input_id"/>
+                            <field name="scoring_percentage"/>
+                            <field name="resume_line_id"/>
+                            <field name="mail_sent_date"/>
+                        </group>
+                    </group>
+                    <group string="Thu hồi" invisible="not is_revoked">
+                        <field name="revoke_reason"/>
+                        <field name="revoke_date"/>
+                        <field name="revoke_uid"/>
+                    </group>
+                    <group string="Tra cứu">
+                        <field name="verify_url" widget="url"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_slide_certificate_search" model="ir.ui.view">
+        <field name="name">slide.certificate.search</field>
+        <field name="model">slide.certificate</field>
+        <field name="arch" type="xml">
+            <search string="Chứng chỉ">
+                <field name="code"/>
+                <field name="partner_id"/>
+                <field name="channel_id"/>
+                <filter name="filter_valid" string="Còn hiệu lực" domain="[('is_revoked', '=', False)]"/>
+                <filter name="filter_revoked" string="Đã thu hồi" domain="[('is_revoked', '=', True)]"/>
+                <separator/>
+                <filter name="filter_not_sent" string="Chưa gửi được"
+                        domain="[('mail_sent_date', '=', False), ('is_revoked', '=', False)]"/>
+                <group>
+                    <filter name="group_channel" string="Khoá học" context="{'group_by': 'channel_id'}"/>
+                    <filter name="group_date" string="Ngày cấp" context="{'group_by': 'date_issued'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_slide_certificate" model="ir.actions.act_window">
+        <field name="name">Chứng chỉ</field>
+        <field name="res_model">slide.certificate</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_filter_valid': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Chưa có chứng chỉ nào được cấp</p>
+            <p>Chứng chỉ được cấp tự động khi học viên đỗ bài thi của khoá học.</p>
+        </field>
+    </record>
+
+    <record id="action_server_backfill_certificates" model="ir.actions.server">
+        <field name="name">Cấp chứng chỉ còn thiếu</field>
+        <field name="model_id" ref="model_slide_certificate"/>
+        <field name="state">code</field>
+        <field name="code">action = model.action_backfill_missing()</field>
+    </record>
+
+    <record id="view_slide_certificate_revoke_form" model="ir.ui.view">
+        <field name="name">slide.certificate.revoke.form</field>
+        <field name="model">slide.certificate.revoke</field>
+        <field name="arch" type="xml">
+            <form string="Thu hồi chứng chỉ">
+                <group>
+                    <field name="certificate_id" readonly="1"/>
+                    <field name="reason" placeholder="Ví dụ: cấp nhầm người, phát hiện gian lận thi"/>
+                </group>
+                <footer>
+                    <button name="action_confirm" type="object" string="Thu hồi" class="btn-danger"/>
+                    <button special="cancel" string="Huỷ" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

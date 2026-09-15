@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_slide_channel_form_im" model="ir.ui.view">
+        <field name="name">slide.channel.form.im</field>
+        <field name="model">slide.channel</field>
+        <field name="inherit_id" ref="website_slides.view_slide_channel_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//header" position="inside">
+                <button name="action_open_link_import" type="object"
+                        string="Nạp bài giảng từ danh sách liên kết"
+                        class="btn-secondary"
+                        groups="website_slides.group_website_slides_officer"
+                        help="Dán cả danh sách liên kết YouTube / Vimeo / Google Drive, mỗi dòng thành một bài giảng."/>
+            </xpath>
+
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button class="oe_stat_button" type="object"
+                        name="action_view_certificates" icon="fa-certificate"
+                        invisible="not certificate_count">
+                    <field name="certificate_count" widget="statinfo" string="Chứng chỉ"/>
+                </button>
+            </xpath>
+
+            <xpath expr="//notebook" position="inside">
+                <page string="Thi và chứng chỉ" name="im_exam_certificate">
+                    <group>
+                        <group string="Bài thi">
+                            <field name="exam_unlock_completion"/>
+                            <div class="text-muted" colspan="2">
+                                Học viên phải hoàn thành đủ tỷ lệ này mới vào được bài
+                                thi. Chặn ở máy chủ nên gõ thẳng URL cũng không vào được.
+                                Để 0 nếu cho thi bất cứ lúc nào.
+                            </div>
+                        </group>
+                        <group string="Chứng chỉ">
+                            <field name="certificate_enabled"/>
+                            <div class="text-muted" colspan="2">
+                                Đỗ bài thi thì tự cấp chứng chỉ có mã tra cứu được.
+                                Chứng chỉ không có hạn hiệu lực.
+                            </div>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,82 @@
+<odoo>
+    <record id="view_im_journey_tree" model="ir.ui.view">
+        <field name="name">im.journey.list</field>
+        <field name="model">im.journey</field>
+        <field name="arch" type="xml">
+            <list string="Kịch bản Marketing Automation">
+                <field name="name"/>
+                <field name="trigger_stage_id"/>
+                <field name="participant_count" string="Đối tượng tham gia"/>
+                <field name="state" widget="badge" 
+                       decoration-info="state == 'draft'" 
+                       decoration-success="state == 'running'" 
+                       decoration-warning="state == 'paused'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_im_journey_form" model="ir.ui.view">
+        <field name="name">im.journey.form</field>
+        <field name="model">im.journey</field>
+        <field name="arch" type="xml">
+            <form string="Kịch bản Marketing Automation">
+                <header>
+                    <button name="action_start" string="Bắt đầu kịch bản" type="object" class="btn-primary" invisible="state == 'running'"/>
+                    <button name="action_pause" string="Tạm dừng" type="object" class="btn-warning" invisible="state != 'running'"/>
+                    <button name="action_reset_draft" string="Chuyển về Nháp" type="object" class="btn-secondary" invisible="state == 'draft'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,running,paused"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" icon="fa-users" type="action" name="%(action_im_journey_participant)d" context="{'search_default_journey_id': id}">
+                            <field name="participant_count" widget="statinfo" string="Đối tượng tham gia"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" string="Tên kịch bản"/>
+                        <h1><field name="name" placeholder="Ví dụ: Kịch bản chào mừng Lead qua ZNS &amp; Email"/></h1>
+                    </div>
+                    <group>
+                        <group string="Kích hoạt">
+                            <field name="trigger_stage_id" options="{'no_create': True}"/>
+                            <field name="allow_re_enroll" widget="boolean_toggle"/>
+                        </group>
+                        <group string="Nhịp gửi">
+                            <field name="step_delay_minutes"/>
+                            <field name="quiet_hours_tz"/>
+                            <field name="active" widget="boolean_toggle"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Các nút trong luồng" name="nodes">
+                            <field name="node_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="name"/>
+                                    <field name="node_type"/>
+                                    <field name="wait_duration" invisible="node_type != 'wait'"/>
+                                    <field name="wait_unit" invisible="node_type != 'wait'"/>
+                                    <field name="action_type" invisible="node_type != 'action'"/>
+                                    <field name="condition_type" invisible="node_type != 'condition'"/>
+                                    <field name="next_node_id" invisible="node_type == 'condition'"/>
+                                    <field name="next_node_if_true_id" invisible="node_type != 'condition'"/>
+                                    <field name="next_node_if_false_id" invisible="node_type != 'condition'"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_im_journey" model="ir.actions.act_window">
+        <field name="name">Kịch bản Marketing</field>
+        <field name="res_model">im.journey</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Tạo kịch bản Marketing Automation đầu tiên của bạn!</p>
+            <p>Thiết lập các hành động tự động nhiều bước (Zalo ZNS / Email) cho Lead dựa trên các giai đoạn CRM.</p>
+        </field>
+    </record>
+</odoo>

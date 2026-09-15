@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="survey_survey_view_form_im_elearning" model="ir.ui.view">
+        <field name="name">survey.survey.form.im.elearning</field>
+        <field name="model">survey.survey</field>
+        <field name="inherit_id" ref="survey.survey_survey_view_form"/>
+        <field name="arch" type="xml">
+            <field name="certification_mail_template_id" position="after">
+                <div class="text-warning" colspan="2"
+                     invisible="not certification_mail_template_id">
+                    <i class="fa fa-exclamation-triangle" role="img" aria-label="Cảnh báo"/>
+                    Khoá học có bật cấp chứng chỉ đã tự gửi thư kèm chứng chỉ mang mã
+                    tra cứu. Đặt thêm mẫu ở đây khiến học viên nhận hai thư với hai số
+                    chứng chỉ khác nhau — để trống trừ khi bạn cố ý muốn vậy.
+                </div>
+            </field>
+        </field>
+    </record>
+</odoo>

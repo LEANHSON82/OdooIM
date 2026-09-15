@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="certificate_verify_form" name="Tra cứu chứng chỉ">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure">
+                <div class="container py-5">
+                    <div class="row justify-content-center">
+                        <div class="col-lg-6">
+                            <h1 class="mb-3">Tra cứu chứng chỉ</h1>
+                            <p class="text-muted">
+                                Nhập mã in trên chứng chỉ để kiểm tra chứng chỉ có thật hay không.
+                            </p>
+                            <form action="/certificate/verify" method="get" class="mt-4">
+                                <div class="input-group">
+                                    <input type="text" name="code" class="form-control"
+                                           placeholder="CERT/2026/00042"
+                                           t-att-value="code"/>
+                                    <button type="submit" class="btn btn-primary">Tra cứu</button>
+                                </div>
+                            </form>
+                            <div class="alert alert-info mt-4" role="status">
+                                Nếu chứng chỉ có mã QR, quét mã đó sẽ mở thẳng kết quả tra cứu.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="certificate_verify_result" name="Kết quả tra cứu chứng chỉ">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure">
+                <div class="container py-5">
+                    <div class="row justify-content-center">
+                        <div class="col-lg-6">
+
+                            <t t-if="not found">
+                                <div class="card border-danger">
+                                    <div class="card-body text-center py-5">
+                                        <i class="fa fa-times-circle fa-3x text-danger mb-3" aria-hidden="true"/>
+                                        <h2 class="card-title">Không tìm thấy chứng chỉ</h2>
+                                        <p class="text-muted mb-0">
+                                            Mã <strong t-out="code"/> không tồn tại, hoặc liên kết
+                                            tra cứu không hợp lệ.
+                                        </p>
+                                    </div>
+                                </div>
+                            </t>
+
+                            <t t-else="">
+                                <div t-attf-class="card #{'border-warning' if is_revoked else 'border-success'}">
+                                    <div class="card-body text-center py-5">
+                                        <t t-if="is_revoked">
+                                            <i class="fa fa-ban fa-3x text-warning mb-3" aria-hidden="true"/>
+                                            <h2 class="card-title">Chứng chỉ đã bị thu hồi</h2>
+                                            <p class="text-muted">
+                                                Chứng chỉ này từng được cấp nhưng đã bị đơn vị cấp thu hồi.
+                                            </p>
+                                        </t>
+                                        <t t-else="">
+                                            <i class="fa fa-check-circle fa-3x text-success mb-3" aria-hidden="true"/>
+                                            <h2 class="card-title">Chứng chỉ hợp lệ</h2>
+                                        </t>
+                                    </div>
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item d-flex justify-content-between">
+                                            <span class="text-muted">Mã chứng chỉ</span>
+                                            <strong t-out="code"/>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between">
+                                            <span class="text-muted">Học viên</span>
+                                            <strong t-out="partner_name"/>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between">
+                                            <span class="text-muted">Khoá học</span>
+                                            <strong t-out="channel_name"/>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between">
+                                            <span class="text-muted">Ngày cấp</span>
+                                            <strong t-out="date_issued" t-options="{'widget': 'date'}"/>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between">
+                                            <span class="text-muted">Đơn vị cấp</span>
+                                            <strong t-out="company_name"/>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </t>
+
+                            <div class="text-center mt-4">
+                                <a href="/certificate/verify" class="btn btn-light">Tra cứu mã khác</a>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>

@@ -1,0 +1,107 @@
+<odoo>
+    <record id="view_event_session_tree" model="ir.ui.view">
+        <field name="name">event.session.list</field>
+        <field name="model">event.session</field>
+        <field name="arch" type="xml">
+            <list string="Các buổi học đào tạo">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="event_id"/>
+                <field name="date_start"/>
+                <field name="date_end"/>
+                <field name="present_count" string="Có mặt"/>
+                <field name="total_attendance_count" string="Tổng số đăng ký"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_event_session_form" model="ir.ui.view">
+        <field name="name">event.session.form</field>
+        <field name="model">event.session</field>
+        <field name="arch" type="xml">
+            <form string="Buổi học đào tạo">
+                <header>
+                    <button name="action_open_attendance"
+                            string="Điểm danh hàng loạt"
+                            type="object"
+                            class="btn-primary"
+                            invisible="not attendance_ids"
+                            help="Mở danh sách điểm danh của buổi học ở chế độ chọn nhiều học viên cùng lúc."/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" string="Tên buổi học"/>
+                        <h1><field name="name" placeholder="Ví dụ: Buổi 1: Giới thiệu tổng quan"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="event_id"/>
+                            <field name="sequence"/>
+                        </group>
+                        <group>
+                            <field name="date_start"/>
+                            <field name="date_end"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Điểm danh" name="attendance">
+                            <field name="attendance_ids">
+                                <list editable="bottom" create="false">
+                                    <field name="registration_id"/>
+                                    <field name="is_present" widget="boolean_toggle"/>
+                                    <field name="is_excused" widget="boolean_toggle" string="Được miễn"/>
+                                    <field name="note"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Mô tả / Ghi chú" name="description">
+                            <field name="description"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_event_session_attendance_tree" model="ir.ui.view">
+        <field name="name">event.session.attendance.list</field>
+        <field name="model">event.session.attendance</field>
+        <field name="arch" type="xml">
+            <list string="Điểm danh học viên" multi_edit="1" create="false" delete="false">
+                <header>
+                    <button name="action_mark_present" type="object"
+                            string="Đánh dấu Có mặt" class="btn-primary"/>
+                    <button name="action_mark_absent" type="object"
+                            string="Đánh dấu Vắng" class="btn-secondary"/>
+                    <button name="action_mark_excused" type="object"
+                            string="Đánh dấu Được miễn" class="btn-secondary"/>
+                </header>
+                <field name="session_id" optional="show"/>
+                <field name="registration_id" string="Học viên"/>
+                <field name="is_present" widget="boolean_toggle" string="Có mặt"/>
+                <field name="is_excused" widget="boolean_toggle" string="Được miễn"/>
+                <field name="note" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_event_session_attendance_search" model="ir.ui.view">
+        <field name="name">event.session.attendance.search</field>
+        <field name="model">event.session.attendance</field>
+        <field name="arch" type="xml">
+            <search string="Tìm kiếm điểm danh">
+                <field name="registration_id" string="Học viên"/>
+                <field name="session_id"/>
+                <filter string="Có mặt" name="present"
+                        domain="[('is_present', '=', True), ('is_excused', '=', False)]"/>
+                <filter string="Vắng" name="absent"
+                        domain="[('is_present', '=', False), ('is_excused', '=', False)]"/>
+                <filter string="Được miễn" name="excused" domain="[('is_excused', '=', True)]"/>
+                <group>
+                    <filter string="Buổi học" name="group_session" context="{'group_by': 'session_id'}"/>
+                    <filter string="Học viên" name="group_registration" context="{'group_by': 'registration_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+</odoo>

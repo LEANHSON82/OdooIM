@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- priority cao để chạy SAU website.brand_promotion và
+         website_sale.brand_promotion — hai module đó cũng kế thừa vào đúng khối
+         này. Xoá trước khi chúng chạy thì xpath của chúng không tìm thấy đích
+         và cả trang vỡ. -->
+    <template id="hide_brand_promotion"
+              inherit_id="web.brand_promotion"
+              priority="99"
+              name="Gỡ khối quảng bá Odoo ở chân trang">
+        <xpath expr="//div[hasclass('o_brand_promotion')]" position="replace"/>
+    </template>
+</odoo>

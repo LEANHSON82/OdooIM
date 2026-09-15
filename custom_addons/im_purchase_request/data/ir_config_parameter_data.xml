@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="param_allow_self_approval" model="ir.config_parameter">
+            <field name="key">im_purchase_request.allow_self_approval</field>
+            <field name="value">0</field>
+        </record>
+
+        <record id="param_overrun_tolerance_pct" model="ir.config_parameter">
+            <field name="key">im_purchase_request.overrun_tolerance_pct</field>
+            <field name="value">10</field>
+        </record>
+
+        <record id="param_min_quote_count" model="ir.config_parameter">
+            <field name="key">im_purchase_request.min_quote_count</field>
+            <field name="value">3</field>
+        </record>
+    </data>
+</odoo>

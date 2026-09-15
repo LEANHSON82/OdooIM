@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_im_elearning_root"
+              name="Đào tạo nội bộ"
+              parent="website_slides.website_slides_menu_root"
+              sequence="50"/>
+
+    <menuitem id="menu_course_assignment"
+              name="Khoá học được giao"
+              parent="menu_im_elearning_root"
+              action="action_course_assignment"
+              sequence="10"/>
+
+    <menuitem id="menu_course_assignment_wizard"
+              name="Giao khoá học"
+              parent="menu_im_elearning_root"
+              action="action_course_assignment_wizard"
+              sequence="20"/>
+
+    <menuitem id="menu_backfill_certificates"
+              name="Cấp chứng chỉ còn thiếu"
+              parent="menu_im_elearning_root"
+              action="action_server_backfill_certificates"
+              groups="website_slides.group_website_slides_manager"
+              sequence="40"/>
+
+    <menuitem id="menu_slide_certificate"
+              name="Chứng chỉ"
+              parent="menu_im_elearning_root"
+              action="action_slide_certificate"
+              sequence="30"/>
+</odoo>

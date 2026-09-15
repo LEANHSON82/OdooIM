@@ -1,0 +1,374 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* im_event_training
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-05 12:00+0000\n"
+"PO-Revision-Date: 2026-08-05 12:00+0000\n"
+"Last-Translator: InMotion\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: im_event_training
+#: model:ir.model.fields,field_description:im_event_training.field_event_event__is_training
+#: model:ir.model.fields,field_description:im_event_training.field_event_registration__is_training
+#: model:ir.model.fields,field_description:im_event_training.field_event_type__is_training
+msgid "Is Training Course"
+msgstr "Là khóa học đào tạo"
+
+#. module: im_event_training
+#: model:ir.model.fields,help:im_event_training.field_event_event__is_training
+msgid "Check if this event is a multi-session training course requiring attendance and certificates."
+msgstr "Tích chọn nếu sự kiện này là khóa học nhiều buổi yêu cầu điểm danh và chứng chỉ."
+
+#. module: im_event_training
+#: model:ir.model.fields,help:im_event_training.field_event_type__is_training
+msgid "Check if events created from this template are training courses by default."
+msgstr "Tích chọn nếu các sự kiện tạo từ mẫu này là khóa học đào tạo theo mặc định."
+
+#. module: im_event_training
+#: model:ir.model.fields,field_description:im_event_training.field_event_event__session_ids
+#: model:ir.ui.menu,name:im_event_training.menu_event_session
+msgid "Training Sessions"
+msgstr "Các buổi học đào tạo"
+
+#. module: im_event_training
+#: model:ir.model.fields,field_description:im_event_training.field_event_event__session_count
+msgid "Session Count"
+msgstr "Số lượng buổi học"
+
+#. module: im_event_training
+#: model:ir.model.fields,field_description:im_event_training.field_event_event__certificate_threshold
+#: model:ir.model.fields,field_description:im_event_training.field_event_registration__certificate_threshold
+msgid "Certificate Threshold (%)"
+msgstr "Ngưỡng cấp chứng chỉ (%)"
+
+#. module: im_event_training
+#: model:ir.model.fields,help:im_event_training.field_event_event__certificate_threshold
+msgid "Minimum attendance percentage required to be eligible for a certificate."
+msgstr "Tỷ lệ phần trăm tham gia tối thiểu để đủ điều kiện nhận chứng chỉ."
+
+#. module: im_event_training
+#: model:ir.model.fields,field_description:im_event_training.field_event_session__name
+msgid "Session Name"
+msgstr "Tên buổi học"
+
+#. module: im_event_training
+#: model:ir.model.fields,field_description:im_event_training.field_event_session__sequence
+msgid "Sequence"
+msgstr "Thứ tự"
+
+#. module: im_event_training
+#: model:ir.model.fields,field_description:im_event_training.field_event_session__event_id
+msgid "Event"
+msgstr "Sự kiện"
+
+#. module: im_event_training
+#: model:ir.model.fields,field_description:im_event_training.field_event_session__date_start
+msgid "Start Time"
+msgstr "Thời gian bắt đầu"
+
+#. module: im_event_training
+#: model:ir.model.fields,field_description:im_event_training.field_event_session__date_end
+msgid "End Time"
+msgstr "Thời gian kết thúc"
+
+#. module: im_event_training
+#: model:ir.model.fields,field_description:im_event_training.field_event_session__description
+msgid "Notes / Description"
+msgstr "Ghi chú / Mô tả"
+
+#. module: im_event_training
+#: model:ir.model.fields,field_description:im_event_training.field_event_session__attendance_ids
+msgid "Attendance Records"
+msgstr "Danh sách điểm danh"
+
+#. module: im_event_training
+#: model:ir.model.fields,field_description:im_event_training.field_event_session__present_count
+msgid "Present Count"
+msgstr "Số lượng có mặt"
+
+#. module: im_event_training
+#: model:ir.model.fields,field_description:im_event_training.field_event_session__total_attendance_count
+msgid "Total Attendees"
+msgstr "Tổng số học viên"
+
+#. module: im_event_training
+#: model:ir.model.fields,field_description:im_event_training.field_event_session_attendance__session_id
+msgid "Session"
+msgstr "Buổi học"
+
+#. module: im_event_training
+#: model:ir.model.fields,field_description:im_event_training.field_event_session_attendance__registration_id
+msgid "Attendee Registration"
+msgstr "Đăng ký học viên"
+
+#. module: im_event_training
+#: model:ir.model.fields,field_description:im_event_training.field_event_session_attendance__is_present
+msgid "Present"
+msgstr "Có mặt"
+
+#. module: im_event_training
+#: model:ir.model.fields,field_description:im_event_training.field_event_session_attendance__note
+msgid "Note"
+msgstr "Ghi chú"
+
+#. module: im_event_training
+#: model:ir.model.fields,field_description:im_event_training.field_event_registration__attendance_ids
+msgid "Attendance Details"
+msgstr "Chi tiết điểm danh"
+
+#. module: im_event_training
+#: model:ir.model.fields,field_description:im_event_training.field_event_registration__attended_session_count
+msgid "Attended Sessions"
+msgstr "Số buổi đã tham gia"
+
+#. module: im_event_training
+#: model:ir.model.fields,field_description:im_event_training.field_event_registration__total_session_count
+msgid "Total Sessions"
+msgstr "Tổng số buổi"
+
+#. module: im_event_training
+#: model:ir.model.fields,field_description:im_event_training.field_event_registration__attendance_ratio
+msgid "Attendance Rate (%)"
+msgstr "Tỷ lệ chuyên cần (%)"
+
+#. module: im_event_training
+#: model:ir.model.fields,field_description:im_event_training.field_event_registration__is_certificate_eligible
+msgid "Certificate Eligible"
+msgstr "Đủ điều kiện cấp chứng chỉ"
+
+#. module: im_event_training
+#: model:ir.model.fields,field_description:im_event_training.field_event_registration__certificate_number
+msgid "Certificate Code"
+msgstr "Mã chứng chỉ"
+
+#. module: im_event_training
+#: model:ir.model.fields,field_description:im_event_training.field_event_registration__certificate_date
+msgid "Certificate Issue Date"
+msgstr "Ngày cấp chứng chỉ"
+
+#. module: im_event_training
+#: model:ir.model.fields,field_description:im_event_training.field_event_registration__certificate_state
+msgid "Certificate Status"
+msgstr "Trạng thái chứng chỉ"
+
+#. module: im_event_training
+#: model:ir.model.fields.selection,name:im_event_training.selection__event_registration__certificate_state__draft
+msgid "Not Issued"
+msgstr "Chưa cấp"
+
+#. module: im_event_training
+#: model:ir.model.fields.selection,name:im_event_training.selection__event_registration__certificate_state__issued
+msgid "Issued"
+msgstr "Đã cấp"
+
+#. module: im_event_training
+#: model:ir.model.fields,field_description:im_event_training.field_event_event_ticket__is_early_bird
+msgid "Is Early Bird Ticket"
+msgstr "Là vé Early-Bird"
+
+#. module: im_event_training
+#: model:ir.model.fields,field_description:im_event_training.field_event_event_ticket__early_bird_deadline
+msgid "Early Bird Deadline"
+msgstr "Hạn chót Early-Bird"
+
+#. module: im_event_training
+#: model:ir.model.fields,field_description:im_event_training.field_event_event_ticket__early_bird_max_qty
+msgid "Early Bird Max Quantity"
+msgstr "Số lượng vé Early-Bird tối đa"
+
+#. module: im_event_training
+#: model:ir.model.fields,field_description:im_event_training.field_event_event_ticket__early_bird_sold_qty
+msgid "Early Bird Sold Quantity"
+msgstr "Số lượng vé Early-Bird đã bán"
+
+#. module: im_event_training
+#: model:ir.model.fields,field_description:im_event_training.field_event_event_ticket__price_early_bird
+msgid "Early Bird Price"
+msgstr "Giá vé Early-Bird"
+
+#. module: im_event_training
+#: model:ir.model.fields,field_description:im_event_training.field_event_event_ticket__price_standard
+msgid "Standard Price"
+msgstr "Giá vé tiêu chuẩn"
+
+#. module: im_event_training
+#: model:ir.model.fields,field_description:im_event_training.field_event_event_ticket__is_early_bird_active
+msgid "Early Bird Active"
+msgstr "Đang áp dụng Early-Bird"
+
+#. module: im_event_training
+#, python-format
+msgid "Please create at least 1 session before generating attendance records."
+msgstr "Vui lòng tạo ít nhất 1 buổi học trước khi sinh bản ghi điểm danh."
+
+#. module: im_event_training
+#, python-format
+msgid "Attendance Generated Successfully"
+msgstr "Khởi tạo bản ghi điểm danh thành công"
+
+#. module: im_event_training
+#, python-format
+msgid "Created %s new attendance records."
+msgstr "Đã tạo thành công %s bản ghi điểm danh mới."
+
+#. module: im_event_training
+#, python-format
+msgid "No eligible attendees found (or all eligible attendees have already been issued certificates)."
+msgstr "Không tìm thấy học viên đủ điều kiện (hoặc tất cả học viên đủ điều kiện đã được cấp chứng chỉ)."
+
+#. module: im_event_training
+#, python-format
+msgid "Bulk Certificates Issued"
+msgstr "Cấp chứng chỉ hàng loạt thành công"
+
+#. module: im_event_training
+#, python-format
+msgid "Successfully issued certificates for %s attendees."
+msgstr "Đã cấp chứng chỉ thành công cho %s học viên."
+
+#. module: im_event_training
+#, python-format
+msgid "Attendee '%s' is not eligible for a certificate. Current attendance rate: %.2f%% (Required minimum: %.2f%%)."
+msgstr "Học viên '%s' chưa đủ điều kiện nhận chứng chỉ. Tỷ lệ chuyên cần hiện tại: %.2f%% (Yêu cầu tối thiểu: %.2f%%)."
+
+#. module: im_event_training
+#: model:ir.ui.view,arch_db:im_event_training.view_event_form_inherit_training
+msgid "Generate Attendance"
+msgstr "Sinh bản ghi điểm danh"
+
+#. module: im_event_training
+#: model:ir.ui.view,arch_db:im_event_training.view_event_form_inherit_training
+msgid "Generate attendance records for all registered attendees across all sessions."
+msgstr "Khởi tạo bản ghi điểm danh cho tất cả học viên đã đăng ký cho tất cả các buổi học."
+
+#. module: im_event_training
+#: model:ir.ui.view,arch_db:im_event_training.view_event_form_inherit_training
+msgid "Bulk Issue Certificates"
+msgstr "Cấp chứng chỉ hàng loạt"
+
+#. module: im_event_training
+#: model:ir.ui.view,arch_db:im_event_training.view_event_form_inherit_training
+msgid "Issue certificates to all eligible attendees meeting the attendance threshold."
+msgstr "Cấp chứng chỉ cho tất cả học viên đủ điều kiện đạt ngưỡng chuyên cần."
+
+#. module: im_event_training
+#: model:ir.ui.view,arch_db:im_event_training.view_event_form_inherit_training
+msgid "Sessions"
+msgstr "Các buổi học"
+
+#. module: im_event_training
+#: model:ir.ui.view,arch_db:im_event_training.view_event_form_inherit_training
+msgid "Training Course & Sessions"
+msgstr "Khóa học đào tạo & Buổi học"
+
+#. module: im_event_training
+#: model:ir.ui.view,arch_db:im_event_training.view_event_form_inherit_training
+msgid "Certificate Settings"
+msgstr "Cấu hình chứng chỉ"
+
+#. module: im_event_training
+#: model:ir.ui.view,arch_db:im_event_training.view_event_form_inherit_training
+msgid "e.g. 80% means attending at least 80% of total sessions."
+msgstr "Ví dụ: 80% nghĩa là phải tham gia ít nhất 80% tổng số buổi học."
+
+#. module: im_event_training
+#: model:ir.ui.view,arch_db:im_event_training.view_event_form_inherit_training
+msgid "Sessions Schedule"
+msgstr "Lịch trình các buổi học"
+
+#. module: im_event_training
+#: model:ir.ui.view,arch_db:im_event_training.view_event_form_inherit_training
+#: model:ir.ui.view,arch_db:im_event_training.view_event_session_tree
+msgid "Present"
+msgstr "Có mặt"
+
+#. module: im_event_training
+#: model:ir.ui.view,arch_db:im_event_training.view_event_form_inherit_training
+#: model:ir.ui.view,arch_db:im_event_training.view_event_session_tree
+msgid "Total Registered"
+msgstr "Tổng số đăng ký"
+
+#. module: im_event_training
+#: model:ir.ui.view,arch_db:im_event_training.event_type_view_form_inherit_training
+msgid "Training Settings"
+msgstr "Cấu hình đào tạo"
+
+#. module: im_event_training
+#: model:ir.ui.view,arch_db:im_event_training.view_event_registration_form_inherit_training
+msgid "Issue Certificate"
+msgstr "Cấp chứng chỉ"
+
+#. module: im_event_training
+#: model:ir.ui.view,arch_db:im_event_training.view_event_registration_form_inherit_training
+msgid "Training Results & Certificate"
+msgstr "Kết quả đào tạo & Chứng chỉ"
+
+#. module: im_event_training
+#: model:ir.ui.view,arch_db:im_event_training.view_event_registration_form_inherit_training
+#: model:ir.ui.view,arch_db:im_event_training.view_event_registration_tree_inherit_training
+msgid "Attendance Rate"
+msgstr "Tỷ lệ chuyên cần"
+
+#. module: im_event_training
+#: model:ir.ui.view,arch_db:im_event_training.view_event_registration_form_inherit_training
+msgid "Certificate Information"
+msgstr "Thông tin chứng chỉ"
+
+#. module: im_event_training
+#: model:ir.ui.view,arch_db:im_event_training.view_event_registration_form_inherit_training
+msgid "Session Attendance Log"
+msgstr "Nhật ký điểm danh buổi học"
+
+#. module: im_event_training
+#: model:ir.ui.view,arch_db:im_event_training.view_event_registration_tree_inherit_training
+msgid "Eligible"
+msgstr "Đủ điều kiện"
+
+#. module: im_event_training
+#: model:ir.ui.view,arch_db:im_event_training.view_event_registration_tree_inherit_training
+msgid "Certificate Code"
+msgstr "Mã chứng chỉ"
+
+#. module: im_event_training
+#: model:ir.ui.view,arch_db:im_event_training.view_event_session_tree
+msgid "Training Sessions"
+msgstr "Các buổi học đào tạo"
+
+#. module: im_event_training
+#: model:ir.ui.view,arch_db:im_event_training.view_event_session_form
+msgid "Training Session"
+msgstr "Buổi học đào tạo"
+
+#. module: im_event_training
+#: model:ir.ui.view,arch_db:im_event_training.view_event_session_form
+msgid "Session Name"
+msgstr "Tên buổi học"
+
+#. module: im_event_training
+#: model:ir.ui.view,arch_db:im_event_training.view_event_session_form
+msgid "e.g. Session 1: Introduction"
+msgstr "Ví dụ: Buổi 1: Giới thiệu tổng quan"
+
+#. module: im_event_training
+#: model:ir.ui.view,arch_db:im_event_training.view_event_session_form
+msgid "Attendance"
+msgstr "Điểm danh"
+
+#. module: im_event_training
+#: model:ir.ui.view,arch_db:im_event_training.view_event_session_form
+msgid "Description / Notes"
+msgstr "Mô tả / Ghi chú"
+
+#. module: im_event_training
+#: model:ir.ui.view,arch_db:im_event_training.event_offer_ticket_view_form_inherit_early_bird
+msgid "Early-Bird Ticket Settings"
+msgstr "Cấu hình vé Early-Bird"

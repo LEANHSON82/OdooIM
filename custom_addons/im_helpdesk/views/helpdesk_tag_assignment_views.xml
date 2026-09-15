@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<!-- Giao diện backend cho rule phân công tag sang team/user. -->
+<odoo>
+
+    <record id="helpdesk_tag_assignment_view_list" model="ir.ui.view">
+        <field name="name">helpdesk.tag.assignment.list</field>
+        <field name="model">helpdesk.tag.assignment</field>
+        <field name="arch" type="xml">
+            <list string="Tag Assignments" editable="bottom">
+                <field name="team_id"/>
+                <field name="tag_id"/>
+                <field name="route_weight"/>
+                <field name="user_ids" widget="many2many_avatar_user"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="helpdesk_tag_assignment_view_form" model="ir.ui.view">
+        <field name="name">helpdesk.tag.assignment.form</field>
+        <field name="model">helpdesk.tag.assignment</field>
+        <field name="arch" type="xml">
+            <form string="Tag Assignment">
+                <sheet>
+                    <group>
+                        <field name="team_id"/>
+                        <field name="tag_id"/>
+                        <field name="route_weight"/>
+                        <field name="user_ids" widget="many2many_avatar_user"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_helpdesk_tag_assignment" model="ir.actions.act_window">
+        <field name="name">Tag Assignments</field>
+        <field name="res_model">helpdesk.tag.assignment</field>
+        <field name="path">helpdesk-tag-assignments</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'default_team_id': active_id}</field>
+    </record>
+
+</odoo>

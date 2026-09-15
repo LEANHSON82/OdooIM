@@ -1,0 +1,62 @@
+<odoo>
+    <data noupdate="1">
+        <record id="demo_event_odoo19_july" model="event.event">
+            <field name="name">Khóa Học Lập Trình Odoo 19 Chuyên Sâu - Tháng 07/2026</field>
+            <field name="is_training">True</field>
+            <field name="certificate_threshold">80.0</field>
+            <field name="date_begin">2026-07-05 09:00:00</field>
+            <field name="date_end">2026-07-25 17:00:00</field>
+        </record>
+
+        <record id="demo_session_1" model="event.session">
+            <field name="name">Buổi 1: Tổng quan Odoo 19 &amp; Môi trường</field>
+            <field name="event_id" ref="demo_event_odoo19_july"/>
+            <field name="sequence">1</field>
+            <field name="date_start">2026-07-05 09:00:00</field>
+            <field name="date_end">2026-07-05 12:00:00</field>
+        </record>
+
+        <record id="demo_session_2" model="event.session">
+            <field name="name">Buổi 2: Xây dựng Data Models &amp; ORM</field>
+            <field name="event_id" ref="demo_event_odoo19_july"/>
+            <field name="sequence">2</field>
+            <field name="date_start">2026-07-10 09:00:00</field>
+            <field name="date_end">2026-07-10 12:00:00</field>
+        </record>
+
+        <record id="demo_session_3" model="event.session">
+            <field name="name">Buổi 3: Thiết kế Giao diện XML Views</field>
+            <field name="event_id" ref="demo_event_odoo19_july"/>
+            <field name="sequence">3</field>
+            <field name="date_start">2026-07-15 09:00:00</field>
+            <field name="date_end">2026-07-15 12:00:00</field>
+        </record>
+
+        <record id="demo_session_4" model="event.session">
+            <field name="name">Buổi 4: Viết Business Logic &amp; Python</field>
+            <field name="event_id" ref="demo_event_odoo19_july"/>
+            <field name="sequence">4</field>
+            <field name="date_start">2026-07-20 09:00:00</field>
+            <field name="date_end">2026-07-20 12:00:00</field>
+        </record>
+
+        <record id="demo_session_5" model="event.session">
+            <field name="name">Buổi 5: Kiểm thử Unit Test &amp; Deploy</field>
+            <field name="event_id" ref="demo_event_odoo19_july"/>
+            <field name="sequence">5</field>
+            <field name="date_start">2026-07-25 09:00:00</field>
+            <field name="date_end">2026-07-25 12:00:00</field>
+        </record>
+
+        <record id="demo_ticket_early_bird_july" model="event.event.ticket">
+            <field name="name">Vé Early-Bird Ưu Đãi (T7/2026)</field>
+            <field name="event_id" ref="demo_event_odoo19_july"/>
+            <field name="is_early_bird">True</field>
+            <field name="early_bird_deadline">2026-07-03 23:59:59</field>
+            <field name="early_bird_max_qty">3</field>
+            <field name="price_early_bird">500000.0</field>
+            <field name="price_standard">800000.0</field>
+            <field name="price">800000.0</field>
+        </record>
+    </data>
+</odoo>

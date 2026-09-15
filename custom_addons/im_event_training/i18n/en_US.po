@@ -1,0 +1,186 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* im_event_training
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-05 12:00+0000\n"
+"PO-Revision-Date: 2026-08-05 12:00+0000\n"
+"Last-Translator: InMotion\n"
+"Language-Team: English\n"
+"Language: en_US\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. module: im_event_training
+#: model:ir.model.fields,field_description:im_event_training.field_event_event__is_training
+#: model:ir.model.fields,field_description:im_event_training.field_event_registration__is_training
+#: model:ir.model.fields,field_description:im_event_training.field_event_type__is_training
+msgid "Is Training Course"
+msgstr "Is Training Course"
+
+#. module: im_event_training
+#: model:ir.model.fields,field_description:im_event_training.field_event_event__session_ids
+#: model:ir.ui.menu,name:im_event_training.menu_event_session
+msgid "Training Sessions"
+msgstr "Training Sessions"
+
+#. module: im_event_training
+#: model:ir.model.fields,field_description:im_event_training.field_event_event__session_count
+msgid "Session Count"
+msgstr "Session Count"
+
+#. module: im_event_training
+#: model:ir.model.fields,field_description:im_event_training.field_event_event__certificate_threshold
+#: model:ir.model.fields,field_description:im_event_training.field_event_registration__certificate_threshold
+msgid "Certificate Threshold (%)"
+msgstr "Certificate Threshold (%)"
+
+#. module: im_event_training
+#: model:ir.model.fields,field_description:im_event_training.field_event_session__name
+msgid "Session Name"
+msgstr "Session Name"
+
+#. module: im_event_training
+#: model:ir.model.fields,field_description:im_event_training.field_event_session__sequence
+msgid "Sequence"
+msgstr "Sequence"
+
+#. module: im_event_training
+#: model:ir.model.fields,field_description:im_event_training.field_event_session__event_id
+msgid "Event"
+msgstr "Event"
+
+#. module: im_event_training
+#: model:ir.model.fields,field_description:im_event_training.field_event_session__date_start
+msgid "Start Time"
+msgstr "Start Time"
+
+#. module: im_event_training
+#: model:ir.model.fields,field_description:im_event_training.field_event_session__date_end
+msgid "End Time"
+msgstr "End Time"
+
+#. module: im_event_training
+#: model:ir.model.fields,field_description:im_event_training.field_event_session__description
+msgid "Notes / Description"
+msgstr "Notes / Description"
+
+#. module: im_event_training
+#: model:ir.model.fields,field_description:im_event_training.field_event_session__attendance_ids
+msgid "Attendance Records"
+msgstr "Attendance Records"
+
+#. module: im_event_training
+#: model:ir.model.fields,field_description:im_event_training.field_event_session__present_count
+msgid "Present Count"
+msgstr "Present Count"
+
+#. module: im_event_training
+#: model:ir.model.fields,field_description:im_event_training.field_event_session__total_attendance_count
+msgid "Total Attendees"
+msgstr "Total Attendees"
+
+#. module: im_event_training
+#: model:ir.model.fields,field_description:im_event_training.field_event_session_attendance__session_id
+msgid "Session"
+msgstr "Session"
+
+#. module: im_event_training
+#: model:ir.model.fields,field_description:im_event_training.field_event_session_attendance__registration_id
+msgid "Attendee Registration"
+msgstr "Attendee Registration"
+
+#. module: im_event_training
+#: model:ir.model.fields,field_description:im_event_training.field_event_session_attendance__is_present
+msgid "Present"
+msgstr "Present"
+
+#. module: im_event_training
+#: model:ir.model.fields,field_description:im_event_training.field_event_session_attendance__note
+msgid "Note"
+msgstr "Note"
+
+#. module: im_event_training
+#: model:ir.model.fields,field_description:im_event_training.field_event_registration__attended_session_count
+msgid "Attended Sessions"
+msgstr "Attended Sessions"
+
+#. module: im_event_training
+#: model:ir.model.fields,field_description:im_event_training.field_event_registration__total_session_count
+msgid "Total Sessions"
+msgstr "Total Sessions"
+
+#. module: im_event_training
+#: model:ir.model.fields,field_description:im_event_training.field_event_registration__attendance_ratio
+msgid "Attendance Rate (%)"
+msgstr "Attendance Rate (%)"
+
+#. module: im_event_training
+#: model:ir.model.fields,field_description:im_event_training.field_event_registration__is_certificate_eligible
+msgid "Certificate Eligible"
+msgstr "Certificate Eligible"
+
+#. module: im_event_training
+#: model:ir.model.fields,field_description:im_event_training.field_event_registration__certificate_number
+msgid "Certificate Code"
+msgstr "Certificate Code"
+
+#. module: im_event_training
+#: model:ir.model.fields,field_description:im_event_training.field_event_registration__certificate_date
+msgid "Certificate Issue Date"
+msgstr "Certificate Issue Date"
+
+#. module: im_event_training
+#: model:ir.model.fields,field_description:im_event_training.field_event_registration__certificate_state
+msgid "Certificate Status"
+msgstr "Certificate Status"
+
+#. module: im_event_training
+#: model:ir.model.fields.selection,name:im_event_training.selection__event_registration__certificate_state__draft
+msgid "Not Issued"
+msgstr "Not Issued"
+
+#. module: im_event_training
+#: model:ir.model.fields.selection,name:im_event_training.selection__event_registration__certificate_state__issued
+msgid "Issued"
+msgstr "Issued"
+
+#. module: im_event_training
+#: model:ir.model.fields,field_description:im_event_training.field_event_event_ticket__is_early_bird
+msgid "Is Early Bird Ticket"
+msgstr "Is Early Bird Ticket"
+
+#. module: im_event_training
+#: model:ir.model.fields,field_description:im_event_training.field_event_event_ticket__early_bird_deadline
+msgid "Early Bird Deadline"
+msgstr "Early Bird Deadline"
+
+#. module: im_event_training
+#: model:ir.model.fields,field_description:im_event_training.field_event_event_ticket__early_bird_max_qty
+msgid "Early Bird Max Quantity"
+msgstr "Early Bird Max Quantity"
+
+#. module: im_event_training
+#: model:ir.model.fields,field_description:im_event_training.field_event_event_ticket__early_bird_sold_qty
+msgid "Early Bird Sold Quantity"
+msgstr "Early Bird Sold Quantity"
+
+#. module: im_event_training
+#: model:ir.model.fields,field_description:im_event_training.field_event_event_ticket__price_early_bird
+msgid "Early Bird Price"
+msgstr "Early Bird Price"
+
+#. module: im_event_training
+#: model:ir.model.fields,field_description:im_event_training.field_event_event_ticket__price_standard
+msgid "Standard Price"
+msgstr "Standard Price"
+
+#. module: im_event_training
+#: model:ir.model.fields,field_description:im_event_training.field_event_event_ticket__is_early_bird_active
+msgid "Early Bird Active"
+msgstr "Early Bird Active"

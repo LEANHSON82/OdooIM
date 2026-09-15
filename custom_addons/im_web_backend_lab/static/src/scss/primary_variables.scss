@@ -1,0 +1,9 @@
+// InMotion Brand — Override CE purple with InMotion Blue
+// Loaded via 'prepend' → runs BEFORE CE primary_variables.scss
+// All values use !default so they can be overridden by future modules
+
+$o-brand-primary: #ee4d2d !default;
+$o-brand-primaty: #64748b !default;
+$o-action: $o-brand-primary !default;
+$o-gray-200: #f0f4f8 !default;
+$o-view-background-color: #f0f4f8 !default;

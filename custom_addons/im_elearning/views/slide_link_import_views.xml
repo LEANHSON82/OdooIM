@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_slide_link_import_form" model="ir.ui.view">
+        <field name="name">im.slide.link.import.form</field>
+        <field name="model">im.slide.link.import</field>
+        <field name="arch" type="xml">
+            <form string="Nạp bài giảng từ danh sách liên kết">
+                <group invisible="result">
+                    <group>
+                        <field name="channel_id" readonly="1"/>
+                        <field name="section_id"
+                               options="{'no_create': True}"/>
+                    </group>
+                    <group>
+                        <field name="fetch_metadata"/>
+                        <field name="is_published"/>
+                    </group>
+                </group>
+                <div invisible="result">
+                    <label for="links"/>
+                    <field name="links" nolabel="1"
+                           placeholder="https://www.youtube.com/watch?v=xxxx&#10;https://www.youtube.com/watch?v=yyyy | Bài 2 - Quy trình&#10;https://vimeo.com/123456789"/>
+                    <div class="text-muted mt-2">
+                        Mỗi dòng một liên kết, mỗi liên kết thành một bài giảng, thứ tự
+                        theo đúng thứ tự dòng. Muốn tự đặt tên thì viết
+                        <code>liên kết | tiêu đề</code> — tiện khi dán từ bảng tính.
+                        Dòng bắt đầu bằng <code>#</code> được bỏ qua.
+                        <br/>
+                        Chạy lại nhiều lần được: liên kết đã có trong khoá sẽ bỏ qua.
+                    </div>
+                </div>
+
+                <div invisible="not result">
+                    <field name="result" nolabel="1" readonly="1" widget="text"/>
+                </div>
+
+                <footer>
+                    <button name="action_import" type="object" string="Nạp"
+                            class="btn-primary" invisible="result"/>
+                    <button special="cancel" string="Đóng" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_slide_link_import" model="ir.actions.act_window">
+        <field name="name">Nạp bài giảng từ danh sách liên kết</field>
+        <field name="res_model">im.slide.link.import</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{'default_channel_id': active_id}</field>
+        <field name="binding_model_id" ref="website_slides.model_slide_channel"/>
+        <field name="binding_view_types">form,list</field>
+    </record>
+</odoo>

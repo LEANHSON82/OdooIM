@@ -1,0 +1,14 @@
+// Edge cases that variables can't cover
+
+.o_web_client {
+    scrollbar-color: $o-gray-400 $o-gray-200;
+}
+
+.o_FormRenderer_chatterContainer {
+    background-color: $o-webclient-background-color;
+}
+
+.o_statusbar_status .o_arrow_button.o_arrow_button_current {
+    background-color: $o-brand-primary;
+    color: $o-gray-100;
+}

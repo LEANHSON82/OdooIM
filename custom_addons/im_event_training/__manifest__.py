@@ -1,0 +1,23 @@
+{
+    'name': 'InMotion - Event Training & Attendance',
+    'version': '19.0.1.0.0',
+    'category': 'Marketing/Events',
+    'summary': 'Sự kiện nhiều buổi, điểm danh, chứng chỉ, vé sớm',
+    'description': 'Mở rộng module Sự kiện cho lớp đào tạo nhiều buổi.',
+    'author': 'InMotion',
+    'website': 'https://inmotion.vn',
+    'license': 'LGPL-3',
+    'depends': ['event', 'event_product', 'event_sale'],
+    'data': [
+        'security/ir.model.access.csv',
+        'data/ir_sequence_data.xml',
+        'data/ir_cron_data.xml',
+        'data/event_training_demo.xml',
+        'views/event_session_views.xml',
+        'views/event_event_views.xml',
+        'views/event_registration_views.xml',
+        'views/event_ticket_views.xml',
+    ],
+    'installable': True,
+    'application': False,
+}

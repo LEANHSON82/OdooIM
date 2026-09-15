@@ -1,0 +1,26 @@
+/// Bootstrap variables for dark backgrounds
+
+$danger: $o-danger !default;
+$min-contrast-ratio: 4.5 !default;
+
+// Shadows — inverted (white glow instead of black shadow)
+$box-shadow: 0 .5rem 1rem rgba($o-white, .3) !default;
+$box-shadow-sm: 0 .125rem .25rem rgba($o-white, .15) !default;
+
+// Forms
+$input-border-color: $o-gray-300 !default;
+$input-placeholder-color: mix($o-gray-500, $o-gray-600) !default;
+
+// Dropdowns
+$dropdown-bg: $o-gray-300 !default;
+$dropdown-border-color: $o-gray-400 !default;
+
+// Tables
+$table-bg: $o-view-background-color !default;
+$table-border-color: $o-gray-300 !default;
+
+// Cards, tooltips, popovers...
+$card-cap-bg: $o-view-background-color !default;
+$tooltip-color: $o-gray-900 !default;
+$tooltip-bg: $o-gray-300 !default;
+$popover-bg: $o-gray-300 !default;

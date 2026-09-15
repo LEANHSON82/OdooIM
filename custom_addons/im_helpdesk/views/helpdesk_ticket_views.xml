@@ -1,0 +1,315 @@
+<?xml version="1.0"?>
+<!-- Giao diện backend list, form, kanban, search và action cho ticket helpdesk. -->
+<odoo>
+
+    <!-- Giao diện tìm kiếm gốc -->
+    <record id="helpdesk_tickets_view_search_base" model="ir.ui.view">
+        <field name="name">helpdesk.ticket.search.base</field>
+        <field name="model">helpdesk.ticket</field>
+        <field name="priority">999</field>
+        <field name="arch" type="xml">
+            <search string="Tickets Search">
+                <field name="name" string="Ticket" filter_domain="['|', ('name', 'ilike', self), ('ticket_ref', 'ilike', self)]"/>
+                <field name="tag_ids"/>
+                <field name="user_id"/>
+                <field name="partner_id" filter_domain="['|', '|', '|', ('partner_id', 'ilike', self), ('partner_email', 'ilike', self), ('partner_phone', 'ilike', self), ('partner_name', 'ilike', self)]"/>
+                <field name="team_id" invisible="context.get('default_team_id', False)"/>
+                <field name="stage_id"/>
+                <field name="sla_ids" groups="im_helpdesk.group_use_sla"/>
+                <field name="priority" invisible="1"/>
+                <field name="company_id" groups="base.group_multi_company" invisible="context.get('default_team_id', False)"/>
+
+                <filter string="My Tickets" domain="[('user_id','=',uid)]" name="my_ticket"/>
+                <filter string="Followed" domain="[('message_is_follower', '=', True)]" name="my_follow_ticket"/>
+                <filter string="Unassigned" domain="[('user_id','=',False)]" name="unassigned"/>
+                <separator/>
+                <filter string="Urgent" domain="[('priority', '=', 3)]" name="urgent_priority"/>
+                <filter string="High Priority" domain="[('priority', '=', 2)]" name="high_priority"/>
+                <filter string="Medium Priority" domain="[('priority', '=', 1)]" name="medium_priority"/>
+                <filter string="Low Priority" domain="[('priority', '=', 0)]" name="low_priority"/>
+                <separator groups="im_helpdesk.group_use_sla"/>
+                <filter string="SLA Success" domain="[('sla_success', '=', True)]" name="sla_success" groups="im_helpdesk.group_use_sla"/>
+                <filter string="SLA in Progress" domain="[('sla_status_ids.status', '=', 'ongoing')]" name="sla_inprogress" groups="im_helpdesk.group_use_sla"/>
+                <filter string="SLA Failed" domain="[('sla_fail', '=', True)]" name="sla_failed" groups="im_helpdesk.group_use_sla"/>
+                <separator/>
+                <filter string="Open" domain="[('stage_id.fold', '=', False)]" name="is_open"/>
+                <filter string="Closed" domain="[('stage_id.fold', '=', True)]" name="is_close"/>
+                <filter name="closed_on" string="Closed On" date="close_date">
+                    <filter name="closed_on_last_7_days" string="Last 7 Days" domain="[('close_date', '&gt;', 'today -7d +1d')]"/>
+                </filter>
+                <separator/>
+                <filter string="Creation Date" date="create_date" name="creation_date"/>
+                <separator/>
+                <filter string="Archived" domain="[('active', '=', False)]" name="archive"/>
+                <group>
+                    <filter string="Assigned to" name="assignee" context="{'group_by':'user_id'}"/>
+                    <filter string="Helpdesk Team" name="team" context="{'group_by':'team_id'}" invisible="context.get('default_team_id', False)"/>
+                    <filter string="Stage" name="stage" context="{'group_by':'stage_id'}"/>
+                    <filter string="Status" name="state" context="{'group_by': 'kanban_state'}"/>
+                    <filter string="SLA" name="sla_ids" context="{'group_by': 'sla_ids'}" groups="im_helpdesk.group_use_sla"/>
+                    <filter string="Tags" name="tag" context="{'group_by': 'tag_ids'}"/>
+                    <filter string="Priority" name="priority" context="{'group_by': 'priority'}"/>
+                    <filter string="Customer" name="partner" context="{'group_by': 'partner_id'}"/>
+                    <filter string="Company" name="company" context="{'group_by': 'company_id'}" groups="base.group_multi_company"/>
+                    <filter string="Create Date" name="created_by" context="{'group_by': 'create_date'}"/>
+                    <filter string="SLA Deadline" name="sla_deadline" context="{'group_by': 'sla_deadline'}" groups="im_helpdesk.group_use_sla"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Giao diện danh sách -->
+    <record id="helpdesk_tickets_view_tree" model="ir.ui.view">
+        <field name="name">helpdesk.ticket.list</field>
+        <field name="model">helpdesk.ticket</field>
+        <field name="arch" type="xml">
+            <list string="Tickets" multi_edit="1" sample="1" default_order="priority desc, sla_deadline, id">
+                <field name="company_id" column_invisible="True"/>
+                <field name="use_sla" column_invisible="True"/>
+                <field name="fold" column_invisible="True"/>
+                <field name="legend_normal" column_invisible="True"/>
+                <field name="legend_blocked" column_invisible="True"/>
+                <field name="legend_done" column_invisible="True"/>
+                <field name="ticket_ref" string="ID" readonly="1" optional="show"/>
+                <field name="priority" optional="show" widget="priority"/>
+                <field name="name" string="Name"/>
+                <field name="team_id" optional="show" readonly="1"/>
+                <field name="user_id" optional="show" widget="many2one_avatar_user"/>
+                <field name="partner_id" domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]" optional="show" options="{'no_open': True}"/>
+                <field name="company_id" groups="base.group_multi_company" optional="show" readonly="1"/>
+                <field name="activity_ids" widget="list_activity" optional="show"/>
+                <field name="sla_status_ids" widget="many2many_tags" options="{'color_field': 'color'}" string="SLAs" optional="hide" readonly="1" invisible="not use_sla"/>
+                <field name="sla_deadline" invisible="not use_sla or fold" optional="show" widget="remaining_days"/>
+                <field name="create_date" optional="hide" readonly="1" string="Creation Date"/>
+                <field name="tag_ids" optional="hide" widget="many2many_tags" options="{'color_field': 'color'}"/>
+                <field name="rating_avg_text" string="Rating" decoration-danger="rating_avg_text == 'ko'"
+                    decoration-warning="rating_avg_text == 'ok'" decoration-success="rating_avg_text == 'top'"
+                    invisible="rating_avg_text == 'none'" class="fw-bold" optional="hide"/>
+                <field name="kanban_state" nolabel="1" width="20px" optional="show" widget="state_selection"/>
+                <field name="stage_id" optional="show" widget="badge"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form tạo nhanh -->
+    <record id="quick_create_ticket_form" model="ir.ui.view">
+        <field name="name">helpdesk.ticket.form.quick_create</field>
+        <field name="model">helpdesk.ticket</field>
+        <field name="priority">1000</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="stage_id" invisible="1"/>
+                    <field name="team_id" invisible="1"/>
+                    <field name="name" string="Ticket Title" placeholder="e.g. Product arrived damaged"/>
+                    <field name="domain_user_ids" invisible="1"/>
+                    <field name="team_id" required="1" invisible="context.get('default_team_id')" options="{'no_open': True}"/>
+                    <field name="user_id" domain="[('id', 'in', domain_user_ids)]" options="{'no_open': True}"/>
+                    <field name="partner_id" options="{'no_open': True}" widget="res_partner_many2one"/>
+                </group>
+            </form>
+        </field>
+    </record>
+
+    <!-- Giao diện kanban -->
+    <record id="helpdesk_ticket_view_kanban" model="ir.ui.view">
+        <field name="name">helpdesk.ticket.kanban</field>
+        <field name="model">helpdesk.ticket</field>
+        <field name="priority">10</field>
+        <field name="arch" type="xml">
+            <kanban highlight_color="color" default_group_by="stage_id" on_create="quick_create" class="o_kanban_small_column" quick_create_view="im_helpdesk.quick_create_ticket_form" sample="1">
+                <field name="active"/>
+                <field name="activity_ids"/>
+                <field name="activity_state"/>
+                <field name="team_id"/>
+                <field name="use_rating"/>
+                <field name="rating_count"/>
+                <field name="rating_avg"/>
+                <field name="fold"/>
+                <field name="use_sla"/>
+                <progressbar field="kanban_state" colors='{"done": "success", "blocked": "danger", "normal": "200"}'/>
+                <templates>
+                    <t t-name="menu">
+                        <a name="action_unarchive" type="object" class="dropdown-item" role="menuitem" t-if="! record.active.value">Restore</a>
+                        <field name="color" widget="kanban_color_picker"/>
+                    </t>
+                    <t t-name="card">
+                        <div class="fw-bold fs-5">
+                            <field name="name"/> (#<field name="ticket_ref"/>)
+                        </div>
+                        <field name="commercial_partner_id"/>
+                        <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color'}" invisible="not tag_ids"/>
+                        <div t-if="record.sla_deadline.raw_value &amp;&amp; record.use_sla.raw_value &amp;&amp; !record.fold.raw_value">
+                            <field name="sla_deadline" widget="remaining_days"/>
+                        </div>
+                        <footer class="pt-1">
+                            <div class="d-flex align-items-center">
+                                <field name="priority" widget="priority"/>
+                                <field name="activity_ids" widget="kanban_activity" class="ms-2"/>
+                            </div>
+                            <div class="d-flex align-items-center ms-auto">
+                                <field name="user_id" widget="many2one_avatar_user" class="ms-1"/>
+                                <field name="kanban_state" widget="state_selection" groups="base.group_user" class="ms-1"/>
+                            </div>
+                        </footer>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Giao diện form -->
+    <record id="helpdesk_ticket_view_form" model="ir.ui.view">
+        <field name="name">helpdesk.ticket.form</field>
+        <field name="model">helpdesk.ticket</field>
+        <field name="arch" type="xml">
+            <form string="Helpdesk Ticket">
+                <header>
+                    <field name="stage_id" widget="statusbar" options="{'clickable': '1', 'fold_field': 'fold'}"/>
+                </header>
+                <sheet>
+                    <field name="legend_blocked" invisible="1"/>
+                    <field name="legend_normal" invisible="1"/>
+                    <field name="legend_done" invisible="1"/>
+                    <field name="rating_count" invisible="1"/>
+                    <field name="use_rating" invisible="1"/>
+                    <field name="rating_avg" invisible="1"/>
+                    <field name="company_id" invisible="1"/>
+                    <field name="team_privacy_visibility" invisible="1"/>
+                    <div class="oe_button_box" name="button_box" groups="base.group_user">
+                        <button name="action_open_ratings" type="object" class="oe_stat_button" icon="" invisible="not use_rating or rating_count == 0" groups="im_helpdesk.group_use_rating">
+                            <i class="fa fa-fw o_button_icon fa-smile-o text-success" invisible="rating_avg &lt; 3.66" title="Happy"/>
+                            <i class="fa fa-fw o_button_icon fa-meh-o text-warning" invisible="rating_avg &lt; 2.33 or rating_avg &gt;= 3.66" title="Neutral"/>
+                            <i class="fa fa-fw o_button_icon fa-frown-o text-danger" invisible="rating_avg &gt;= 2.33" title="Unhappy"/>
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_value"><field name="rating_avg_text" nolabel="1"/></span>
+                                <span class="o_stat_text">Rating</span>
+                            </div>
+                        </button>
+                        <button class="oe_stat_button" type="object" name="action_open_helpdesk_ticket" icon="fa-life-ring" invisible="not partner_id or partner_ticket_count == 0">
+                            <div class="o_field_widget o_stat_info">
+                                <div class="d-flex align-items-baseline gap-1">
+                                    <span class="o_stat_value"><field name="partner_ticket_count" nolabel="1"/></span>
+                                    <span class="o_stat_text">Tickets</span>
+                                </div>
+                                <div class="d-flex align-items-baseline gap-1">
+                                    <span class="o_stat_value"><field name="partner_open_ticket_count" nolabel="1"/></span>
+                                    <span class="o_stat_text">Open</span>
+                                </div>
+                            </div>
+                        </button>
+                        <button class="oe_stat_button" type="object" name="action_generate_portal_link" icon="fa-link" invisible="not partner_id or team_privacy_visibility != 'portal'">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_text">Portal Link</span>
+                            </div>
+                        </button>
+                    </div>
+                    <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active"/>
+                    <field name="kanban_state" widget="state_selection"/>
+                    <field name="use_sla" invisible="1"/>
+                    <field name="fold" invisible="1"/>
+                    <div class="oe_title">
+                        <h1><field name="name" options="{'line_breaks': False}" widget="text" class="field_name" placeholder="e.g. Product arrived damaged"/></h1>
+                    </div>
+                    <div class="d-flex mb-4" invisible="not sla_status_ids" groups="im_helpdesk.group_use_sla">
+                        <field name="sla_status_ids" widget="many2many_tags" invisible="not use_sla" options="{'color_field': 'color', 'no_edit_color': True}" class="mb-0" readonly="1"/>
+                        <div invisible="not sla_deadline or not use_sla" class="mx-2 text-muted d-inline-flex align-items-center h-100">
+                            <i class="fa fa-lg fa-clock-o me-2 mt-1" title="SLA Deadline"/>
+                            <field name="sla_deadline" class="mb-0" widget="remaining_days"/>
+                        </div>
+                    </div>
+                    <group class="mb-0 mt-4">
+                        <group>
+                            <field name="active" invisible="1"/>
+                            <field name="team_id" required="1"/>
+                            <field name="user_id" class="field_user_id" domain="['&amp;', ('id', 'in', domain_user_ids), ('share', '=', False)]" widget="many2one_avatar_user"/>
+                            <field name="domain_user_ids" invisible="1"/>
+                            <field name="priority" widget="priority"/>
+                            <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color', 'no_create_edit': True}"/>
+                        </group>
+                        <group>
+                            <field name="partner_id" class="field_partner_id" domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]" widget="res_partner_many2one" context="{'default_phone': partner_phone}"/>
+                            <field name="is_partner_phone_update" invisible="1"/>
+                            <label for="partner_phone" string="Phone"/>
+                            <div class="o_row o_row_readonly">
+                                <field name="partner_phone" widget="phone" string="Phone"/>
+                                <span class="fa fa-exclamation-triangle text-warning oe_edit_only"
+                                    title="By saving, customer phone will also be updated." invisible="not is_partner_phone_update"/>
+                            </div>
+                            <field name="email_cc" groups="base.group_no_one"/>
+                            <field name="portal_access_link" widget="CopyClipboardChar" readonly="1" invisible="not portal_access_link"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Description" name="description">
+                            <field name="description" options="{'collaborative': true}" placeholder="Add details about this ticket..."/>
+                        </page>
+                        <page string="Extra Info" name="extra_info">
+                            <group>
+                                <field name="company_id" groups="base.group_multi_company" context="{'create': False}"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter reload_on_post="True"/>
+            </form>
+        </field>
+    </record>
+
+    <!-- Hành động -->
+    <record id="helpdesk_ticket_action_main_my" model="ir.actions.act_window">
+        <field name="name">My Tickets</field>
+        <field name="res_model">helpdesk.ticket</field>
+        <field name="path">my-tickets</field>
+        <field name="view_mode">list,kanban,form,activity,pivot,graph</field>
+        <field name="search_view_id" ref="helpdesk_tickets_view_search_base"/>
+        <field name="context">{'search_default_my_ticket': True, 'search_default_is_open': True, 'default_user_id': uid}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No tickets found. Let's create one!</p>
+        </field>
+    </record>
+
+    <record id="helpdesk_ticket_action_main_tree" model="ir.actions.act_window">
+        <field name="name">All Tickets</field>
+        <field name="res_model">helpdesk.ticket</field>
+        <field name="path">all-tickets</field>
+        <field name="view_mode">list,kanban,form,activity,pivot,graph</field>
+        <field name="search_view_id" ref="helpdesk_tickets_view_search_base"/>
+        <field name="context">{'search_default_is_open': True}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No tickets found. Let's create one!</p>
+        </field>
+    </record>
+
+    <record id="helpdesk_ticket_action_team" model="ir.actions.act_window">
+        <field name="name">Tickets</field>
+        <field name="res_model">helpdesk.ticket</field>
+        <field name="path">tickets</field>
+        <field name="view_mode">kanban,list,form,activity,pivot,graph</field>
+        <field name="domain">[('team_id', '=', active_id)]</field>
+        <field name="context">{'default_team_id': active_id}</field>
+        <field name="search_view_id" ref="helpdesk_tickets_view_search_base"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No tickets found. Let's create one!</p>
+        </field>
+    </record>
+
+    <record id="helpdesk_ticket_action_unassigned" model="ir.actions.act_window">
+        <field name="name">Tickets</field>
+        <field name="res_model">helpdesk.ticket</field>
+        <field name="view_mode">kanban,list,form,activity,pivot,graph</field>
+        <field name="context">{'search_default_unassigned': True, 'search_default_is_open': True}</field>
+        <field name="domain">[('team_id', '=', active_id)]</field>
+        <field name="search_view_id" ref="helpdesk_tickets_view_search_base"/>
+    </record>
+
+    <record id="portal_share_action" model="ir.actions.act_window">
+        <field name="name">Share Ticket</field>
+        <field name="res_model">portal.share</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="model_helpdesk_ticket"/>
+        <field name="binding_view_types">form</field>
+    </record>
+
+</odoo>

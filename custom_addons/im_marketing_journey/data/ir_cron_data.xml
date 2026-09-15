@@ -1,0 +1,13 @@
+<odoo>
+    <data noupdate="1">
+        <record id="ir_cron_process_marketing_journey" model="ir.cron">
+            <field name="name">Marketing Journey: Engine Process Participants</field>
+            <field name="model_id" ref="model_im_journey_participant"/>
+            <field name="state">code</field>
+            <field name="code">model._cron_process_participants()</field>
+            <field name="interval_number">5</field>
+            <field name="interval_type">minutes</field>
+            <field name="active" eval="True"/>
+        </record>
+    </data>
+</odoo>

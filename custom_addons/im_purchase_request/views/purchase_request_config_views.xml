@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_purchase_request_config_form" model="ir.ui.view">
+        <field name="name">im.purchase.request.config.form</field>
+        <field name="model">im.purchase.request.config</field>
+        <field name="arch" type="xml">
+            <form string="Thiết lập đề nghị mua hàng" create="false" delete="false">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>Thiết lập đề nghị mua hàng</h1>
+                    </div>
+                    <group>
+                        <field name="company_id" groups="base.group_multi_company"/>
+                        <field name="currency_id" invisible="1"/>
+                    </group>
+
+                    <separator string="① Cấp duyệt"/>
+                    <div class="text-muted mb-2">
+                        Phiếu có tổng dự toán nằm trong dải Từ (trên) – Đến (tối đa) của cấp nào thì
+                        cấp đó phải ký, lần lượt theo thứ tự. Từ = 0 là mọi phiếu, Đến = 0 là không
+                        giới hạn. Nhóm duyệt là danh sách hiện ở “Là người duyệt” trên người dùng;
+                        gõ tên mới để tạo nhóm. Phạm vi “Theo phòng”: chỉ trưởng phòng của người đề
+                        nghị ký được.
+                    </div>
+                    <field name="level_ids" nolabel="1"/>
+
+                    <separator string="② Ai được bấm “Tạo đơn mua” (khi phiếu đã duyệt đủ cấp)"/>
+                    <field name="po_creator_mode" widget="radio" options="{'horizontal': true}"/>
+                    <div class="text-muted mb-2" invisible="po_creator_mode != 'limited'">
+                        Mỗi dòng là một dải tổng dự toán và những nhóm, những người được tạo đơn
+                        mua trong dải đó. Khớp bất kỳ dòng nào là được.
+                    </div>
+                    <field name="po_creator_rule_ids" nolabel="1"
+                           invisible="po_creator_mode != 'limited'"
+                           context="{'default_permission_type': 'po_creator'}"/>
+
+                    <separator string="③ Ai được duyệt hóa đơn vượt dự toán"/>
+                    <group>
+                        <field name="overrun_tolerance_pct"/>
+                    </group>
+                    <field name="overrun_approval_mode" widget="radio" options="{'horizontal': true}"/>
+                    <div class="text-muted mb-2" invisible="overrun_approval_mode != 'limited'">
+                        Dải so với tổng tiền mới của phiếu sau hóa đơn. Người đề nghị không tự duyệt
+                        vượt phiếu của mình.
+                    </div>
+                    <field name="overrun_rule_ids" nolabel="1"
+                           invisible="overrun_approval_mode != 'limited'"
+                           context="{'default_permission_type': 'overrun'}"/>
+
+                    <separator string="Nhà cung cấp trên dòng hàng"/>
+                    <field name="quote_count_mode" widget="radio" options="{'horizontal': true}"/>
+                    <group>
+                        <field name="min_quote_count"
+                               string="Số nhà cung cấp tối thiểu mỗi dòng hàng"
+                               invisible="quote_count_mode != 'fixed'"/>
+                    </group>
+                    <div class="text-muted mb-2" invisible="quote_count_mode != 'by_amount'">
+                        So với thành tiền của từng dòng hàng (số lượng × đơn giá của nhà cung cấp
+                        đã chọn). Đặt 0 ở một dải là dải đó không bắt buộc báo giá.
+                    </div>
+                    <field name="quote_rule_ids" nolabel="1"
+                           invisible="quote_count_mode != 'by_amount'">
+                        <list editable="bottom">
+                            <field name="sequence" widget="handle"/>
+                            <field name="amount_threshold"/>
+                            <field name="amount_max"/>
+                            <field name="min_quote_count"/>
+                            <field name="currency_id" column_invisible="1"/>
+                        </list>
+                    </field>
+                    <group invisible="quote_count_mode != 'by_amount'">
+                        <field name="min_quote_count" string="Dòng không rơi vào dải nào cần"/>
+                    </group>
+                    <group>
+                        <field name="product_creation"/>
+                        <field name="vendor_creation"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_purchase_request_config" model="ir.actions.server">
+        <field name="name">Thiết lập đề nghị mua hàng</field>
+        <field name="model_id" ref="model_im_purchase_request_config"/>
+        <field name="state">code</field>
+        <field name="group_ids" eval="[(4, ref('im_purchase_request.group_manager'))]"/>
+        <field name="code">action = model.action_open()</field>
+    </record>
+
+    <record id="view_users_form_purchase_request" model="ir.ui.view">
+        <field name="name">res.users.form.im.purchase.request</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form"/>
+        <field name="arch" type="xml">
+            <page name="access_rights" position="after">
+                <page string="Đề nghị mua hàng" name="im_purchase_request" invisible="share">
+                    <group>
+                        <field name="im_approver_group_ids" widget="many2many_checkboxes"/>
+                        <field name="im_can_configure"/>
+                    </group>
+                    <div class="text-muted">
+                        “Là người duyệt” lấy từ các nhóm duyệt ở Đề nghị mua hàng / Cấu hình /
+                        Thiết lập. Không tick gì là nhân viên đề nghị. “Có quyền cấu hình” thì vào
+                        được màn hình Thiết lập.
+                    </div>
+                </page>
+            </page>
+        </field>
+    </record>
+
+</odoo>

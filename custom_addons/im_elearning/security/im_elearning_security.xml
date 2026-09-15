@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="rule_slide_certificate_own" model="ir.rule">
+            <field name="name">Chứng chỉ: học viên chỉ xem của mình</field>
+            <field name="model_id" ref="model_slide_certificate"/>
+            <field name="domain_force">[('partner_id', '=', user.partner_id.id)]</field>
+            <field name="groups" eval="[(4, ref('base.group_user')), (4, ref('base.group_portal'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <record id="rule_slide_certificate_officer" model="ir.rule">
+            <field name="name">Chứng chỉ: giảng viên xem tất cả</field>
+            <field name="model_id" ref="model_slide_certificate"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('website_slides.group_website_slides_officer'))]"/>
+        </record>
+
+        <record id="rule_course_assignment_own" model="ir.rule">
+            <field name="name">Khoá được giao: nhân viên xem của mình và của cấp dưới</field>
+            <field name="model_id" ref="model_im_course_assignment"/>
+            <field name="domain_force">['|', ('employee_id.user_id', '=', user.id), ('manager_id.user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <record id="rule_course_assignment_hr" model="ir.rule">
+            <field name="name">Khoá được giao: HR xem tất cả</field>
+            <field name="model_id" ref="model_im_course_assignment"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('hr.group_hr_user')), (4, ref('website_slides.group_website_slides_officer'))]"/>
+        </record>
+    </data>
+</odoo>

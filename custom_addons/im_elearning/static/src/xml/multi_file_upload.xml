@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="im_elearning.SlideUploadSourceTypes"
+       t-inherit="website_slides.SlideUploadSourceTypes"
+       t-inherit-mode="extension">
+
+        <xpath expr="//input[@type='file']" position="attributes">
+            <attribute name="multiple">multiple</attribute>
+        </xpath>
+
+        <xpath expr="//div[@t-if=&quot;props.attributes.urlInputName === 'video_url'&quot;]"
+               position="attributes">
+            <attribute name="t-if">props.attributes.urlInputName === 'video_url' and !props.attributes.acceptedFiles</attribute>
+        </xpath>
+
+        <xpath expr="//label[@for='source_type_external']" position="replace">
+            <label class="form-check-label fw-normal" for="source_type_external">
+                <t t-if="props.attributes.externalLabel" t-out="props.attributes.externalLabel"/>
+                <t t-else="">Retrieve from Google Drive</t>
+            </label>
+        </xpath>
+
+    </t>
+
+</templates>

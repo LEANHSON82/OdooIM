@@ -1,0 +1,298 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* im_marketing_journey
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-05 12:00+0000\n"
+"PO-Revision-Date: 2026-08-05 12:00+0000\n"
+"Last-Translator: InMotion\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: im_marketing_journey
+#: model:ir.model.fields,field_description:im_marketing_journey.field_im_journey__name
+msgid "Journey Name"
+msgstr "Tên kịch bản"
+
+#. module: im_marketing_journey
+#: model:ir.model.fields,field_description:im_marketing_journey.field_im_journey__active
+msgid "Active"
+msgstr "Đang hoạt động"
+
+#. module: im_marketing_journey
+#: model:ir.model.fields,field_description:im_marketing_journey.field_im_journey__state
+#: model:ir.model.fields,field_description:im_marketing_journey.field_im_journey_participant__state
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: im_marketing_journey
+#: model:ir.model.fields.selection,name:im_marketing_journey.selection__im_journey__state__draft
+msgid "Draft"
+msgstr "Nháp"
+
+#. module: im_marketing_journey
+#: model:ir.model.fields.selection,name:im_marketing_journey.selection__im_journey__state__running
+#: model:ir.model.fields.selection,name:im_marketing_journey.selection__im_journey_participant__state__running
+msgid "Running"
+msgstr "Đang chạy"
+
+#. module: im_marketing_journey
+#: model:ir.model.fields.selection,name:im_marketing_journey.selection__im_journey__state__paused
+msgid "Paused"
+msgstr "Tạm dừng"
+
+#. module: im_marketing_journey
+#: model:ir.model.fields,field_description:im_marketing_journey.field_im_journey__trigger_stage_id
+msgid "Trigger Stage (CRM)"
+msgstr "Giai đoạn kích hoạt (CRM)"
+
+#. module: im_marketing_journey
+#: model:ir.model.fields,field_description:im_marketing_journey.field_im_journey__node_ids
+msgid "Journey Nodes"
+msgstr "Các nút bước trong kịch bản"
+
+#. module: im_marketing_journey
+#: model:ir.model.fields,field_description:im_marketing_journey.field_im_journey__participant_ids
+#: model:ir.ui.menu,name:im_marketing_journey.menu_im_journey_participant
+msgid "Participants"
+msgstr "Đối tượng tham gia"
+
+#. module: im_marketing_journey
+#: model:ir.model.fields,field_description:im_marketing_journey.field_im_journey__participant_count
+msgid "Participant Count"
+msgstr "Số đối tượng tham gia"
+
+#. module: im_marketing_journey
+#: model:ir.model.fields,field_description:im_marketing_journey.field_im_journey_node__name
+msgid "Node Name"
+msgstr "Tên nút"
+
+#. module: im_marketing_journey
+#: model:ir.model.fields,field_description:im_marketing_journey.field_im_journey_node__sequence
+msgid "Sequence"
+msgstr "Thứ tự"
+
+#. module: im_marketing_journey
+#: model:ir.model.fields,field_description:im_marketing_journey.field_im_journey_node__node_type
+msgid "Node Type"
+msgstr "Loại nút"
+
+#. module: im_marketing_journey
+#: model:ir.model.fields.selection,name:im_marketing_journey.selection__im_journey_node__node_type__wait
+msgid "Wait Delay"
+msgstr "Chờ thời gian"
+
+#. module: im_marketing_journey
+#: model:ir.model.fields.selection,name:im_marketing_journey.selection__im_journey_node__node_type__action
+msgid "Send Message (ZNS/Email)"
+msgstr "Gửi tin nhắn (ZNS/Email)"
+
+#. module: im_marketing_journey
+#: model:ir.model.fields.selection,name:im_marketing_journey.selection__im_journey_node__node_type__condition
+msgid "Condition Branch"
+msgstr "Rẽ nhánh điều kiện"
+
+#. module: im_marketing_journey
+#: model:ir.model.fields,field_description:im_marketing_journey.field_im_journey_node__wait_duration
+msgid "Wait Duration"
+msgstr "Thời gian chờ"
+
+#. module: im_marketing_journey
+#: model:ir.model.fields,field_description:im_marketing_journey.field_im_journey_node__wait_unit
+msgid "Wait Unit"
+msgstr "Đơn vị thời gian"
+
+#. module: im_marketing_journey
+#: model:ir.model.fields.selection,name:im_marketing_journey.selection__im_journey_node__wait_unit__hours
+msgid "Hours"
+msgstr "Giờ"
+
+#. module: im_marketing_journey
+#: model:ir.model.fields.selection,name:im_marketing_journey.selection__im_journey_node__wait_unit__days
+msgid "Days"
+msgstr "Ngày"
+
+#. module: im_marketing_journey
+#: model:ir.model.fields,field_description:im_marketing_journey.field_im_journey_node__action_type
+#: model:ir.model.fields,field_description:im_marketing_journey.field_im_journey_log__action_type
+msgid "Channel"
+msgstr "Kênh gửi tin"
+
+#. module: im_marketing_journey
+#: model:ir.model.fields.selection,name:im_marketing_journey.selection__im_journey_node__action_type__zns
+msgid "Zalo ZNS"
+msgstr "Zalo ZNS"
+
+#. module: im_marketing_journey
+#: model:ir.model.fields.selection,name:im_marketing_journey.selection__im_journey_node__action_type__email
+msgid "Email"
+msgstr "Email"
+
+#. module: im_marketing_journey
+#: model:ir.model.fields,field_description:im_marketing_journey.field_im_journey_node__message_template
+msgid "Message Content / Template"
+msgstr "Nội dung / Mẫu tin nhắn"
+
+#. module: im_marketing_journey
+#: model:ir.model.fields,field_description:im_marketing_journey.field_im_journey_node__condition_type
+msgid "Condition Type"
+msgstr "Loại điều kiện"
+
+#. module: im_marketing_journey
+#: model:ir.model.fields.selection,name:im_marketing_journey.selection__im_journey_node__condition_type__has_email
+msgid "Valid Email Present"
+msgstr "Có Email hợp lệ"
+
+#. module: im_marketing_journey
+#: model:ir.model.fields.selection,name:im_marketing_journey.selection__im_journey_node__condition_type__has_phone
+msgid "Phone Number Present"
+msgstr "Có Số điện thoại"
+
+#. module: im_marketing_journey
+#: model:ir.model.fields,field_description:im_marketing_journey.field_im_journey_node__next_node_id
+msgid "Next Node"
+msgstr "Nút kế tiếp"
+
+#. module: im_marketing_journey
+#: model:ir.model.fields,field_description:im_marketing_journey.field_im_journey_node__next_node_if_true_id
+msgid "If TRUE -> Node"
+msgstr "Nếu ĐÚNG -> Nút tiếp"
+
+#. module: im_marketing_journey
+#: model:ir.model.fields,field_description:im_marketing_journey.field_im_journey_node__next_node_if_false_id
+msgid "If FALSE -> Node"
+msgstr "Nếu SAI -> Nút tiếp"
+
+#. module: im_marketing_journey
+#: model:ir.model.fields,field_description:im_marketing_journey.field_im_journey_participant__lead_id
+msgid "Lead"
+msgstr "Cơ hội / Lead CRM"
+
+#. module: im_marketing_journey
+#: model:ir.model.fields,field_description:im_marketing_journey.field_im_journey_participant__partner_id
+msgid "Customer"
+msgstr "Khách hàng"
+
+#. module: im_marketing_journey
+#: model:ir.model.fields,field_description:im_marketing_journey.field_im_journey_participant__current_node_id
+msgid "Current Node"
+msgstr "Nút hiện tại"
+
+#. module: im_marketing_journey
+#: model:ir.model.fields,field_description:im_marketing_journey.field_im_journey_participant__next_execution_time
+msgid "Next Execution Time"
+msgstr "Thời điểm thực thi tiếp theo"
+
+#. module: im_marketing_journey
+#: model:ir.model.fields,field_description:im_marketing_journey.field_im_journey_participant__last_executed_time
+msgid "Last Executed Time"
+msgstr "Thời điểm thực thi gần nhất"
+
+#. module: im_marketing_journey
+#: model:ir.model.fields.selection,name:im_marketing_journey.selection__im_journey_participant__state__done
+msgid "Done"
+msgstr "Hoàn thành"
+
+#. module: im_marketing_journey
+#: model:ir.model.fields.selection,name:im_marketing_journey.selection__im_journey_participant__state__exited
+msgid "Exited"
+msgstr "Đã thoát"
+
+#. module: im_marketing_journey
+#: model:ir.model.fields,field_description:im_marketing_journey.field_im_journey_participant__exit_reason
+msgid "Exit Reason"
+msgstr "Lý do thoát"
+
+#. module: im_marketing_journey
+#: model:ir.model.fields,field_description:im_marketing_journey.field_im_journey_log__participant_id
+msgid "Participant"
+msgstr "Đối tượng tham gia"
+
+#. module: im_marketing_journey
+#: model:ir.model.fields,field_description:im_marketing_journey.field_im_journey_log__node_id
+msgid "Node"
+msgstr "Nút kịch bản"
+
+#. module: im_marketing_journey
+#: model:ir.model.fields,field_description:im_marketing_journey.field_im_journey_log__status
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: im_marketing_journey
+#: model:ir.model.fields.selection,name:im_marketing_journey.selection__im_journey_log__status__success
+msgid "Success"
+msgstr "Thành công"
+
+#. module: im_marketing_journey
+#: model:ir.model.fields.selection,name:im_marketing_journey.selection__im_journey_log__status__failed
+msgid "Failed"
+msgstr "Thất bại"
+
+#. module: im_marketing_journey
+#: model:ir.model.fields.selection,name:im_marketing_journey.selection__im_journey_log__status__postponed
+msgid "Postponed (Quiet Hours)"
+msgstr "Tạm dời (Giờ yên tĩnh)"
+
+#. module: im_marketing_journey
+#: model:ir.model.fields,field_description:im_marketing_journey.field_im_journey_log__message_content
+msgid "Message Content"
+msgstr "Nội dung tin nhắn"
+
+#. module: im_marketing_journey
+#: model:ir.model.fields,field_description:im_marketing_journey.field_im_journey_log__execution_time
+msgid "Execution Time"
+msgstr "Thời gian thực thi"
+
+#. module: im_marketing_journey
+#: model:ir.ui.menu,name:im_marketing_journey.menu_im_marketing_journey_root
+msgid "Automation Journey"
+msgstr "Marketing Automation"
+
+#. module: im_marketing_journey
+#: model:ir.ui.menu,name:im_marketing_journey.menu_im_journey
+#: model:ir.actions.act_window,name:im_marketing_journey.action_im_journey
+msgid "Marketing Journeys"
+msgstr "Kịch bản Marketing"
+
+#. module: im_marketing_journey
+#: model:ir.ui.menu,name:im_marketing_journey.menu_im_journey_log
+#: model:ir.actions.act_window,name:im_marketing_journey.action_im_journey_log
+msgid "Messaging Logs"
+msgstr "Nhật ký gửi tin"
+
+#. module: im_marketing_journey
+#, python-format
+msgid "Lead moved stage from '%s' to '%s'."
+msgstr "Lead đã chuyển giai đoạn từ '%s' sang '%s'."
+
+#. module: im_marketing_journey
+#, python-format
+msgid "Auto %s message sent to Lead: %s"
+msgstr "Tin nhắn %s tự động đã gửi đến Lead: %s"
+
+#. module: im_marketing_journey
+#: model:ir.ui.view,arch_db:im_marketing_journey.view_im_journey_form
+msgid "Start Journey"
+msgstr "Bắt đầu kịch bản"
+
+#. module: im_marketing_journey
+#: model:ir.ui.view,arch_db:im_marketing_journey.view_im_journey_form
+msgid "Pause"
+msgstr "Tạm dừng"
+
+#. module: im_marketing_journey
+#: model:ir.ui.view,arch_db:im_marketing_journey.view_im_journey_form
+msgid "Reset to Draft"
+msgstr "Chuyển về Nháp"
+
+#. module: im_marketing_journey
+#: model:ir.ui.view,arch_db:im_marketing_journey.view_im_journey_form
+msgid "Workflow Nodes"
+msgstr "Các nút trong luồng"

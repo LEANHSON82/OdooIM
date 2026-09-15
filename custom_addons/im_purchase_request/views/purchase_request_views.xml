@@ -1,0 +1,333 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_purchase_request_form" model="ir.ui.view">
+        <field name="name">im.purchase.request.form</field>
+        <field name="model">im.purchase.request</field>
+        <field name="arch" type="xml">
+            <form string="Đề nghị mua hàng">
+                <header>
+                    <button name="action_submit" type="object" string="Trình duyệt"
+                            class="btn-primary" invisible="state != 'draft' or not is_requester"
+                            data-hotkey="v"/>
+                    <button name="action_approve" type="object" string="Duyệt"
+                            class="btn-primary" invisible="not is_my_turn"
+                            data-hotkey="q"/>
+                    <button name="action_refuse" type="object" string="Từ chối"
+                            invisible="not is_my_turn" data-hotkey="w"/>
+                    <button name="action_withdraw" type="object" string="Rút phiếu"
+                            invisible="state != 'to_approve' or not is_requester"
+                            confirm="Rút phiếu về Nháp? Chuỗi duyệt sẽ bị xoá."/>
+                    <button name="action_create_purchase_orders" type="object"
+                            string="Tạo đơn mua" class="btn-primary"
+                            invisible="not can_create_purchase_orders" data-hotkey="g"/>
+                    <button name="action_open_overrun_wizard" type="object"
+                            string="Duyệt vượt dự toán" class="btn-primary"
+                            invisible="not can_approve_overrun"/>
+                    <button name="action_reset_to_draft" type="object"
+                            string="Đưa về nháp" class="btn-primary"
+                            invisible="state != 'refused' or not is_requester"/>
+                    <field name="is_my_turn" invisible="1"/>
+                    <field name="is_requester" invisible="1"/>
+                    <field name="can_create_purchase_orders" invisible="1"/>
+                    <field name="can_approve_overrun" invisible="1"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,to_approve,approved,po_created"
+                           readonly="1"/>
+                </header>
+                <sheet>
+                    <widget name="web_ribbon" title="Đã lưu trữ"
+                            bg_color="text-bg-danger" invisible="active"/>
+                    <field name="active" invisible="1"/>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_purchase_orders" type="object"
+                                class="oe_stat_button" icon="fa-shopping-cart"
+                                groups="purchase.group_purchase_user,account.group_account_readonly"
+                                invisible="purchase_order_count == 0">
+                            <field name="purchase_order_count" widget="statinfo"
+                                   string="Đơn mua"/>
+                        </button>
+                        <button name="action_view_invoices" type="object"
+                                class="oe_stat_button" icon="fa-file-text-o"
+                                groups="account.group_account_readonly"
+                                invisible="invoice_count == 0">
+                            <field name="invoice_count" widget="statinfo"
+                                   string="Hóa đơn"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="requester_id"/>
+                            <field name="department_id"/>
+                            <field name="company_id" groups="base.group_multi_company"
+                                   readonly="state != 'draft'"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="date_request" readonly="1"/>
+                            <field name="date_required" readonly="state != 'draft'"/>
+                            <field name="amount_total" widget="monetary"/>
+                            <field name="required_level_count" readonly="1"/>
+                        </group>
+                    </group>
+                    <div class="alert alert-danger mb-3" role="alert"
+                         invisible="not overrun_pending">
+                        <strong>Có hóa đơn vượt dự toán đang chờ duyệt.</strong>
+                        <field name="overrun_detail" nolabel="1" readonly="1"/>
+                    </div>
+                    <field name="overrun_pending" invisible="1"/>
+                    <div class="alert alert-warning mb-3" role="alert"
+                         invisible="extra_cost_total == 0">
+                        Phiếu này đang chọn nguồn đắt hơn phương án rẻ nhất
+                        <field name="extra_cost_total" nolabel="1" readonly="1"
+                               class="oe_inline fw-bold"/>
+                        — xem lý do chọn ở từng dòng hàng.
+                    </div>
+                    <group string="Hóa đơn và thanh toán"
+                           invisible="state != 'po_created'">
+                        <group>
+                            <field name="amount_invoiced" widget="monetary"/>
+                            <field name="invoice_status"/>
+                        </group>
+                        <group>
+                            <field name="payment_state"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Dòng hàng" name="lines">
+                            <field name="line_ids" readonly="state != 'draft'">
+                                <list>
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="product_id"/>
+                                    <field name="name" optional="hide"/>
+                                    <field name="product_qty"/>
+                                    <field name="product_uom_id" optional="hide"/>
+                                    <field name="quote_count"/>
+                                    <field name="partner_id"/>
+                                    <field name="price_unit"/>
+                                    <field name="price_subtotal" sum="Tổng dự toán"/>
+                                    <field name="extra_cost" sum="Tổng trả thêm" optional="show"
+                                           decoration-warning="extra_cost &gt; 0"/>
+                                    <field name="currency_id" column_invisible="1"/>
+                                </list>
+                                <form string="Dòng hàng">
+                                    <group>
+                                        <group>
+                                            <field name="product_id"
+                                                   options="{'no_create_edit': True}"/>
+                                            <field name="name"/>
+                                        </group>
+                                        <group>
+                                            <field name="product_qty"/>
+                                            <field name="product_uom_id"
+                                                   options="{'no_create': True}"/>
+                                            <field name="currency_id" invisible="1"/>
+                                            <field name="required_quote_count" invisible="1"/>
+                                            <field name="selected_quote_id" invisible="1"/>
+                                        </group>
+                                    </group>
+                                    <separator string="Thông tin nhà cung cấp"/>
+                                    <div class="text-muted mb-2" invisible="not required_quote_count">
+                                        Nhập ít nhất <field name="required_quote_count" class="oe_inline"
+                                                            readonly="1"/> nhà cung cấp.
+                                        Chỉ một nhà cung cấp thì được chọn luôn; nhiều nhà cung cấp thì bật
+                                        “Chọn” ở nhà cung cấp sẽ đặt hàng. Số này có thể thay đổi theo
+                                        thành tiền của dòng.
+                                    </div>
+                                    <div class="text-muted mb-2" invisible="required_quote_count">
+                                        Không bắt buộc báo giá: nhập thẳng đơn giá và nhà cung cấp gợi ý,
+                                        hoặc nhập bảng nhà cung cấp bên dưới để so sánh.
+                                    </div>
+                                    <group invisible="quote_ids or (required_quote_count and not price_unit and not partner_id)">
+                                        <group>
+                                            <field name="partner_id"
+                                                   context="{'res_partner_search_mode': 'supplier'}"/>
+                                            <field name="price_unit"/>
+                                        </group>
+                                    </group>
+                                    <field name="quote_ids">
+                                        <list editable="bottom"
+                                              decoration-success="is_chosen">
+                                            <field name="partner_id"
+                                                   context="{'res_partner_search_mode': 'supplier'}"/>
+                                            <field name="price_unit"/>
+                                            <field name="price_diff" optional="show"/>
+                                            <field name="price_diff_pct" optional="hide"/>
+                                            <field name="warranty_months"/>
+                                            <field name="origin_type"/>
+                                            <field name="condition"/>
+                                            <field name="payment_term_id"
+                                                   options="{'no_create': True}"/>
+                                            <field name="quality_note" optional="hide"/>
+                                            <field name="note" optional="hide"/>
+                                            <field name="attachment_ids"
+                                                   widget="many2many_binary"
+                                                   optional="show"/>
+                                            <field name="is_cheapest" optional="hide"/>
+                                            <field name="is_selected"
+                                                   widget="boolean_toggle"/>
+                                            <field name="is_chosen" column_invisible="1"/>
+                                            <field name="currency_id" column_invisible="1"/>
+                                        </list>
+                                    </field>
+                                    <group invisible="quote_count &lt; 2">
+                                        <field name="quote_count" invisible="1"/>
+                                        <field name="selection_reason"
+                                               placeholder="Vì sao chọn nhà cung cấp này — bắt buộc khi không chọn nhà cung cấp rẻ nhất…"/>
+                                    </group>
+                                </form>
+                            </field>
+                        </page>
+                        <page string="So sánh nguồn mua" name="comparison"
+                              invisible="not quote_ids">
+                            <div class="text-muted mb-2">
+                                Toàn bộ nguồn mua của phiếu, xếp theo dòng hàng rồi
+                                theo giá tăng dần. Dòng bôi đậm là nguồn đã chọn.
+                                Sửa ở tab Dòng hàng.
+                            </div>
+                            <field name="quote_ids" readonly="1" nolabel="1">
+                                <list decoration-bf="is_chosen"
+                                      decoration-muted="not is_chosen">
+                                    <field name="line_id" string="Dòng hàng"/>
+                                    <field name="partner_id" string="Nhà cung cấp"/>
+                                    <field name="price_unit"/>
+                                    <field name="price_diff"
+                                           decoration-warning="price_diff &gt; 0"/>
+                                    <field name="price_diff_pct"/>
+                                    <field name="is_cheapest" string="Rẻ nhất"/>
+                                    <field name="warranty_months"/>
+                                    <field name="origin_type"/>
+                                    <field name="condition"
+                                           decoration-warning="condition != 'new'"/>
+                                    <field name="payment_term_id"/>
+                                    <field name="quality_note" optional="show"/>
+                                    <field name="attachment_ids"
+                                           widget="many2many_binary" string="Báo giá"/>
+                                    <field name="is_chosen"/>
+                                    <field name="currency_id" column_invisible="1"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Lịch sử duyệt" name="approvals">
+                            <field name="approval_ids" readonly="1">
+                                <list>
+                                    <field name="sequence" string="Cấp"/>
+                                    <field name="level_id"/>
+                                    <field name="user_id"/>
+                                    <field name="date"/>
+                                    <field name="state"
+                                           decoration-success="state == 'approved'"
+                                           decoration-danger="state == 'refused'"
+                                           decoration-muted="state == 'pending'"
+                                           widget="badge"/>
+                                    <field name="is_self_approved" optional="hide"/>
+                                    <field name="note"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Ghi chú" name="note">
+                            <field name="note" placeholder="Lý do đề nghị mua…"
+                                   readonly="state != 'draft'"/>
+                            <separator string="Lý do từ chối" invisible="not refuse_reason"/>
+                            <field name="refuse_reason" invisible="not refuse_reason"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_purchase_request_list" model="ir.ui.view">
+        <field name="name">im.purchase.request.list</field>
+        <field name="model">im.purchase.request</field>
+        <field name="arch" type="xml">
+            <list string="Đề nghị mua hàng"
+                  decoration-muted="state == 'refused'"
+                  decoration-info="state == 'draft'"
+                  decoration-bf="state == 'to_approve'"
+                  decoration-success="state in ('approved', 'po_created')">
+                <field name="name"/>
+                <field name="requester_id"/>
+                <field name="department_id"/>
+                <field name="date_request"/>
+                <field name="date_required" optional="show"/>
+                <field name="amount_total" sum="Tổng"/>
+                <field name="extra_cost_total" string="Trả thêm" optional="show"
+                       sum="Tổng trả thêm" decoration-warning="extra_cost_total &gt; 0"/>
+                <field name="required_level_count" string="Số cấp" optional="show"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="state" widget="badge"
+                       decoration-success="state in ('approved', 'po_created')"
+                       decoration-danger="state == 'refused'"
+                       decoration-warning="state == 'to_approve'"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_purchase_request_search" model="ir.ui.view">
+        <field name="name">im.purchase.request.search</field>
+        <field name="model">im.purchase.request</field>
+        <field name="arch" type="xml">
+            <search string="Đề nghị mua hàng">
+                <field name="name" string="Số phiếu"/>
+                <field name="requester_id"/>
+                <field name="department_id"/>
+                <field name="line_ids" string="Sản phẩm"
+                       filter_domain="[('line_ids.product_id', 'ilike', self)]"/>
+                <filter name="waiting_me" string="Chờ tôi duyệt"
+                        domain="[('is_my_turn', '=', True)]"/>
+                <filter name="my_requests" string="Của tôi"
+                        domain="[('requester_id', '=', uid)]"/>
+                <filter name="to_create_po" string="Chờ tạo đơn mua"
+                        domain="[('state', '=', 'approved')]"/>
+                <separator/>
+                <filter name="state_draft" string="Nháp" domain="[('state', '=', 'draft')]"/>
+                <filter name="state_to_approve" string="Chờ duyệt"
+                        domain="[('state', '=', 'to_approve')]"/>
+                <filter name="state_approved" string="Đã duyệt"
+                        domain="[('state', '=', 'approved')]"/>
+                <filter name="state_refused" string="Từ chối"
+                        domain="[('state', '=', 'refused')]"/>
+                <filter name="state_po_created" string="Đã tạo đơn mua"
+                        domain="[('state', '=', 'po_created')]"/>
+                <separator/>
+                <filter name="to_invoice" string="Chờ hóa đơn"
+                        domain="[('purchase_order_ids.invoice_status', '=', 'to invoice')]"/>
+                <filter name="not_paid" string="Chưa thanh toán xong"
+                        domain="[('purchase_order_ids.invoice_ids.payment_state',
+                                  'in', ('not_paid', 'partial'))]"/>
+                <separator/>
+                <filter name="inactive" string="Đã lưu trữ"
+                        domain="[('active', '=', False)]"/>
+                <group>
+                    <filter name="group_state" string="Trạng thái" domain="[]"
+                            context="{'group_by': 'state'}"/>
+                    <filter name="group_department" string="Bộ phận" domain="[]"
+                            context="{'group_by': 'department_id'}"/>
+                    <filter name="group_requester" string="Người đề nghị" domain="[]"
+                            context="{'group_by': 'requester_id'}"/>
+                    <filter name="group_date" string="Ngày đề nghị" domain="[]"
+                            context="{'group_by': 'date_request'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_purchase_request" model="ir.actions.act_window">
+        <field name="name">Đề nghị mua hàng</field>
+        <field name="res_model">im.purchase.request</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_purchase_request_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Lập phiếu đề nghị mua hàng đầu tiên</p>
+            <p>Ghi rõ món cần mua, số lượng và đơn giá dự toán. Số cấp duyệt sẽ
+               tự xác định theo tổng dự toán của phiếu.</p>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="im_elearning.VideoUploadField">
+        <div class="o_im_video_upload">
+            <input type="file" class="d-none" t-ref="fileInput"
+                   accept="video/mp4,video/webm,video/ogg,video/quicktime,.mp4,.webm,.ogv,.mov,.m4v"
+                   t-on-change="onFileChange"/>
+
+            <t t-if="state.uploading">
+                <div class="progress" style="height: 20px;">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated"
+                         role="progressbar"
+                         t-att-style="'width: ' + state.progress + '%'">
+                        <t t-esc="state.progress"/>%
+                    </div>
+                </div>
+                <small class="text-muted">Đang tải lên, đừng đóng tab này.</small>
+            </t>
+
+            <t t-else="">
+                <div class="d-flex align-items-center gap-2">
+                    <button type="button" class="btn btn-secondary btn-sm"
+                            t-on-click="onSelectFile">
+                        <i class="fa fa-upload me-1" aria-hidden="true"/>
+                        <t t-if="hasVideo">Thay tệp video</t>
+                        <t t-else="">Tải tệp video lên</t>
+                    </button>
+                    <span t-if="state.uploadedName" class="text-success small">
+                        <i class="fa fa-check me-1" aria-hidden="true"/>
+                        <t t-esc="state.uploadedName"/>
+                    </span>
+                    <span t-elif="hasVideo" class="text-muted small">
+                        Đã có tệp <t t-esc="sizeLabel"/>
+                    </span>
+                </div>
+                <small class="text-muted d-block mt-1">
+                    Tải thẳng từ máy, không giới hạn ở 96 MB như ô tải mặc định.
+                    Chỉ học viên đã tham gia khoá mới xem được.
+                </small>
+            </t>
+        </div>
+    </t>
+
+</templates>

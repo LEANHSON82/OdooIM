@@ -1,0 +1,79 @@
+<odoo>
+    <record id="view_event_registration_form_inherit_training" model="ir.ui.view">
+        <field name="name">event.registration.form.inherit.training</field>
+        <field name="model">event.registration</field>
+        <field name="inherit_id" ref="event.view_event_registration_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <field name="is_training" invisible="1"/>
+                <button name="action_issue_certificate"
+                        string="Cấp chứng chỉ"
+                        type="object"
+                        class="btn-success"
+                        invisible="not is_training or certificate_state == 'issued' or not is_certificate_eligible or state == 'cancel'"/>
+                <button name="action_revoke_certificate"
+                        string="Thu hồi chứng chỉ"
+                        type="object"
+                        class="btn-secondary"
+                        confirm="Thu hồi chứng chỉ này? Số hiệu và ngày cấp vẫn được giữ lại để tra cứu."
+                        invisible="not is_training or certificate_state != 'issued'"/>
+                <field name="certificate_state" widget="statusbar" statusbar_visible="draft,issued" invisible="not is_training"/>
+            </xpath>
+
+            <xpath expr="//sheet" position="inside">
+                <notebook>
+                    <page string="Kết quả đào tạo &amp; Chứng chỉ" name="training_certificate" invisible="not is_training">
+                        <group>
+                            <group string="Tỷ lệ chuyên cần">
+                                <field name="attended_session_count"/>
+                                <field name="total_session_count"/>
+                                <field name="attendance_ratio" widget="progressbar"/>
+                                <field name="certificate_threshold"/>
+                                <field name="is_certificate_eligible" widget="boolean_toggle"/>
+                            </group>
+                            <group string="Thông tin chứng chỉ">
+                                <field name="certificate_number"/>
+                                <field name="certificate_date"/>
+                                <field name="certificate_ratio"
+                                       string="Tỷ lệ lúc cấp (%)"
+                                       invisible="certificate_state == 'draft'"/>
+                                <field name="certificate_threshold_issued"
+                                       string="Ngưỡng lúc cấp (%)"
+                                       invisible="certificate_state == 'draft'"/>
+                            </group>
+                        </group>
+                        <separator string="Nhật ký điểm danh buổi học"/>
+                        <field name="attendance_ids">
+                            <list editable="bottom" create="false" delete="false">
+                                <field name="session_id"/>
+                                <field name="is_present" widget="boolean_toggle"/>
+                                <field name="is_excused" widget="boolean_toggle" string="Được miễn"/>
+                                <field name="note"/>
+                            </list>
+                        </field>
+                    </page>
+                </notebook>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_event_registration_tree_inherit_training" model="ir.ui.view">
+        <field name="name">event.registration.list.inherit.training</field>
+        <field name="model">event.registration</field>
+        <field name="inherit_id" ref="event.view_event_registration_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//list" position="inside">
+                <field name="is_training" column_invisible="True"/>
+                <field name="attendance_ratio" widget="progressbar" string="Tỷ lệ chuyên cần" optional="show"/>
+                <field name="is_certificate_eligible" string="Đủ điều kiện" optional="show"/>
+                <field name="certificate_number" string="Mã chứng chỉ" optional="show"/>
+                <field name="certificate_state" widget="badge"
+                       decoration-success="certificate_state == 'issued'"
+                       decoration-info="certificate_state == 'draft'"
+                       decoration-danger="certificate_state == 'revoked'"
+                       optional="show"/>
+                <field name="is_early_bird_sale" string="Mua giá Early-Bird" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

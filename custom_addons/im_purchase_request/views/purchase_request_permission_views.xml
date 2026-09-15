@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_purchase_request_permission_list" model="ir.ui.view">
+        <field name="name">im.purchase.request.permission.list</field>
+        <field name="model">im.purchase.request.permission</field>
+        <field name="arch" type="xml">
+            <list string="Giới hạn theo dải giá trị" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="permission_type" column_invisible="1"/>
+                <field name="amount_threshold"/>
+                <field name="amount_max"/>
+                <field name="group_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                <field name="user_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                <field name="currency_id" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+</odoo>

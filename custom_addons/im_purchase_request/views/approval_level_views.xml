@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_approval_level_list" model="ir.ui.view">
+        <field name="name">im.purchase.request.approval.level.list</field>
+        <field name="model">im.purchase.request.approval.level</field>
+        <field name="arch" type="xml">
+            <list string="Cấp duyệt" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="group_id" context="{'default_im_is_approver_role': True}"
+                       options="{'no_open': True, 'no_create_edit': True}"/>
+                <field name="amount_threshold"/>
+                <field name="amount_max"/>
+                <field name="scope"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+</odoo>

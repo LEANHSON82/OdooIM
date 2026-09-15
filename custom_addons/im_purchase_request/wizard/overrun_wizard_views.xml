@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_overrun_wizard_form" model="ir.ui.view">
+        <field name="name">im.purchase.request.overrun.form</field>
+        <field name="model">im.purchase.request.overrun</field>
+        <field name="arch" type="xml">
+            <form string="Duyệt vượt dự toán">
+                <field name="request_id" invisible="1"/>
+                <div class="alert alert-warning" role="alert">
+                    <field name="detail" readonly="1" nolabel="1"/>
+                </div>
+                <group>
+                    <field name="reason" nolabel="1" colspan="2"
+                           placeholder="Vì sao chấp nhận trả cao hơn số đã duyệt…"/>
+                </group>
+                <footer>
+                    <button name="action_confirm" type="object" string="Duyệt vượt"
+                            class="btn-primary" data-hotkey="q"/>
+                    <button string="Hủy" class="btn-secondary" special="cancel"
+                            data-hotkey="x"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

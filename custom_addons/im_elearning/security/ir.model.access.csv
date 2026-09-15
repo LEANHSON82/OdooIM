@@ -1,0 +1,13 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_slide_certificate_user,slide.certificate.user,model_slide_certificate,base.group_user,1,0,0,0
+access_slide_certificate_portal,slide.certificate.portal,model_slide_certificate,base.group_portal,1,0,0,0
+access_slide_certificate_officer,slide.certificate.officer,model_slide_certificate,website_slides.group_website_slides_officer,1,1,1,0
+access_slide_certificate_manager,slide.certificate.manager,model_slide_certificate,website_slides.group_website_slides_manager,1,1,1,1
+access_slide_certificate_revoke_officer,slide.certificate.revoke.officer,model_slide_certificate_revoke,website_slides.group_website_slides_officer,1,1,1,1
+access_course_assignment_user,im.course.assignment.user,model_im_course_assignment,base.group_user,1,0,0,0
+access_course_assignment_hr_user,im.course.assignment.hr.user,model_im_course_assignment,hr.group_hr_user,1,1,1,1
+access_course_assignment_slides_officer,im.course.assignment.slides.officer,model_im_course_assignment,website_slides.group_website_slides_officer,1,1,1,1
+access_course_assignment_wizard_hr_user,im.course.assignment.wizard.hr.user,model_im_course_assignment_wizard,hr.group_hr_user,1,1,1,1
+access_course_assignment_wizard_slides_officer,im.course.assignment.wizard.slides.officer,model_im_course_assignment_wizard,website_slides.group_website_slides_officer,1,1,1,1
+access_slide_link_import_officer,im.slide.link.import.officer,model_im_slide_link_import,website_slides.group_website_slides_officer,1,1,1,1
+access_slide_move_section_officer,im.slide.move.section.officer,model_im_slide_move_section,website_slides.group_website_slides_officer,1,1,1,1

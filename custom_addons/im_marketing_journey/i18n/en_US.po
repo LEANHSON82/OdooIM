@@ -1,0 +1,70 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* im_marketing_journey
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-05 12:00+0000\n"
+"PO-Revision-Date: 2026-08-05 12:00+0000\n"
+"Last-Translator: InMotion\n"
+"Language-Team: English\n"
+"Language: en_US\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. module: im_marketing_journey
+#: model:ir.model.fields,field_description:im_marketing_journey.field_im_journey__name
+msgid "Journey Name"
+msgstr "Journey Name"
+
+#. module: im_marketing_journey
+#: model:ir.model.fields,field_description:im_marketing_journey.field_im_journey__active
+msgid "Active"
+msgstr "Active"
+
+#. module: im_marketing_journey
+#: model:ir.model.fields,field_description:im_marketing_journey.field_im_journey__state
+#: model:ir.model.fields,field_description:im_marketing_journey.field_im_journey_participant__state
+msgid "Status"
+msgstr "Status"
+
+#. module: im_marketing_journey
+#: model:ir.model.fields.selection,name:im_marketing_journey.selection__im_journey__state__draft
+msgid "Draft"
+msgstr "Draft"
+
+#. module: im_marketing_journey
+#: model:ir.model.fields.selection,name:im_marketing_journey.selection__im_journey__state__running
+#: model:ir.model.fields.selection,name:im_marketing_journey.selection__im_journey_participant__state__running
+msgid "Running"
+msgstr "Running"
+
+#. module: im_marketing_journey
+#: model:ir.model.fields.selection,name:im_marketing_journey.selection__im_journey__state__paused
+msgid "Paused"
+msgstr "Paused"
+
+#. module: im_marketing_journey
+#: model:ir.model.fields,field_description:im_marketing_journey.field_im_journey__trigger_stage_id
+msgid "Trigger Stage (CRM)"
+msgstr "Trigger Stage (CRM)"
+
+#. module: im_marketing_journey
+#: model:ir.model.fields,field_description:im_marketing_journey.field_im_journey__node_ids
+msgid "Journey Nodes"
+msgstr "Journey Nodes"
+
+#. module: im_marketing_journey
+#: model:ir.model.fields,field_description:im_marketing_journey.field_im_journey__participant_ids
+#: model:ir.ui.menu,name:im_marketing_journey.menu_im_journey_participant
+msgid "Participants"
+msgstr "Participants"
+
+#. module: im_marketing_journey
+#: model:ir.model.fields,field_description:im_marketing_journey.field_im_journey__participant_count
+msgid "Participant Count"
+msgstr "Participant Count"

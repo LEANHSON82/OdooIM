@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_move_form_overrun" model="ir.ui.view">
+        <field name="name">account.move.form.im.purchase.request</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='narration']" position="before">
+                <field name="im_over_budget" invisible="1"/>
+                <div class="alert alert-danger" role="alert"
+                     invisible="state != 'draft' or not im_over_budget">
+                    <strong>Hóa đơn vượt dự toán của đề nghị mua hàng.</strong>
+                    Người có thẩm quyền cần bấm “Duyệt vượt dự toán” trên phiếu đề nghị
+                    trước khi vào sổ.
+                </div>
+                <div class="alert alert-warning" role="alert"
+                     invisible="not im_overrun_reason">
+                    <strong>Đã duyệt vượt dự toán</strong>
+                    bởi <field name="im_overrun_user_id" readonly="1" nolabel="1"/>
+                    <field name="im_overrun_reason" readonly="1" nolabel="1"/>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

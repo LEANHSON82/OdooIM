@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_calendar_event_form_inherit_im" model="ir.ui.view">
+        <field name="name">calendar.event.form.im_calendar</field>
+        <field name="model">calendar.event</field>
+        <field name="inherit_id" ref="calendar.view_calendar_event_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='videocall_location_div']//button[@name='set_discuss_videocall_location']" position="replace">
+                <button name="set_discuss_videocall_location" type="object"
+                        class="btn btn-link btn-sm px-0 text-nowrap"
+                        invisible="videocall_location or not user_can_edit"
+                        context="{'recurrence_update': recurrence_update}">
+                    <span class="fa fa-plus"/><span> Google Meet</span>
+                </button>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_calendar_event_form_quick_inherit_im" model="ir.ui.view">
+        <field name="name">calendar.event.form.quick.im_calendar</field>
+        <field name="model">calendar.event</field>
+        <field name="inherit_id" ref="calendar.view_calendar_event_form_quick_create"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='set_discuss_videocall_location']" position="replace">
+                <button name="set_discuss_videocall_location" type="object"
+                        class="mx-1 btn-link text-nowrap"
+                        invisible="videocall_location"
+                        context="{'recurrence_update': recurrence_update}">
+                    <span class="fa fa-plus me-1"/>Meet
+                </button>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

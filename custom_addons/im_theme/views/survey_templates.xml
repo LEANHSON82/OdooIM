@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- The exam of a course, taken from the course (answer.slide_id) or opened
+         with the survey's Test button (survey used by a course slide): name the
+         course, say "start" in Vietnamese, no Odoo badge. Other surveys keep
+         Odoo's wording. -->
+    <template id="survey_fill_form_start_course_exam"
+              inherit_id="survey.survey_fill_form_start"
+              name="eLearning theme: exam start page">
+        <xpath expr="//div[hasclass('o_survey_start')]" position="before">
+            <t t-set="im_course" t-value="answer.slide_id.channel_id or survey.slide_ids[:1].channel_id"/>
+        </xpath>
+        <xpath expr="//h1[hasclass('o_survey_main_title')]" position="before">
+            <div t-if="im_course" class="o_im_exam_course text-muted text-uppercase small mb-2">
+                Bài thi khoá học <strong t-out="im_course.name"/>
+            </div>
+        </xpath>
+        <xpath expr="//button[@value='start']/t[@t-if='survey.certification']" position="before">
+            <t t-if="im_course">Bắt đầu làm bài</t>
+        </xpath>
+        <xpath expr="//button[@value='start']/t[@t-if='survey.certification']" position="attributes">
+            <attribute name="t-if"/>
+            <attribute name="t-elif">survey.certification</attribute>
+        </xpath>
+    </template>
+
+    <template id="survey_layout_course_exam"
+              inherit_id="survey.layout"
+              name="eLearning theme: exam layout">
+        <xpath expr="//div[hasclass('o_survey_brand_message')]/div[1]" position="attributes">
+            <attribute name="t-if">not ((answer and answer.slide_id) or (survey and survey.slide_ids))</attribute>
+        </xpath>
+    </template>
+</odoo>

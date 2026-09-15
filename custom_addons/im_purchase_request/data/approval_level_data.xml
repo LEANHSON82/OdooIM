@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="level_dept_manager" model="im.purchase.request.approval.level">
+            <field name="name">Trưởng bộ phận</field>
+            <field name="sequence">10</field>
+            <field name="group_id" ref="group_dept_manager"/>
+            <field name="amount_threshold">0</field>
+            <field name="scope">department</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <record id="level_purchase_manager" model="im.purchase.request.approval.level">
+            <field name="name">Trưởng phòng vật tư</field>
+            <field name="sequence">20</field>
+            <field name="group_id" ref="group_purchase_manager"/>
+            <field name="amount_threshold">5000000</field>
+            <field name="scope">company</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <record id="level_director" model="im.purchase.request.approval.level">
+            <field name="name">Giám đốc</field>
+            <field name="sequence">30</field>
+            <field name="group_id" ref="group_director"/>
+            <field name="amount_threshold">50000000</field>
+            <field name="scope">company</field>
+            <field name="company_id" eval="False"/>
+        </record>
+    </data>
+</odoo>

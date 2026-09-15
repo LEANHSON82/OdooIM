@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_im_journey_user,access_im_journey_user,model_im_journey,base.group_user,1,1,1,1
+access_im_journey_node_user,access_im_journey_node_user,model_im_journey_node,base.group_user,1,1,1,1
+access_im_journey_participant_user,access_im_journey_participant_user,model_im_journey_participant,base.group_user,1,1,1,1
+access_im_journey_log_user,access_im_journey_log_user,model_im_journey_log,base.group_user,1,1,1,1

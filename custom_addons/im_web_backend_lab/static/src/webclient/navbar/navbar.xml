@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+<!-- Custom AppsMenu: toggle button thay vì dropdown -->
+<t t-name="im_web_backend_lab.AppsMenu">
+    <t t-if="env.isSmall">
+        <a href="/odoo" class="o_menu_toggle border-0"
+           accesskey="h" t-ref="menuApps"
+           t-on-click.prevent="_onHomeMenuToggle">
+            <i class="fa fa-th fa-lg" aria-hidden="true"/>
+        </a>
+    </t>
+    <t t-else="">
+        <div class="o_navbar_apps_menu">
+            <button class="o_home_menu_toggle btn border-0"
+                    t-att-class="{'active': isHomeMenuOpen}"
+                    t-on-click="_onHomeMenuToggle"
+                    data-hotkey="h"
+                    title="Home Menu"
+                    aria-label="Toggle Home Menu">
+                <i class="oi oi-apps"/>
+            </button>
+        </div>
+    </t>
+</t>
+
+<!-- ImNavBar: inherit CE NavBar, replace AppsMenu -->
+<t t-name="im_web_backend_lab.ImNavBar" t-inherit="web.NavBar" t-inherit-mode="primary">
+    <xpath expr="//t[@t-call='web.NavBar.AppsMenu']" position="replace">
+        <t t-call="im_web_backend_lab.AppsMenu"/>
+    </xpath>
+</t>
+
+</templates>

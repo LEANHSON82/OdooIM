@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+
+    <template id="courses_home_certificate_verify"
+              inherit_id="website_slides.courses_home"
+              name="eLearning: ô tra cứu chứng chỉ">
+        <xpath expr="//t[@t-call='website_slides.courses_search_bar']" position="after">
+            <div class="d-flex justify-content-end mb-3">
+                <form action="/certificate/verify" method="get"
+                      class="o_im_certificate_verify">
+                    <div role="search" class="input-group">
+                        <input type="text" name="code"
+                               class="form-control border-0 bg-light"
+                               placeholder="Verify a certificate"
+                               aria-label="Verify a certificate"/>
+                        <button type="submit" class="btn btn-light"
+                                title="Verify a certificate">
+                            <i class="fa fa-certificate" role="img"/>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </xpath>
+    </template>
+
+    <template id="course_main_exam_locked"
+              inherit_id="website_slides.course_main"
+              name="eLearning: thông báo bài thi chưa mở">
+        <xpath expr="//div[hasclass('o_wslides_course_main')]/div[hasclass('container')]/div[hasclass('row')]"
+               position="before">
+            <div t-if="exam_lock_reason"
+                 class="alert alert-warning d-flex align-items-start o_im_exam_locked mb-4"
+                 role="alert">
+                <i class="fa fa-lock fa-lg me-3 mt-1" role="img" aria-hidden="true"/>
+                <span t-out="exam_lock_reason"/>
+            </div>
+        </xpath>
+    </template>
+</odoo>

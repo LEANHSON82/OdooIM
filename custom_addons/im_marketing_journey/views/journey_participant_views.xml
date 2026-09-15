@@ -1,0 +1,77 @@
+<odoo>
+    <record id="action_im_journey_participant" model="ir.actions.act_window">
+        <field name="name">Đối tượng tham gia kịch bản</field>
+        <field name="res_model">im.journey.participant</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{}</field>
+    </record>
+
+    <record id="view_im_journey_participant_tree" model="ir.ui.view">
+        <field name="name">im.journey.participant.list</field>
+        <field name="model">im.journey.participant</field>
+        <field name="arch" type="xml">
+            <list string="Đối tượng tham gia kịch bản">
+                <field name="lead_id"/>
+                <field name="journey_id"/>
+                <field name="current_node_id"/>
+                <field name="next_execution_time"/>
+                <field name="last_executed_time"/>
+                <field name="state" widget="badge" 
+                       decoration-info="state == 'running'" 
+                       decoration-success="state == 'done'" 
+                       decoration-muted="state == 'exited'"/>
+                <field name="exit_reason" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_im_journey_participant_form" model="ir.ui.view">
+        <field name="name">im.journey.participant.form</field>
+        <field name="model">im.journey.participant</field>
+        <field name="arch" type="xml">
+            <form string="Đối tượng tham gia kịch bản">
+                <header>
+                    <button name="action_restart_run" string="Chăm sóc lại (lượt mới)"
+                            type="object" class="btn-primary"
+                            confirm="Bắt đầu một lượt chăm sóc mới cho lead này?"
+                            invisible="state == 'running'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="running,done,exited"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="journey_id" readonly="1"/>
+                            <field name="lead_id" readonly="1"/>
+                            <field name="partner_id"/>
+                        </group>
+                        <group>
+                            <field name="current_node_id" readonly="1"/>
+                            <field name="next_execution_time"/>
+                            <field name="last_executed_time" readonly="1"/>
+                            <field name="run_count" string="Lượt chăm sóc thứ"/>
+                            <field name="exit_reason" invisible="state != 'exited'"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_im_journey_participant_search" model="ir.ui.view">
+        <field name="name">im.journey.participant.search</field>
+        <field name="model">im.journey.participant</field>
+        <field name="arch" type="xml">
+            <search string="Tìm kiếm đối tượng tham gia">
+                <field name="lead_id"/>
+                <field name="journey_id"/>
+                <filter string="Đang chạy" name="running" domain="[('state', '=', 'running')]"/>
+                <filter string="Hoàn thành" name="done" domain="[('state', '=', 'done')]"/>
+                <filter string="Đã thoát" name="exited" domain="[('state', '=', 'exited')]"/>
+                <group>
+                    <filter string="Kịch bản" name="group_journey" context="{'group_by': 'journey_id'}"/>
+                    <filter string="Trạng thái" name="group_state" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+</odoo>

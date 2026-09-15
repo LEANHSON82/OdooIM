@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Landscape, because the learner's name is the largest thing on the page and
+         a long name wraps in portrait. Zero margins: the template draws its own frame. -->
+    <record id="paperformat_certificate" model="report.paperformat">
+        <field name="name">Chứng chỉ eLearning (A4 ngang)</field>
+        <field name="default" eval="False"/>
+        <field name="format">A4</field>
+        <field name="orientation">Landscape</field>
+        <field name="margin_top">0</field>
+        <field name="margin_bottom">0</field>
+        <field name="margin_left">0</field>
+        <field name="margin_right">0</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">0</field>
+        <field name="dpi">90</field>
+    </record>
+
+    <record id="action_report_certificate" model="ir.actions.report">
+        <field name="name">Chứng chỉ</field>
+        <field name="model">slide.certificate</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">im_theme.report_certificate</field>
+        <field name="report_file">im_theme.report_certificate</field>
+        <field name="print_report_name">'Chung chi - %s' % (object.code or '').replace('/', '-')</field>
+        <field name="binding_model_id" ref="im_elearning.model_slide_certificate"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="paperformat_certificate"/>
+    </record>
+
+    <template id="report_certificate">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-set="company" t-value="doc.channel_id.website_id.company_id or res_company"/>
+                <t t-call="web.basic_layout">
+                    <!-- Tables, not flexbox: wkhtmltopdf renders flexbox unreliably. -->
+                    <div class="page o_im_certificate"
+                         style="font-family: Arial, Helvetica, sans-serif; color:#262129; padding:0; margin:0;">
+                        <div style="border:1px solid #E8E1D6; margin:14px; padding:34px 52px 30px 52px; height:678px;">
+                            <table style="width:100%; height:100%; border-collapse:collapse;">
+
+                                <!-- HEADER -->
+                                <tr>
+                                    <td style="vertical-align:top; text-align:center; padding:0;">
+                                        <div t-if="company.logo" style="margin-bottom:14px;">
+                                            <img t-att-src="image_data_uri(company.logo)"
+                                                 style="max-height:52px;" alt="Logo"/>
+                                        </div>
+                                        <div t-else=""
+                                             style="font-size:13px; font-weight:bold; letter-spacing:4px; color:#714B67; margin-bottom:14px;"
+                                             t-out="(company.name or '').upper()">CÔNG TY ABC</div>
+
+                                        <div style="font-family: Georgia, 'Times New Roman', 'DejaVu Serif', serif; font-size:46px; font-weight:normal; letter-spacing:11px; color:#241F27; line-height:1;">
+                                            CHỨNG CHỈ
+                                        </div>
+
+                                        <div style="width:56px; height:2px; background:#9C7C41; margin:16px auto 14px auto; font-size:0; line-height:0;">&#160;</div>
+
+                                        <div style="font-size:13px; letter-spacing:2px; color:#857A87;">
+                                            CHỨNG NHẬN HOÀN THÀNH KHOÁ HỌC
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <!-- MIDDLE -->
+                                <tr>
+                                    <td style="vertical-align:middle; text-align:center; padding:0;">
+                                        <div style="font-size:14px; color:#857A87; margin-bottom:10px;">
+                                            Chứng chỉ này được trao cho
+                                        </div>
+
+                                        <div style="font-family: Georgia, 'Times New Roman', 'DejaVu Serif', serif; font-size:42px; color:#1E1A21; line-height:1.15;"
+                                             t-out="doc.partner_id.name">Nguyễn Văn A</div>
+
+                                        <div style="font-size:14px; color:#857A87; margin:14px 0 8px 0;">
+                                            đã hoàn thành khoá học
+                                        </div>
+
+                                        <div style="font-size:22px; font-weight:bold; color:#4B3145; line-height:1.3;"
+                                             t-out="doc.channel_id.name">Tên khoá học</div>
+
+                                        <div t-if="doc.scoring_percentage"
+                                             style="font-size:13px; color:#6E6470; margin-top:12px;">
+                                            Kết quả bài thi:
+                                            <span style="font-weight:bold;" t-out="'%.0f' % doc.scoring_percentage">85</span>%
+                                        </div>
+
+                                        <div t-if="doc.is_revoked"
+                                             style="margin-top:18px; color:#AF4F3E; font-weight:bold; font-size:14px; letter-spacing:1px;">
+                                            CHỨNG CHỈ NÀY ĐÃ BỊ THU HỒI
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <!-- FOOTER: two signature cells left, code and QR right -->
+                                <tr>
+                                    <td style="vertical-align:bottom; padding:0;">
+                                        <table style="width:100%; border-collapse:collapse;">
+                                            <tr>
+                                                <td style="width:20%; vertical-align:bottom; padding-right:26px;">
+                                                    <div style="border-top:1px solid #B9B0BA; padding-top:7px; text-align:center; font-size:12px; line-height:1.5;">
+                                                        <span t-out="doc.date_issued" t-options="{'widget': 'date'}">01/01/2026</span><br/>
+                                                        <span style="color:#8A7F8C; font-size:11px;">Ngày cấp</span>
+                                                    </div>
+                                                </td>
+                                                <td style="width:22%; vertical-align:bottom; padding-right:26px;">
+                                                    <div style="border-top:1px solid #B9B0BA; padding-top:7px; text-align:center; font-size:12px; line-height:1.5;">
+                                                        <span t-out="company.name">Công ty</span><br/>
+                                                        <span style="color:#8A7F8C; font-size:11px;">Đơn vị cấp</span>
+                                                    </div>
+                                                </td>
+                                                <td style="vertical-align:bottom;">&#160;</td>
+                                                <td style="vertical-align:bottom; text-align:right; padding-right:12px; font-size:11px; color:#857A87; line-height:1.6;">
+                                                    Mã chứng chỉ<br/>
+                                                    <span style="font-size:16px; font-weight:bold; color:#1E1A21; letter-spacing:.5px;"
+                                                          t-out="doc.code">CERT/2026/00042-K7M2QX</span><br/>
+                                                    Quét mã QR hoặc mở<br/>
+                                                    <span t-out="doc.verify_page_url or ''">https://example.com/certificate/verify</span>
+                                                </td>
+                                                <td style="width:112px; vertical-align:bottom; text-align:right;">
+                                                    <img t-att-src="'/report/barcode/?barcode_type=%s&amp;value=%s&amp;width=%s&amp;height=%s&amp;quiet=%s' % ('QR', quote_plus(doc.verify_url or ''), 200, 200, 0)"
+                                                         style="width:104px; height:104px; border:1px solid #E4DFE5;" alt="QR tra cứu"/>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+
+                            </table>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

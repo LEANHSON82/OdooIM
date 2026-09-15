@@ -1,0 +1,176 @@
+// Home Menu Theme — InMotion Branding
+// Light mode: soft blue gradient, macOS Launchpad style
+// Dark mode: deep gradient + SVG pattern
+
+// === Light Mode ===
+.o_home_menu_background,
+.o_web_client.o_home_menu_background {
+    background:
+        radial-gradient(ellipse 60% 55% at 100% 0%,
+            rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0) 70%),
+        radial-gradient(ellipse 60% 55% at 0% 100%,
+            rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0) 70%),
+        linear-gradient(135deg, #e2edfe 0%, #e3eeff 100%) !important;
+
+    &:not(.o_home_menu_background_custom):not(.o_in_studio) .o_main_navbar {
+        background: transparent;
+        border-bottom-color: transparent;
+        color: #1e293b;
+        a, button, .dropdown-toggle, .o_menu_systray > *, span, .o_nav_entry {
+            color: #475569 !important;
+        }
+        a:hover, button:hover { color: #0f172a !important; }
+    }
+}
+
+// Watermark — subtle branding behind grid
+.o_home_menu {
+    position: relative;
+
+    &::before {
+        content: "I N M O T I O N";
+        position: absolute;
+        bottom: 56px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-family: 'Segoe UI', Arial, sans-serif;
+        font-size: clamp(40px, 9vw, 120px);
+        font-weight: 800;
+        letter-spacing: clamp(6px, 1.6vw, 24px);
+        color: rgba(58, 65, 81, 0.05);
+        pointer-events: none;
+        z-index: 0;
+        white-space: nowrap;
+        line-height: 1;
+    }
+
+    &::after {
+        content: "S A A S   P L A T F O R M";
+        position: absolute;
+        bottom: 28px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-family: 'Segoe UI', Arial, sans-serif;
+        font-size: clamp(11px, 1.6vw, 22px);
+        font-weight: 500;
+        letter-spacing: clamp(4px, 1vw, 12px);
+        color: rgba(58, 65, 81, 0.05);
+        pointer-events: none;
+        z-index: 0;
+        white-space: nowrap;
+        line-height: 1;
+    }
+
+    @media (max-width: 480px) {
+        &::before, &::after { display: none; }
+    }
+}
+
+// Light mode app captions
+.o_home_menu .o_app {
+    .o_app_icon { background-color: transparent !important; }
+    .o_caption {
+        color: #334155 !important;
+        text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8) !important;
+    }
+}
+
+// Light mode search bar
+.o_home_menu_search {
+    .o_home_menu_search_icon { color: #94a3b8; }
+    .o_home_menu_search_input {
+        border: 1px solid rgba(180, 188, 200, 0.45);
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.65);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        color: #1e293b;
+        box-shadow: 0 2px 8px rgba(58, 65, 81, 0.08), 0 1px 2px rgba(58, 65, 81, 0.04);
+        &::placeholder { color: #94a3b8; }
+        &:focus {
+            border-color: #818cf8;
+            background: rgba(255, 255, 255, 0.85);
+            box-shadow: 0 4px 12px rgba(58, 65, 81, 0.10), 0 0 0 3px rgba(129, 140, 248, 0.12);
+        }
+    }
+    .o_home_menu_search_clear {
+        color: #94a3b8;
+        &:hover { color: #475569; }
+    }
+}
+
+// Light mode grid container
+.o_home_menu_grid {
+    background: #f1f2f6 !important;
+    border: 1px solid rgba(255, 255, 255, 0.6) !important;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    box-shadow: 0 1px 8px rgba(0, 0, 0, 0.04) !important;
+}
+
+.o_app:hover, .o_app.o_focused {
+    background: rgba(255, 255, 255, 0.6);
+}
+
+.o_home_menu_empty { color: #64748b; }
+
+// === Dark Mode ===
+html[data-color-scheme="dark"] {
+    .o_home_menu_background,
+    .o_web_client.o_home_menu_background {
+        background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%) !important;
+
+        &:not(.o_home_menu_background_custom):not(.o_in_studio) .o_main_navbar {
+            background: transparent;
+            border-bottom-color: transparent;
+            color: #e2e8f0;
+            a, button, .dropdown-toggle, .o_menu_systray > *, span, .o_nav_entry {
+                color: #e2e8f0 !important;
+            }
+            a:hover, button:hover { color: #fff !important; }
+        }
+    }
+
+    .o_home_menu {
+        &::before { color: rgba(165, 180, 252, 0.06); }
+        &::after { color: rgba(165, 180, 252, 0.05); }
+    }
+
+    .o_home_menu .o_app .o_caption {
+        color: #e2e8f0 !important;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5) !important;
+    }
+
+    .o_home_menu_search {
+        .o_home_menu_search_icon { color: rgba(255, 255, 255, 0.6); }
+        .o_home_menu_search_input {
+            border-color: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            &::placeholder { color: rgba(255, 255, 255, 0.5); }
+            &:focus {
+                border-color: rgba(255, 255, 255, 0.4);
+                background: rgba(255, 255, 255, 0.15);
+                box-shadow: none;
+            }
+        }
+        .o_home_menu_search_clear {
+            color: rgba(255, 255, 255, 0.6);
+            &:hover { color: #fff; }
+        }
+    }
+
+    .o_home_menu_grid {
+        background: rgba(255, 255, 255, 0.06) !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        backdrop-filter: blur(40px) saturate(180%);
+        -webkit-backdrop-filter: blur(40px) saturate(180%);
+        box-shadow: none !important;
+    }
+
+    .o_app:hover, .o_app.o_focused {
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    .o_home_menu_empty { color: rgba(255, 255, 255, 0.6); }
+}

@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<!-- Phần mở rộng view mail activity để hiển thị context ticket helpdesk. -->
+<odoo>
+    <record id="mail_activity_type_action_config_helpdesk" model="ir.actions.act_window">
+        <field name="name">Activity Types</field>
+        <field name="res_model">mail.activity.type</field>
+        <field name="path">helpdesk-activity-types</field>
+        <field name="view_mode">list,kanban,form</field>
+        <field name="domain">['|', ('res_model', '=', False), ('res_model', '=', 'helpdesk.ticket')]</field>
+        <field name="context">{'default_res_model': 'helpdesk.ticket'}</field>
+    </record>
+</odoo>

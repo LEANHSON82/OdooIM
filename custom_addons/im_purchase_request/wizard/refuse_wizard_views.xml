@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_purchase_request_refuse_form" model="ir.ui.view">
+        <field name="name">im.purchase.request.refuse.form</field>
+        <field name="model">im.purchase.request.refuse</field>
+        <field name="arch" type="xml">
+            <form string="Từ chối phiếu đề nghị">
+                <field name="request_id" invisible="1"/>
+                <group>
+                    <field name="reason" nolabel="1"
+                           placeholder="Vì sao từ chối phiếu này? Người đề nghị sẽ đọc được."/>
+                </group>
+                <footer>
+                    <button name="action_confirm" type="object" string="Từ chối"
+                            class="btn-primary" data-hotkey="q"/>
+                    <button string="Huỷ" class="btn-secondary" special="cancel"
+                            data-hotkey="x"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

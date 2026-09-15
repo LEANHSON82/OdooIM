@@ -1,0 +1,14 @@
+# Chỉ cần custom_addons + file cấu hình lọt vào image.
+# Loại core Odoo (đã có trong image odoo:19) và rác local.
+.git
+.venv
+**/__pycache__/
+*.pyc
+*.pyo
+# Nếu lỡ để chung trong repo Odoo gốc, loại luôn các thư mục nặng của core:
+/odoo/
+/addons/
+/doc/
+/setup/
+/debian/
+/docs/

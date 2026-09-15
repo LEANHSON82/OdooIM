@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<!-- Giao diện wizard dùng khi lưu trữ, khôi phục hoặc xóa stage ticket. -->
+<odoo>
+
+    <record id="view_helpdesk_stage_delete_wizard" model="ir.ui.view">
+        <field name="name">helpdesk.stage.delete.wizard.form</field>
+        <field name="model">helpdesk.stage.delete.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Delete Stage">
+                <field name="stages_active" invisible="1"/>
+                <group>
+                    <field name="stage_ids" widget="many2many_tags" readonly="1"/>
+                    <field name="team_ids" widget="many2many_tags" readonly="1"/>
+                    <field name="ticket_count" readonly="1"/>
+                </group>
+                <footer>
+                    <button name="action_archive" type="object" string="Archive Stages" class="btn-primary" invisible="not stages_active"/>
+                    <button name="action_unlink" type="object" string="Delete Stages" class="btn-primary" invisible="stages_active"/>
+                    <button special="cancel" string="Cancel" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_helpdesk_stage_delete_confirmation_wizard" model="ir.ui.view">
+        <field name="name">helpdesk.stage.delete.wizard.confirmation.form</field>
+        <field name="model">helpdesk.stage.delete.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Confirmation">
+                <group>
+                    <p>This operation will archive the selected stages and their tickets.</p>
+                    <field name="stage_ids" widget="many2many_tags" readonly="1"/>
+                    <field name="ticket_count" readonly="1"/>
+                </group>
+                <footer>
+                    <button name="action_confirm" type="object" string="Confirm" class="btn-primary"/>
+                    <button special="cancel" string="Cancel" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_helpdesk_stage_unarchive_wizard" model="ir.ui.view">
+        <field name="name">helpdesk.stage.unarchive.wizard.form</field>
+        <field name="model">helpdesk.stage.delete.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Unarchive Tickets">
+                <group>
+                    <p>Do you want to unarchive tickets in the selected stages?</p>
+                    <field name="stage_ids" widget="many2many_tags" readonly="1"/>
+                    <field name="ticket_count" readonly="1"/>
+                </group>
+                <footer>
+                    <button name="action_unarchive_ticket" type="object" string="Unarchive Tickets" class="btn-primary"/>
+                    <button special="cancel" string="Skip" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

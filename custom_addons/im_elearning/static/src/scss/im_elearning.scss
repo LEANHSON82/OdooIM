@@ -1,0 +1,15 @@
+.o_im_fs_video_local {
+    background-color: #000;
+
+    .o_im_fs_video_local_player {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        outline: none;
+    }
+}
+
+.o_im_certificate_verify {
+    width: 100%;
+    max-width: 320px;
+}

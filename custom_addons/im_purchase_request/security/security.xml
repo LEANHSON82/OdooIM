@@ -1,0 +1,486 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="module_category_purchase_request" model="ir.module.category">
+        <field name="name">Đề nghị mua hàng</field>
+        <field name="description">Approval levels for internal purchase requests.</field>
+        <field name="sequence">18</field>
+    </record>
+
+    <record id="group_dept_manager" model="res.groups">
+        <field name="name">Trưởng bộ phận</field>
+        <field name="sequence">10</field>
+        <field name="privilege_id" eval="False"/>
+        <field name="im_is_approver_role" eval="True"/>
+        <field name="implied_ids" eval="[(6, 0, [ref('base.group_user')])]"/>
+    </record>
+
+    <record id="group_purchase_manager" model="res.groups">
+        <field name="name">Trưởng phòng vật tư</field>
+        <field name="sequence">20</field>
+        <field name="privilege_id" eval="False"/>
+        <field name="im_is_approver_role" eval="True"/>
+        <field name="implied_ids" eval="[(6, 0, [ref('base.group_user'), ref('purchase.group_purchase_user')])]"/>
+    </record>
+
+    <record id="group_director" model="res.groups">
+        <field name="name">Giám đốc</field>
+        <field name="sequence">30</field>
+        <field name="privilege_id" eval="False"/>
+        <field name="im_is_approver_role" eval="True"/>
+        <field name="implied_ids" eval="[(6, 0, [ref('base.group_user'), ref('account.group_account_readonly')])]"/>
+    </record>
+
+    <record id="group_manager" model="res.groups">
+        <field name="name">Quản trị đề nghị mua hàng</field>
+        <field name="sequence">40</field>
+        <field name="privilege_id" eval="False"/>
+        <field name="implied_ids" eval="[(6, 0, [ref('base.group_user')])]"/>
+    </record>
+
+    <record id="group_product_creator" model="res.groups">
+        <field name="name">Tạo sản phẩm mới trên đề nghị mua hàng</field>
+    </record>
+
+    <record id="group_vendor_creator" model="res.groups">
+        <field name="name">Tạo nhà cung cấp mới trên đề nghị mua hàng</field>
+    </record>
+
+    <data noupdate="1">
+
+        <record id="request_own_rule" model="ir.rule">
+            <field name="name">Purchase Request: own records</field>
+            <field name="model_id" ref="model_im_purchase_request"/>
+            <field name="domain_force">[('requester_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+
+        <record id="request_line_own_rule" model="ir.rule">
+            <field name="name">Purchase Request Line: own records</field>
+            <field name="model_id" ref="model_im_purchase_request_line"/>
+            <field name="domain_force">[('request_id.requester_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+
+        <record id="quote_own_rule" model="ir.rule">
+            <field name="name">Purchase Request Quote: own records</field>
+            <field name="model_id" ref="model_im_purchase_request_quote"/>
+            <field name="domain_force">[('request_id.requester_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+
+        <record id="approval_own_rule" model="ir.rule">
+            <field name="name">Purchase Request Approval: own records</field>
+            <field name="model_id" ref="model_im_purchase_request_approval"/>
+            <field name="domain_force">[('request_id.requester_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+
+        <record id="request_company_rule" model="ir.rule">
+            <field name="name">Purchase Request: multi-company</field>
+            <field name="model_id" ref="model_im_purchase_request"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">['|', ('company_id', '=', False),
+                                            ('company_id', 'in', company_ids)]</field>
+        </record>
+
+        <record id="request_line_company_rule" model="ir.rule">
+            <field name="name">Purchase Request Line: multi-company</field>
+            <field name="model_id" ref="model_im_purchase_request_line"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">['|', ('company_id', '=', False),
+                                            ('company_id', 'in', company_ids)]</field>
+        </record>
+
+        <record id="quote_company_rule" model="ir.rule">
+            <field name="name">Purchase Request Quote: multi-company</field>
+            <field name="model_id" ref="model_im_purchase_request_quote"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">['|', ('company_id', '=', False),
+                                            ('company_id', 'in', company_ids)]</field>
+        </record>
+
+        <record id="approval_company_rule" model="ir.rule">
+            <field name="name">Purchase Request Approval: multi-company</field>
+            <field name="model_id" ref="model_im_purchase_request_approval"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">['|', ('company_id', '=', False),
+                                            ('company_id', 'in', company_ids)]</field>
+        </record>
+
+        <record id="level_company_rule" model="ir.rule">
+            <field name="name">Purchase Request Approval Level: multi-company</field>
+            <field name="model_id" ref="model_im_purchase_request_approval_level"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">['|', ('company_id', '=', False),
+                                            ('company_id', 'in', company_ids)]</field>
+        </record>
+
+        <function model="res.groups" name="write"
+                  eval="[[ref('group_manager')], {'user_ids': [(4, ref('base.user_admin'))]}]"/>
+
+    </data>
+
+    <delete model="ir.rule" search="[('name', 'in', [
+        'Purchase Request: approvers see all',
+        'Purchase Request Line: approvers see all',
+        'Purchase Request Quote: approvers see all',
+        'Purchase Request Approval: approvers see all'])]"/>
+
+    <record id="request_chain_rule" model="ir.rule">
+        <field name="name">Purchase Request: approvers in the approval chain</field>
+        <field name="model_id" ref="model_im_purchase_request"/>
+        <field name="domain_force">[('approval_ids', 'any', [
+            ('level_id.group_id', 'in', user.all_group_ids.ids),
+            '|', ('level_id.scope', '=', 'company'),
+            '|', '|', ('request_id.department_id.manager_id.user_id', '=', user.id),
+                      ('request_id.department_id.manager_id', '=', False),
+                      ('request_id.department_id.manager_id.user_id', '=', False),
+        ])]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="request_line_chain_rule" model="ir.rule">
+        <field name="name">Purchase Request Line: approvers in the approval chain</field>
+        <field name="model_id" ref="model_im_purchase_request_line"/>
+        <field name="domain_force">[('request_id.approval_ids', 'any', [
+            ('level_id.group_id', 'in', user.all_group_ids.ids),
+            '|', ('level_id.scope', '=', 'company'),
+            '|', '|', ('request_id.department_id.manager_id.user_id', '=', user.id),
+                      ('request_id.department_id.manager_id', '=', False),
+                      ('request_id.department_id.manager_id.user_id', '=', False),
+        ])]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="quote_chain_rule" model="ir.rule">
+        <field name="name">Purchase Request Quote: approvers in the approval chain</field>
+        <field name="model_id" ref="model_im_purchase_request_quote"/>
+        <field name="domain_force">[('request_id.approval_ids', 'any', [
+            ('level_id.group_id', 'in', user.all_group_ids.ids),
+            '|', ('level_id.scope', '=', 'company'),
+            '|', '|', ('request_id.department_id.manager_id.user_id', '=', user.id),
+                      ('request_id.department_id.manager_id', '=', False),
+                      ('request_id.department_id.manager_id.user_id', '=', False),
+        ])]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="approval_chain_rule" model="ir.rule">
+        <field name="name">Purchase Request Approval: approvers in the approval chain</field>
+        <field name="model_id" ref="model_im_purchase_request_approval"/>
+        <field name="domain_force">[('request_id.approval_ids', 'any', [
+            ('level_id.group_id', 'in', user.all_group_ids.ids),
+            '|', ('level_id.scope', '=', 'company'),
+            '|', '|', ('request_id.department_id.manager_id.user_id', '=', user.id),
+                      ('request_id.department_id.manager_id', '=', False),
+                      ('request_id.department_id.manager_id.user_id', '=', False),
+        ])]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="request_department_head_rule" model="ir.rule">
+        <field name="name">Purchase Request: department head sees own departments</field>
+        <field name="model_id" ref="model_im_purchase_request"/>
+        <field name="domain_force">[('department_id.manager_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="request_line_department_head_rule" model="ir.rule">
+        <field name="name">Purchase Request Line: department head sees own departments</field>
+        <field name="model_id" ref="model_im_purchase_request_line"/>
+        <field name="domain_force">[('request_id.department_id.manager_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="quote_department_head_rule" model="ir.rule">
+        <field name="name">Purchase Request Quote: department head sees own departments</field>
+        <field name="model_id" ref="model_im_purchase_request_quote"/>
+        <field name="domain_force">[('request_id.department_id.manager_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="approval_department_head_rule" model="ir.rule">
+        <field name="name">Purchase Request Approval: department head sees own departments</field>
+        <field name="model_id" ref="model_im_purchase_request_approval"/>
+        <field name="domain_force">[('request_id.department_id.manager_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="request_company_approver_rule" model="ir.rule">
+        <field name="name">Purchase Request: company-wide approvers see all</field>
+        <field name="model_id" ref="model_im_purchase_request"/>
+        <field name="domain_force">[('company_id.im_config_ids', 'any', [
+            ('level_ids', 'any', [('active', '=', True), ('scope', '=', 'company'),
+                                  ('group_id', 'in', user.all_group_ids.ids)])])]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="request_line_company_approver_rule" model="ir.rule">
+        <field name="name">Purchase Request Line: company-wide approvers see all</field>
+        <field name="model_id" ref="model_im_purchase_request_line"/>
+        <field name="domain_force">[('request_id.company_id.im_config_ids', 'any', [
+            ('level_ids', 'any', [('active', '=', True), ('scope', '=', 'company'),
+                                  ('group_id', 'in', user.all_group_ids.ids)])])]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="quote_company_approver_rule" model="ir.rule">
+        <field name="name">Purchase Request Quote: company-wide approvers see all</field>
+        <field name="model_id" ref="model_im_purchase_request_quote"/>
+        <field name="domain_force">[('request_id.company_id.im_config_ids', 'any', [
+            ('level_ids', 'any', [('active', '=', True), ('scope', '=', 'company'),
+                                  ('group_id', 'in', user.all_group_ids.ids)])])]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="approval_company_approver_rule" model="ir.rule">
+        <field name="name">Purchase Request Approval: company-wide approvers see all</field>
+        <field name="model_id" ref="model_im_purchase_request_approval"/>
+        <field name="domain_force">[('request_id.company_id.im_config_ids', 'any', [
+            ('level_ids', 'any', [('active', '=', True), ('scope', '=', 'company'),
+                                  ('group_id', 'in', user.all_group_ids.ids)])])]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="request_see_all_rule" model="ir.rule">
+        <field name="name">Purchase Request: configuration managers see all</field>
+        <field name="model_id" ref="model_im_purchase_request"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(6, 0, [ref('group_manager')])]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="request_line_see_all_rule" model="ir.rule">
+        <field name="name">Purchase Request Line: configuration managers see all</field>
+        <field name="model_id" ref="model_im_purchase_request_line"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(6, 0, [ref('group_manager')])]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="quote_see_all_rule" model="ir.rule">
+        <field name="name">Purchase Request Quote: configuration managers see all</field>
+        <field name="model_id" ref="model_im_purchase_request_quote"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(6, 0, [ref('group_manager')])]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="approval_see_all_rule" model="ir.rule">
+        <field name="name">Purchase Request Approval: configuration managers see all</field>
+        <field name="model_id" ref="model_im_purchase_request_approval"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(6, 0, [ref('group_manager')])]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="request_po_creator_rule" model="ir.rule">
+        <field name="name">Purchase Request: purchase order creators see approved requests</field>
+        <field name="model_id" ref="model_im_purchase_request"/>
+        <field name="domain_force">[('state', 'in', ['approved', 'po_created']),
+            '|', '&amp;', ('company_id.im_config_ids.po_creator_mode', '=', 'all'),
+                       ('company_id', 'in', company_ids if user.has_group('purchase.group_purchase_user') else []),
+                 ('company_id.im_config_ids', 'any', [
+                     ('po_creator_mode', '=', 'limited'),
+                     ('po_creator_rule_ids', 'any', ['|', ('group_ids', 'in', user.all_group_ids.ids),
+                                                          ('user_ids', 'in', [user.id])])])]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="request_line_po_creator_rule" model="ir.rule">
+        <field name="name">Purchase Request Line: purchase order creators see approved requests</field>
+        <field name="model_id" ref="model_im_purchase_request_line"/>
+        <field name="domain_force">[('request_id.state', 'in', ['approved', 'po_created']),
+            '|', '&amp;', ('request_id.company_id.im_config_ids.po_creator_mode', '=', 'all'),
+                       ('request_id.company_id', 'in', company_ids if user.has_group('purchase.group_purchase_user') else []),
+                 ('request_id.company_id.im_config_ids', 'any', [
+                     ('po_creator_mode', '=', 'limited'),
+                     ('po_creator_rule_ids', 'any', ['|', ('group_ids', 'in', user.all_group_ids.ids),
+                                                          ('user_ids', 'in', [user.id])])])]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="quote_po_creator_rule" model="ir.rule">
+        <field name="name">Purchase Request Quote: purchase order creators see approved requests</field>
+        <field name="model_id" ref="model_im_purchase_request_quote"/>
+        <field name="domain_force">[('request_id.state', 'in', ['approved', 'po_created']),
+            '|', '&amp;', ('request_id.company_id.im_config_ids.po_creator_mode', '=', 'all'),
+                       ('request_id.company_id', 'in', company_ids if user.has_group('purchase.group_purchase_user') else []),
+                 ('request_id.company_id.im_config_ids', 'any', [
+                     ('po_creator_mode', '=', 'limited'),
+                     ('po_creator_rule_ids', 'any', ['|', ('group_ids', 'in', user.all_group_ids.ids),
+                                                          ('user_ids', 'in', [user.id])])])]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="approval_po_creator_rule" model="ir.rule">
+        <field name="name">Purchase Request Approval: purchase order creators see approved requests</field>
+        <field name="model_id" ref="model_im_purchase_request_approval"/>
+        <field name="domain_force">[('request_id.state', 'in', ['approved', 'po_created']),
+            '|', '&amp;', ('request_id.company_id.im_config_ids.po_creator_mode', '=', 'all'),
+                       ('request_id.company_id', 'in', company_ids if user.has_group('purchase.group_purchase_user') else []),
+                 ('request_id.company_id.im_config_ids', 'any', [
+                     ('po_creator_mode', '=', 'limited'),
+                     ('po_creator_rule_ids', 'any', ['|', ('group_ids', 'in', user.all_group_ids.ids),
+                                                          ('user_ids', 'in', [user.id])])])]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="request_overrun_approver_rule" model="ir.rule">
+        <field name="name">Purchase Request: overrun approvers see ordered requests</field>
+        <field name="model_id" ref="model_im_purchase_request"/>
+        <field name="domain_force">[('state', '=', 'po_created'),
+            ('company_id.im_config_ids', 'any', [
+                ('overrun_approval_mode', '=', 'limited'),
+                ('overrun_rule_ids', 'any', ['|', ('group_ids', 'in', user.all_group_ids.ids),
+                                                  ('user_ids', 'in', [user.id])])])]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="request_line_overrun_approver_rule" model="ir.rule">
+        <field name="name">Purchase Request Line: overrun approvers see ordered requests</field>
+        <field name="model_id" ref="model_im_purchase_request_line"/>
+        <field name="domain_force">[('request_id.state', '=', 'po_created'),
+            ('request_id.company_id.im_config_ids', 'any', [
+                ('overrun_approval_mode', '=', 'limited'),
+                ('overrun_rule_ids', 'any', ['|', ('group_ids', 'in', user.all_group_ids.ids),
+                                                  ('user_ids', 'in', [user.id])])])]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="quote_overrun_approver_rule" model="ir.rule">
+        <field name="name">Purchase Request Quote: overrun approvers see ordered requests</field>
+        <field name="model_id" ref="model_im_purchase_request_quote"/>
+        <field name="domain_force">[('request_id.state', '=', 'po_created'),
+            ('request_id.company_id.im_config_ids', 'any', [
+                ('overrun_approval_mode', '=', 'limited'),
+                ('overrun_rule_ids', 'any', ['|', ('group_ids', 'in', user.all_group_ids.ids),
+                                                  ('user_ids', 'in', [user.id])])])]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="approval_overrun_approver_rule" model="ir.rule">
+        <field name="name">Purchase Request Approval: overrun approvers see ordered requests</field>
+        <field name="model_id" ref="model_im_purchase_request_approval"/>
+        <field name="domain_force">[('request_id.state', '=', 'po_created'),
+            ('request_id.company_id.im_config_ids', 'any', [
+                ('overrun_approval_mode', '=', 'limited'),
+                ('overrun_rule_ids', 'any', ['|', ('group_ids', 'in', user.all_group_ids.ids),
+                                                  ('user_ids', 'in', [user.id])])])]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="config_company_rule" model="ir.rule">
+        <field name="name">Purchase Request Config: multi-company</field>
+        <field name="model_id" ref="model_im_purchase_request_config"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="permission_company_rule" model="ir.rule">
+        <field name="name">Purchase Request Permission: multi-company</field>
+        <field name="model_id" ref="model_im_purchase_request_permission"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="quote_rule_company_rule" model="ir.rule">
+        <field name="name">Purchase Request Quote Rule: multi-company</field>
+        <field name="model_id" ref="model_im_purchase_request_quote_rule"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+</odoo>

@@ -1,0 +1,65 @@
+// InMotion Login Page — Enhanced Styling
+// Loaded in web.assets_frontend
+
+// === Login button ===
+.oe_login_form {
+    .btn-primary {
+        background-color: #2563eb;
+        border-color: #2563eb;
+        border-radius: 8px;
+        padding: 10px 20px;
+        font-weight: 600;
+        transition: background-color 0.2s, transform 0.1s;
+
+        &:hover {
+            background-color: #1d4ed8;
+            border-color: #1d4ed8;
+        }
+
+        &:active {
+            transform: scale(0.98);
+        }
+    }
+}
+
+// === Login card ===
+.o_database_list {
+    border-radius: 16px !important;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08) !important;
+    padding: 2rem !important;
+    background: #fff !important;
+    max-width: 380px !important;
+
+    .card-body {
+        padding: 0;
+    }
+}
+
+// === Input fields ===
+.oe_login_form .form-control {
+    border-radius: 8px;
+    padding: 10px 14px;
+    border: 1px solid #e2e8f0;
+    transition: border-color 0.2s, box-shadow 0.2s;
+
+    &:focus {
+        border-color: #2563eb;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+}
+
+// === Page background ===
+body.bg-100 {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%) !important;
+}
+
+// === Logo ===
+.oe_login_form img.mx-auto {
+    max-height: 80px !important;
+    margin-bottom: 1.5rem !important;
+}
+
+// === Footer ===
+.oe_login_form .text-center.small a[href*="odoo.com"] {
+    color: #94a3b8 !important;
+}

@@ -1,0 +1,35 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* im_user_default_app
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-14 14:00+0000\n"
+"PO-Revision-Date: 2026-07-14 14:00+0000\n"
+"Language-Team: Vietnamese\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: vi_VN\n"
+
+#. module: im_user_default_app
+#: model:ir.model.fields,field_description:im_user_default_app.field_res_users__default_app_id
+msgid "Default App"
+msgstr "App Mặc Định"
+
+#. module: im_user_default_app
+#: model:ir.model.fields,help:im_user_default_app.field_res_users__default_app_id
+msgid "App that will be opened automatically after login."
+msgstr "App sẽ được mở tự động sau khi login."
+
+#. module: im_user_default_app
+#: model:ir.model.fields,field_description:im_user_default_app.field_res_users__default_menu_id
+msgid "Default Menu"
+msgstr "Menu Mặc Định"
+
+#. module: im_user_default_app
+#: model:ir.model.fields,help:im_user_default_app.field_res_users__default_menu_id
+msgid "Specific menu inside the App that will be opened."
+msgstr "Menu con cụ thể trong App sẽ được mở."

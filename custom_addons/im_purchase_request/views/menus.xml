@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_purchase_request_root"
+              name="Đề nghị mua hàng"
+              web_icon="im_purchase_request,static/description/icon.png"
+              sequence="115"/>
+
+    <menuitem id="menu_purchase_request"
+              name="Đề nghị mua hàng"
+              parent="menu_purchase_request_root"
+              action="action_purchase_request"
+              sequence="10"/>
+
+    <menuitem id="menu_purchase_request_config"
+              name="Cấu hình"
+              parent="menu_purchase_request_root"
+              groups="im_purchase_request.group_manager"
+              sequence="90"/>
+
+    <menuitem id="menu_purchase_request_settings"
+              name="Thiết lập"
+              parent="menu_purchase_request_config"
+              action="action_purchase_request_config"
+              sequence="10"/>
+</odoo>
