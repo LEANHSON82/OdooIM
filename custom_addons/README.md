@@ -73,13 +73,3 @@ Bảng gộp để khỏi phải mở từng module:
 | im_helpdesk | Automatically close the tickets (1 ngày/lần, **mặc định tắt**) | không |
 | im_purchase_request | không | `allow_self_approval` (0), `overrun_tolerance_pct` (10), `min_quote_count` (3) |
 | im_brevo_mail | không | `brevo.api_key`, `brevo.sender_email`, `brevo.sender_name` |
-
-## Quy ước viết code
-
-- Tên biến, tên hàm, tên model, commit message: tiếng Anh.
-- Comment và docstring: tiếng Anh, câu ngắn, không quá 15 chữ một dòng. Comment
-  trả lời vì sao, không lặp lại điều code đã nói rõ.
-- Nhãn trường, chuỗi hiển thị, thông báo lỗi cho người dùng: tiếng Việt (riêng
-  `im_helpdesk` để tiếng Anh và dịch qua `i18n/`).
-- Mỗi module giữ `README.md` riêng theo đúng bố cục 5 mục, và phần `description`
-  trong `__manifest__.py` đủ để người mới biết module làm gì.
