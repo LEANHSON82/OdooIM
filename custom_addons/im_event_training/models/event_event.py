@@ -39,6 +39,7 @@ class EventEvent(models.Model):
             event.session_count = len(event.session_ids)
 
     def action_generate_attendance(self):
+        """Fill in the attendance rows that are still missing."""
         self.ensure_one()
         if not self.session_ids:
             raise UserError(_("Please create at least 1 session before generating attendance records."))
@@ -57,6 +58,7 @@ class EventEvent(models.Model):
         }
 
     def action_issue_certificates_bulk(self):
+        """Issue certificates to every eligible attendee at once."""
         self.ensure_one()
         eligible_registrations = self.registration_ids.filtered(
             lambda r: r.state != 'cancel' and r.is_certificate_eligible and r.certificate_state != 'issued'

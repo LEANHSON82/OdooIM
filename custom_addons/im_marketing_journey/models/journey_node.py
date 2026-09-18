@@ -48,11 +48,13 @@ class ImJourneyNode(models.Model):
     )
 
     def _get_next_nodes(self):
+        """Every outgoing edge of this node, whatever the node type."""
         self.ensure_one()
         return self.next_node_id | self.next_node_if_true_id | self.next_node_if_false_id
 
     @api.constrains('journey_id', 'next_node_id', 'next_node_if_true_id', 'next_node_if_false_id')
     def _check_next_nodes(self):
+        """Edges must stay inside the journey, and must not loop."""
         for node in self:
             targets = node._get_next_nodes()
 

@@ -23,6 +23,7 @@ class EventTicket(models.Model):
 
     @api.depends('registration_ids.state', 'registration_ids.is_early_bird_sale')
     def _compute_early_bird_sold_qty(self):
+        """Count the early-bird seats already sold and not cancelled."""
         for ticket in self:
             ticket.early_bird_sold_qty = len(
                 ticket.registration_ids.filtered(
@@ -46,6 +47,7 @@ class EventTicket(models.Model):
         return True
 
     def _get_early_bird_price(self):
+        """Early-bird price while the window is open, standard price after."""
         self.ensure_one()
         if not self.is_early_bird:
             return None
@@ -79,6 +81,7 @@ class EventTicket(models.Model):
     @api.depends('product_id', 'price', 'is_early_bird', 'early_bird_deadline',
                  'early_bird_max_qty', 'early_bird_sold_qty', 'price_early_bird', 'price_standard')
     def _compute_price_reduce(self):
+        """Apply the contextual discount on top of our two-tier price."""
         super()._compute_price_reduce()
         for ticket in self:
             target = ticket._get_early_bird_price()

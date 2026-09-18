@@ -52,6 +52,7 @@ class ImJourneyParticipant(models.Model):
             participant.process_next_step()
 
     def _get_step_delay(self):
+        """Minimum gap before this participant is due again."""
         self.ensure_one()
         return timedelta(minutes=self.journey_id.step_delay_minutes or DEFAULT_STEP_MINUTES)
 
@@ -77,6 +78,7 @@ class ImJourneyParticipant(models.Model):
         return local_tz.localize(naive_target).astimezone(pytz.utc).replace(tzinfo=None)
 
     def _log(self, node, status, content, action_type=None):
+        """Write one line of the journey log for this step."""
         return self.env['im.journey.log'].create({
             'participant_id': self.id,
             'node_id': node.id,

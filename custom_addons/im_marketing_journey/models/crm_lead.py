@@ -52,12 +52,14 @@ class CrmLead(models.Model):
                     'state': 'running',
                 })
 
+    # A brand new lead may already sit in a trigger stage.
     @api.model_create_multi
     def create(self, vals_list):
         leads = super().create(vals_list)
         leads._enroll_in_running_journeys()
         return leads
 
+    # Changing stage both enters one journey and leaves another.
     def write(self, vals):
         res = super().write(vals)
         if 'stage_id' in vals:

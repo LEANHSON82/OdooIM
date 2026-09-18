@@ -9,6 +9,7 @@ class ResUsers(models.Model):
         readonly=False,
     )
 
+    # Let a user read and write their own theme choice.
     @property
     def SELF_READABLE_FIELDS(self):
         return super().SELF_READABLE_FIELDS + ['x_color_scheme']

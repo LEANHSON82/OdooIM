@@ -131,18 +131,21 @@ class PurchaseRequestQuote(models.Model):
                     "Phiếu %s đã trình duyệt nên không sửa được nguồn mua.",
                     quote.request_id.name))
 
+    # Adding a source is an edit too, so the same guard applies.
     @api.model_create_multi
     def create(self, vals_list):
         quotes = super().create(vals_list)
         quotes._check_request_editable()
         return quotes
 
+    # Checked before and after, because a quote can move to another request.
     def write(self, vals):
         self._check_request_editable()
         res = super().write(vals)
         self._check_request_editable()
         return res
 
+    # Same guard when a source is removed.
     def unlink(self):
         self._check_request_editable()
         return super().unlink()

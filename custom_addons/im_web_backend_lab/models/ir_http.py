@@ -27,6 +27,7 @@ class IrHttp(models.AbstractModel):
         return super().color_scheme()
 
     def session_info(self):
+        """Ship the chosen theme to the browser inside the session."""
         result = super().session_info()
         result['color_scheme'] = self.color_scheme()
         return result

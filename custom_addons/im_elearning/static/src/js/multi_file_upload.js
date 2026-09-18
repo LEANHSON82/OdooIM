@@ -9,9 +9,14 @@ import { SlideUploadSourceTypes } from '@website_slides/js/public/components/sli
 
 import { uploadVideoFile } from '@im_elearning/js/video_upload';
 
+// CE hard-codes this browser-side ceiling for images and PDFs.
 const MAX_FILE_SIZE = 25 * 1024 * 1024;
 const VIDEO_EXTENSIONS = 'video/mp4,video/webm,video/ogg,video/quicktime,.mp4,.webm,.ogv,.mov,.m4v';
 
+// CE blocks multi-file video upload in four places and this file lifts all
+// four: the accepted file types below, onChangeFileInput taking only the
+// first file, the 25 MB browser cap, and _formValidateGetValues forcing
+// every video to be an external link.
 SlideUploadCategory.sourceSettings.video = {
     ...SlideUploadCategory.sourceSettings.video,
     sourceTypeLabel: _t("Video Source"),
@@ -25,11 +30,13 @@ SlideUploadSourceTypes.props.attributes.shape.externalLabel = {
     optional: true,
 };
 
+// A file name becomes the lesson title: drop the extension, tidy separators.
 function titleFromFilename(filename) {
     const stem = filename.replace(/\.[^.]+$/, '');
     return stem.replace(/[_-]+/g, ' ').replace(/\s+/g, ' ').trim() || filename;
 }
 
+// Natural order, so lesson 2 sorts before lesson 10.
 function naturalCompare(a, b) {
     return a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' });
 }
@@ -40,6 +47,8 @@ patch(SlideUploadCategory.prototype, {
         return this.props.slideCategory === 'video' && this.state.form.isLocalSource;
     },
 
+    // Keep every selected file. CE reads only the first one; the rest go to
+    // imVideoFiles, or to imExtraFiles as base64 images and PDFs.
     async onChangeFileInput(ev) {
         const all = [...(ev.target.files || [])];
         this.imExtraFiles = [];
@@ -79,9 +88,11 @@ patch(SlideUploadCategory.prototype, {
         return result;
     },
 
+    // Sort and validate the chosen videos against the server-side ceiling.
     async _imHandleVideoFiles(files) {
         this._alertRemove();
 
+        // Ask the server for its limit; unreachable means no browser check.
         let limitMb = 0;
         try {
             const info = await rpc('/im_elearning/video/upload_limit', {});
@@ -119,6 +130,7 @@ patch(SlideUploadCategory.prototype, {
         this._imAnnounce(this.imVideoFiles.length);
     },
 
+    // Tell the user what was skipped, or how many lessons will be created.
     _imAnnounce(total) {
         if (this.imRejectedFiles.length) {
             this._alertDisplay(_t(
@@ -131,6 +143,8 @@ patch(SlideUploadCategory.prototype, {
         }
     },
 
+    // CE forces source_type to external for every video; undo that when the
+    // user picked real files.
     async _formValidateGetValues(forcePublished) {
         const values = await super._formValidateGetValues(forcePublished);
         if (this.imVideoFiles?.length) {
@@ -140,6 +154,8 @@ patch(SlideUploadCategory.prototype, {
         return values;
     },
 
+    // Turn one form into a batch of lesson values, one entry per file.
+    // The first video keeps the typed title, the others take their filename.
     async onClickFormSubmit(forcePublished) {
         const hasVideos = this.imVideoFiles?.length;
         const hasExtras = this.imExtraFiles?.length;
@@ -181,7 +197,12 @@ patch(SlideUploadCategory.prototype, {
 
 patch(SlideUploadDialog.prototype, {
 
+    // Create the lessons one by one, then send each video separately.
+    //
+    // The video never travels with the create call: /slides/add_slide is
+    // JSON-RPC, so a base64 payload would hit the 128 MiB request cap.
     async uploadSlide(formValues, previousPage) {
+        // A plain object means the stock single-file flow.
         if (!Array.isArray(formValues)) {
             return super.uploadSlide(formValues, previousPage);
         }
@@ -189,6 +210,8 @@ patch(SlideUploadDialog.prototype, {
         this.state.page = 'upload';
         this.state.size = 'md';
 
+        // One failure must not lose the lessons that did work, so errors are
+        // collected and the user lands on the last lesson created.
         let lastUrl = null;
         const failed = [];
         for (const entry of formValues) {

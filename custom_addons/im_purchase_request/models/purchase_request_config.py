@@ -90,6 +90,7 @@ class PurchaseRequestConfig(models.Model):
             vals[field_name] = commands
         return vals
 
+    # Both write paths stamp the permission type before saving.
     @api.model_create_multi
     def create(self, vals_list):
         return super().create([self._with_permission_types(vals) for vals in vals_list])
@@ -113,6 +114,7 @@ class PurchaseRequestConfig(models.Model):
         for config in self:
             config.product_creation = creator in employee.implied_ids
 
+    # Ticking the switch grants the group to every employee at once.
     def _inverse_product_creation(self):
         self._toggle_employee_implied(
             'im_purchase_request.group_product_creator', any(self.mapped('product_creation')))
@@ -124,6 +126,7 @@ class PurchaseRequestConfig(models.Model):
         for config in self:
             config.vendor_creation = creator in employee.implied_ids
 
+    # Same switch for vendors, written out because it also unlinks.
     def _inverse_vendor_creation(self):
         employee = self.env.ref('base.group_user').sudo()
         creator = self.env.ref('im_purchase_request.group_vendor_creator')

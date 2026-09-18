@@ -158,6 +158,7 @@ class PurchaseRequestLine(models.Model):
                     "Phiếu %s đã trình duyệt nên không sửa được dòng hàng.",
                     line.request_id.name))
 
+    # Adding a line is an edit too, so the same guard applies.
     @api.model_create_multi
     def create(self, vals_list):
         lines = super().create(vals_list)
@@ -173,6 +174,7 @@ class PurchaseRequestLine(models.Model):
             return res
         return super().write(vals)
 
+    # Same guard when a line is removed.
     def unlink(self):
         self._check_request_editable()
         return super().unlink()

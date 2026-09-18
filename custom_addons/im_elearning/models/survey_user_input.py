@@ -10,6 +10,7 @@ class SurveyUserInput(models.Model):
     _inherit = 'survey.user_input'
 
     def _mark_done(self):
+        """CE's end-of-attempt hook; certificate and failure mail hang off it."""
         res = super()._mark_done()
         self._im_issue_certificates()
         self._im_notify_failures()

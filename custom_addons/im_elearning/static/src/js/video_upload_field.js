@@ -6,6 +6,12 @@ import { Component, useState, useRef } from '@odoo/owl';
 
 import { uploadVideoFile } from '@im_elearning/js/video_upload';
 
+/**
+ * Backend field widget uploading a lesson video over multipart.
+ *
+ * The stock binary widget sends base64 inside one JSON-RPC call, which hits
+ * the 128 MiB request cap and inflates the file by a third.
+ */
 export class VideoUploadField extends Component {
     static template = 'im_elearning.VideoUploadField';
     static props = { ...standardFieldProps };
@@ -37,6 +43,7 @@ export class VideoUploadField extends Component {
     }
 
     onSelectFile() {
+        // The upload route needs the lesson id, so the record must exist.
         if (!this.slideId) {
             this.notification.add(
                 _t("Lưu bài giảng trước đã, rồi mới tải video lên."),
@@ -56,6 +63,7 @@ export class VideoUploadField extends Component {
         ev.target.value = '';
     }
 
+    // Upload with a progress bar, then reload so the field shows the file.
     async upload(file) {
         this.state.uploading = true;
         this.state.progress = 0;

@@ -88,6 +88,7 @@ class SlideCertificate(models.Model):
 
     @api.model
     def _generate_code_suffix(self):
+        """Random tail of the code, so counting up reveals nobody else's."""
         return ''.join(
             secrets.choice(SUFFIX_ALPHABET) for _index in range(SUFFIX_LENGTH))
 
@@ -147,6 +148,7 @@ class SlideCertificate(models.Model):
 
     @api.model
     def action_backfill_missing(self):
+        """Issue certificates to learners who passed before the install."""
         created = self._backfill_missing()
         if created:
             message = _(
@@ -180,6 +182,7 @@ class SlideCertificate(models.Model):
         }
 
     def action_restore(self):
+        """Undo a revocation and put the HR resume line back."""
         self.ensure_one()
         self.sudo().write({
             'is_revoked': False,
@@ -275,6 +278,7 @@ class SlideCertificateRevoke(models.TransientModel):
     reason = fields.Char('Lý do', required=True)
 
     def action_confirm(self):
+        """Revoke with the typed reason, then close the dialog."""
         self.ensure_one()
         self.certificate_id._do_revoke(self.reason)
         return {'type': 'ir.actions.act_window_close'}

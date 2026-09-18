@@ -11,6 +11,7 @@ class SlideChannelPartner(models.Model):
 
     @api.depends('partner_id', 'channel_id')
     def _compute_certificate_id(self):
+        """Certificate this learner already holds for this course, if any."""
         held = self.env['slide.certificate']._map_by_learner_and_course(
             self.partner_id, self.channel_id)
         for membership in self:
@@ -18,6 +19,7 @@ class SlideChannelPartner(models.Model):
                 (membership.partner_id.id, membership.channel_id.id), False)
 
     def write(self, vals):
+        """Issue the certificate the moment CE records a passing exam."""
         res = super().write(vals)
         if vals.get('survey_certification_success'):
             self._im_issue_certificates()

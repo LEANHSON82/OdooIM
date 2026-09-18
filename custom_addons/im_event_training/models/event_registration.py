@@ -88,6 +88,7 @@ class EventRegistration(models.Model):
         return registrations
 
     def write(self, vals):
+        """Re-price early-bird tickets when the state or the ticket changes."""
         res = super().write(vals)
         if 'state' in vals or 'event_ticket_id' in vals:
             self._refresh_early_bird_tickets()
@@ -125,6 +126,7 @@ class EventRegistration(models.Model):
     @api.depends('attendance_ids.is_present', 'attendance_ids.is_excused',
                  'event_id.session_ids', 'event_id.certificate_threshold')
     def _compute_attendance_stats(self):
+        """Attendance rate over the sessions that count for this attendee."""
         for reg in self:
             # Excused sessions leave the denominator: someone excused from
             # 2 of 10 sessions who attends the other 8 still scores 100%.
@@ -145,6 +147,7 @@ class EventRegistration(models.Model):
                 reg.is_certificate_eligible = False
 
     def action_issue_certificate(self):
+        """Issue the certificate, refusing anyone below the threshold."""
         for reg in self:
             if reg.state == 'cancel':
                 raise UserError(_(
@@ -178,6 +181,7 @@ class EventRegistration(models.Model):
         return True
 
     def action_revoke_certificate(self):
+        """Revoke an issued certificate without deleting the record."""
         for reg in self:
             if reg.certificate_state != 'issued':
                 raise UserError(_(

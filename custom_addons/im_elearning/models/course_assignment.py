@@ -68,6 +68,7 @@ class ImCourseAssignment(models.Model):
 
     @api.depends('channel_id', 'partner_id')
     def _compute_certificate_id(self):
+        """Certificate this employee already holds for this course, if any."""
         held = self.env['slide.certificate']._map_by_learner_and_course(
             self.partner_id, self.channel_id)
         for assignment in self:
@@ -137,6 +138,7 @@ class ImCourseAssignment(models.Model):
                 raise ValidationError(_(
                     "Hạn hoàn thành không được sớm hơn ngày giao khoá học."))
 
+    # Assigning a course also enrols the employee in it.
     @api.model_create_multi
     def create(self, vals_list):
         assignments = super().create(vals_list)

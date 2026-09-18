@@ -68,6 +68,7 @@ class SlideSlide(models.Model):
 
     @api.depends('slide_category', 'source_type', 'video_source_type')
     def _compute_slide_type(self):
+        """Local videos get their own slide_type, for the player to branch on."""
         super()._compute_slide_type()
         for slide in self:
             if slide.slide_category == 'video' and slide.video_source_type == 'local':
