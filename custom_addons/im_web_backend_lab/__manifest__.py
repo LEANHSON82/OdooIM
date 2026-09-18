@@ -3,7 +3,17 @@
     'version': '19.0.0.5.0',
     'category': 'Hidden',
     'summary': 'Thương hiệu, menu chính, thanh điều hướng và chế độ tối',
-    'description': 'Tuỳ biến giao diện backend Odoo.',
+    'description': """
+Tuỳ biến giao diện backend: màu thương hiệu, Home Menu dạng lưới app,
+thanh điều hướng riêng và chế độ tối.
+
+Module giao diện thuần, không có model nghiệp vụ. Lưu ý: manifest thay
+entry point web/static/src/main.js để khởi động ImWebClient — kiểm tra chỗ
+này đầu tiên nếu backend trắng trang sau khi nâng cấp Odoo.
+Chế độ tối chọn theo thứ tự cookie > thiết lập người dùng > hệ điều hành;
+đổi theme luôn phải reload vì bundle CSS do server chọn.
+Chi tiết: README.md trong module.
+""",
     'author': 'InMotion',
     'license': 'LGPL-3',
     'depends': ['web', 'base_setup'],

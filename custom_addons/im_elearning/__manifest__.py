@@ -4,7 +4,21 @@
     'category': 'Website/eLearning',
     'sequence': 105,
     'summary': 'Video tự host, chứng chỉ tra cứu, chặn thi sớm, giao khoá',
-    'description': 'Mở rộng website_slides cho đào tạo nội bộ doanh nghiệp.',
+    'description': """
+Mở rộng eLearning của Odoo 19 CE (website_slides + survey) cho đào tạo nội bộ.
+
+Bốn phần CE còn thiếu:
+
+- Video tự host: thêm nguồn "local" vào video_source_type, phát bằng thẻ
+  video HTML5, route riêng có kiểm tra tư cách thành viên khoá học
+- Chứng chỉ tra cứu được: mã dạng CERT/2026/00042-K7M2QX, trang tra cứu
+  công khai, QR trên bản PDF, thu hồi được
+- Chặn thi sớm: phải học đủ tỉ lệ bài giảng mới mở được bài thi
+- Giao khoá học: gán khoá cho nhân viên kèm hạn, cron nhắc và báo quá hạn
+
+Giao diện thư, chứng chỉ PDF và trang thi nằm ở module im_theme (tự cài kèm).
+Chi tiết: README.md trong module.
+""",
     'author': 'IM',
     'license': 'LGPL-3',
     'depends': [
