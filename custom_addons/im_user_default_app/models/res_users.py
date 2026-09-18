@@ -20,15 +20,16 @@ class ResUsers(models.Model):
 
     @api.onchange('default_app_id')
     def _onchange_default_app_id(self):
+        # The submenu belongs to the old app, so drop it on app change.
         for user in self:
             user.default_menu_id = False
 
     def action_clear_default_app(self):
-        """Bỏ app mặc định, quay lại hành vi gốc của Odoo.
+        """Clear the default app and restore stock Odoo behaviour.
 
-        Ô many2one vốn xoá được bằng cách bôi đen rồi xoá chữ, nhưng gần như
-        không ai đoán ra — nên đã chọn một app là coi như mắc kẹt, chỉ đổi được
-        sang app khác. Nút này làm việc bỏ trở nên nhìn thấy được.
+        A many2one is cleared by selecting the text and deleting it,
+        which almost nobody discovers, so users felt stuck with the
+        first app they picked. This button makes clearing visible.
         """
         self.write({
             'default_app_id': False,
@@ -36,6 +37,7 @@ class ResUsers(models.Model):
         })
         return True
 
+    # Without these two, a plain user opening Preferences hits AccessError.
     @property
     def SELF_READABLE_FIELDS(self):
         return super().SELF_READABLE_FIELDS + ['default_app_id', 'default_menu_id']
@@ -45,6 +47,8 @@ class ResUsers(models.Model):
         return super().SELF_WRITEABLE_FIELDS + ['default_app_id', 'default_menu_id']
 
     def _get_app_landing_action(self, menu):
+        """Walk down the menu tree to the first child holding an action."""
+        # sudo() only to read the menu tree; the action checks rights itself.
         menu = menu.sudo()
         if not menu:
             return self.env['ir.actions.actions'].browse()
@@ -57,6 +61,12 @@ class ResUsers(models.Model):
         return self.env['ir.actions.actions'].browse()
 
     def _sync_default_app_to_action(self):
+        """Translate the chosen app/menu into core's action_id.
+
+        Odoo itself only knows action_id; the two fields above are just a
+        friendlier way to pick one. Synced on create and write so RPC
+        callers get the same behaviour as the form.
+        """
         for user in self:
             target_menu = user.default_menu_id or user.default_app_id
             action = (

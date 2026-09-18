@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Định nghĩa pivot, graph, search và action cho phân tích ticket. -->
+<!-- Pivot, graph, search views and action for the ticket analysis. -->
 <odoo>
     <record id="helpdesk_ticket_view_pivot_analysis" model="ir.ui.view">
         <field name="name">helpdesk.ticket.report.analysis.pivot</field>

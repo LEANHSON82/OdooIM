@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!-- Giao diện và hành động backend để cấu hình SLA policy helpdesk. -->
+<!-- Backend views and actions for configuring the SLA policies. -->
 <odoo>
 
     <record id="helpdesk_sla_view_tree" model="ir.ui.view">

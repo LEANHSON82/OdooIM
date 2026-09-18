@@ -1,6 +1,6 @@
 from odoo import fields, models
 
-# Một dòng lịch sử duyệt: cấp nào, ai ký, kết quả ra sao
+# One approval history row: which level, who signed, what result
 class PurchaseRequestApproval(models.Model):
     _name = 'im.purchase.request.approval'
     _description = 'Lịch sử duyệt đề nghị mua hàng'

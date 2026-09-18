@@ -1,30 +1,30 @@
-"""Phần mở rộng company để tạo mặc định cho IM Helpdesk.
+"""Company extension providing the IM Helpdesk defaults.
 
-Khi tạo công ty mới, module tự tạo một team Customer Care cơ bản kèm các stage
-helpdesk chuẩn để công ty có thể nhận ticket ngay.
+A new company automatically gets a basic Customer Care team with the standard helpdesk
+stages, so it can take tickets right away.
 """
 
 from odoo import Command, api, models, _
 
 
 class ResCompany(models.Model):
-    """Mở rộng company với cơ chế tự tạo team helpdesk."""
+    """Extend company with automatic helpdesk team creation."""
 
     _inherit = 'res.company'
 
     @api.model_create_multi
     def create(self, vals_list):
-        """Tạo company và tạo luôn team helpdesk mặc định cho company đó."""
+        """Create the company and its default helpdesk team in one go."""
         company = super().create(vals_list)
         company._create_helpdesk_team()
         return company
 
     def _create_helpdesk_team(self):
-        """Tạo một team Customer Care mặc định cho mỗi company trong ``self``.
+        """Create one default Customer Care team per company in ``self``.
 
-        Helper này dùng lại các stage đã cấu hình, sinh mail alias không trùng
-        và tắt SLA mặc định để team bắt đầu đơn giản cho tới khi admin chủ động
-        bật policy.
+        The helper reuses the configured stages, generates a mail alias that
+        does not clash, and leaves SLA off so the team starts simple until an
+        admin turns policies on deliberately.
         """
         results = []
         stage_ids = []

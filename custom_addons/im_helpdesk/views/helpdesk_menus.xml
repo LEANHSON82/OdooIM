@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!-- Cấu trúc menu backend và hành động để điều hướng IM Helpdesk. -->
+<!-- Backend menu tree and actions for navigating IM Helpdesk. -->
 <odoo>
 
     <menuitem

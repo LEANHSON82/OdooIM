@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
 
-<!-- Custom AppsMenu: toggle button thay vì dropdown -->
+<!-- Custom AppsMenu: a toggle button instead of the dropdown -->
 <t t-name="im_web_backend_lab.AppsMenu">
     <t t-if="env.isSmall">
         <a href="/odoo" class="o_menu_toggle border-0"

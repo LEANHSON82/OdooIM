@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Scheduled action dùng cho tự động hóa helpdesk, bao gồm tự đóng ticket. -->
+<!-- Scheduled actions for helpdesk automation, including ticket auto-closing. -->
 <odoo noupdate="1">
     <record id="ir_cron_auto_close_ticket" model="ir.cron">
         <field name="name">Helpdesk Ticket: Automatically close the tickets</field>

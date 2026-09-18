@@ -1,7 +1,7 @@
-"""Model trạng thái SLA theo từng ticket.
+"""Per-ticket SLA status model.
 
-Các record trong model này liên kết ticket với SLA policy đang áp dụng, lưu hạn
-xử lý đã tính và theo dõi ticket có đạt stage mục tiêu đúng hạn hay không.
+Records here link a ticket to the SLA policy that applies, store the computed deadline
+and track whether the ticket reached the target stage in time.
 """
 
 import math
@@ -11,7 +11,7 @@ from odoo.fields import Domain
 
 
 class HelpdeskSlaStatus(models.Model):
-    """Theo dõi tiến độ của một SLA policy trên một ticket."""
+    """Track the progress of one SLA policy on one ticket."""
 
     _name = 'helpdesk.sla.status'
     _description = "Ticket SLA Status"
@@ -30,11 +30,11 @@ class HelpdeskSlaStatus(models.Model):
 
     @api.depends('ticket_id.create_date', 'sla_id', 'ticket_id.stage_id')
     def _compute_deadline(self):
-        """Tính deadline theo giờ làm việc cho từng trạng thái SLA.
+        """Compute the working-hours deadline of each SLA status.
 
-        Các stage bị exclude sẽ tạm dừng đồng hồ SLA. Nếu ticket hiện đang nằm
-        trong stage bị exclude, deadline sẽ tạm thời được xóa cho tới khi ticket
-        quay lại stage được tính vào SLA.
+        Excluded stages pause the SLA clock. While the ticket sits in an
+        excluded stage the deadline is cleared, until the ticket returns to a
+        stage the SLA counts.
         """
         for status in self:
             if (status.deadline and status.reached_datetime) or (status.deadline and not status.sla_id.exclude_stage_ids) or (status.status == 'failed'):
@@ -69,7 +69,7 @@ class HelpdeskSlaStatus(models.Model):
 
     @api.depends('deadline', 'reached_datetime')
     def _compute_status(self):
-        """Hiển thị trạng thái SLA là failed, reached hoặc ongoing."""
+        """Expose the SLA status as failed, reached or ongoing."""
         for status in self:
             if status.reached_datetime and status.deadline:
                 status.status = 'reached' if status.reached_datetime < status.deadline else 'failed'
@@ -78,7 +78,7 @@ class HelpdeskSlaStatus(models.Model):
 
     @api.model
     def _search_status(self, operator, value):
-        """Chuyển tìm kiếm status ảo thành domain theo deadline/reached."""
+        """Turn a search on the virtual status into a deadline/reached domain."""
         if operator != 'in':
             return NotImplemented
         datetime_now = fields.Datetime.now()
@@ -93,7 +93,7 @@ class HelpdeskSlaStatus(models.Model):
 
     @api.depends('status')
     def _compute_color(self):
-        """Ánh xạ trạng thái SLA sang mã màu trên kanban/list."""
+        """Map the SLA status to the colour code used in kanban and list views."""
         for status in self:
             if status.status == 'failed':
                 status.color = 1
@@ -104,10 +104,11 @@ class HelpdeskSlaStatus(models.Model):
 
     @api.depends('deadline', 'reached_datetime')
     def _compute_exceeded_hours(self):
-        """Tính số giờ làm việc sớm hoặc trễ so với deadline SLA.
+        """Compute the working hours before or past the SLA deadline.
 
-        Giá trị âm nghĩa là ticket vẫn còn trước deadline hoặc đã đạt mục tiêu
-        sớm. Giá trị dương nghĩa là ticket đã vượt quá deadline.
+        A negative value means the ticket is still ahead of the deadline, or
+        reached its target early. A positive value means the deadline has been
+        passed.
         """
         for status in self:
             if status.deadline and status.ticket_id.team_id.resource_calendar_id:
@@ -126,10 +127,10 @@ class HelpdeskSlaStatus(models.Model):
                 status.exceeded_hours = False
 
     def _get_freezed_hours(self, working_calendar):
-        """Trả về số giờ làm việc ticket nằm trong các stage bị exclude khỏi SLA.
+        """Return the working hours the ticket spent in stages excluded from the SLA.
 
-        Hàm đọc tracking line của stage để dựng lại thời điểm ticket ở trong các
-        stage bị exclude, rồi cộng khoảng thời gian đó ngược lại vào deadline.
+        The stage tracking lines are replayed to rebuild when the ticket sat in
+        excluded stages, and that duration is added back onto the deadline.
         """
         self.ensure_one()
         hours_freezed = 0

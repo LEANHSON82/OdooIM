@@ -16,13 +16,14 @@ class TestUserDefaultApp(TransactionCase):
     def test_setting_app_sets_landing_action(self):
         self.user.write({'default_app_id': self.app.id})
         self.assertTrue(self.user.action_id,
-                        "Chọn app mặc định phải đặt hành động khi đăng nhập")
+                        "Picking a default app must set the login action")
 
     def test_clearing_app_restores_default_behaviour(self):
-        """Bỏ app mặc định phải trả về hành vi gốc của Odoo.
+        """Clearing the default app must restore stock Odoo behaviour.
 
-        Trước đây chỉ đổi được sang app khác chứ không bỏ được, vì ô many2one
-        muốn xoá phải bôi đen rồi xoá chữ — gần như không ai đoán ra.
+        Users could only switch to another app, never clear it: a many2one
+        is cleared by selecting the text and deleting it, which almost
+        nobody discovers.
         """
         self.user.write({'default_app_id': self.app.id})
         self.assertTrue(self.user.action_id)
@@ -32,7 +33,7 @@ class TestUserDefaultApp(TransactionCase):
         self.assertFalse(self.user.default_app_id)
         self.assertFalse(self.user.default_menu_id)
         self.assertFalse(self.user.action_id,
-                         "Bỏ app mặc định thì không được để sót hành động cũ")
+                         "Clearing the default app must leave no stale action behind")
 
     def test_clearing_twice_does_not_raise(self):
         self.user.action_clear_default_app()
@@ -46,7 +47,7 @@ class TestUserDefaultApp(TransactionCase):
             ('action', '!=', False),
         ], limit=1)
         if not submenu:
-            self.skipTest("Không có menu con nào có action để thử")
+            self.skipTest("No submenu with an action to test against")
 
         self.user.write({
             'default_app_id': self.app.id,
@@ -56,12 +57,12 @@ class TestUserDefaultApp(TransactionCase):
         self.assertFalse(self.user.default_menu_id)
 
     def test_changing_app_still_works(self):
-        """Không được phá đường đổi sang app khác."""
+        """Switching to another app must keep working."""
         other = self.env['ir.ui.menu'].search([
             ('parent_id', '=', False), ('id', '!=', self.app.id),
         ], limit=1)
         if not other:
-            self.skipTest("Chỉ có một app gốc trong cơ sở dữ liệu")
+            self.skipTest("Only one root app in this database")
 
         self.user.write({'default_app_id': self.app.id})
         self.user.write({'default_app_id': other.id})

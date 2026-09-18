@@ -1,6 +1,8 @@
 from odoo import models, fields
 
 class ImJourneyLog(models.Model):
+    """Audit trail of every step run, and the double-send guard."""
+
     _name = 'im.journey.log'
     _description = 'Marketing Journey Execution Log'
     _order = 'execution_time desc, id desc'

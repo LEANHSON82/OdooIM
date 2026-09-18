@@ -50,19 +50,22 @@ const colorSchemeService = {
                 cookie.set("color_scheme", scheme, 365 * 24 * 3600);
             }
 
+            // Store the raw preference, "system" included, so the choice
+            // follows the user to another browser.
             try {
                 await user.setUserSettings("x_color_scheme", preference);
             } catch (e) {
                 console.warn("Failed to save color scheme preference:", e);
             }
 
+            // Reload is required: the dark CSS bundle is chosen server side.
             if (scheme !== currentScheme) {
                 _applyScheme(scheme);
                 browser.location.reload();
             }
         }
 
-        // Listen for OS preference changes
+        // Follow the OS only while the user made no explicit choice.
         if (browser.matchMedia) {
             const mql = browser.matchMedia("(prefers-color-scheme: dark)");
             mql.addEventListener("change", (ev) => {

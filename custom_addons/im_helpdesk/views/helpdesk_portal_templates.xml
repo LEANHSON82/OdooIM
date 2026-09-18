@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Template website portal để liệt kê, xem, tạo và đóng ticket. -->
+<!-- Website portal templates to list, read, create and close tickets. -->
 <odoo>
 <data noupdate="0">
     <template id="portal_my_home_menu_helpdesk" name="Portal: helpdesk breadcrumbs" inherit_id="portal.portal_breadcrumbs" priority="50">

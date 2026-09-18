@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- priority cao để chạy SAU website.brand_promotion và
-         website_sale.brand_promotion — hai module đó cũng kế thừa vào đúng khối
-         này. Xoá trước khi chúng chạy thì xpath của chúng không tìm thấy đích
-         và cả trang vỡ. -->
+    <!-- Priority 99 makes us run last, after website.brand_promotion
+         and website_sale.brand_promotion inherit the same block.
+         Removing it earlier breaks their xpath and the whole page. -->
     <template id="hide_brand_promotion"
               inherit_id="web.brand_promotion"
               priority="99"

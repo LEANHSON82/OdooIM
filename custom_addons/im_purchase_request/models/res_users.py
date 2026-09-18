@@ -1,7 +1,7 @@
 from odoo import api, fields, models
 from odoo.fields import Command
 
-# Tab cấu hình cá nhân trên form người dùng
+# Personal settings tab on the user form
 class ResUsers(models.Model):
     _inherit = 'res.users'
 
@@ -15,7 +15,7 @@ class ResUsers(models.Model):
         compute='_compute_im_purchase_request_roles',
         inverse='_inverse_im_can_configure')
 
-    # Đọc vai trò từ các nhóm người dùng đang có
+    # Read the roles from the groups the user already has
     @api.depends('group_ids')
     def _compute_im_purchase_request_roles(self):
         manager = self.env.ref('im_purchase_request.group_manager')
@@ -23,7 +23,7 @@ class ResUsers(models.Model):
             user.im_approver_group_ids = user.group_ids.filtered('im_is_approver_role')
             user.im_can_configure = manager in user.group_ids
 
-    # Tick ô nào thì gán nhóm duyệt tương ứng
+    # Ticking a box grants the matching approver group
     def _inverse_im_approver_group_ids(self):
         for user in self:
             current = user.group_ids.filtered('im_is_approver_role')
@@ -33,7 +33,7 @@ class ResUsers(models.Model):
             if commands:
                 user.group_ids = commands
 
-    # Bật tắt nhóm quản trị đề nghị mua hàng
+    # Toggles the purchase request administrator group
     def _inverse_im_can_configure(self):
         manager = self.env.ref('im_purchase_request.group_manager')
         for user in self:

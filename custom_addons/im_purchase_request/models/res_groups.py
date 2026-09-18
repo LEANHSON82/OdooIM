@@ -1,13 +1,13 @@
 from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 
-# Nhóm hệ thống, không được dùng làm nhóm duyệt
+# System groups may not serve as approver roles
 PROTECTED_GROUPS = (
     'base.group_user', 'base.group_portal', 'base.group_public',
     'base.group_system', 'base.group_erp_manager', 'base.group_no_one',
 )
 
-# Đánh dấu nhóm nào là nhóm duyệt của module
+# Marks which groups are this module's approver roles
 class ResGroups(models.Model):
     _inherit = 'res.groups'
 
@@ -15,13 +15,13 @@ class ResGroups(models.Model):
         string="Nhóm duyệt đề nghị mua hàng",
         help="Hiện trong mục “Là người duyệt” trên người dùng và chọn được cho cấp duyệt.")
 
-    # Nhóm hệ thống hoặc nhóm chia sẻ thì không dùng được
+    # System and share groups cannot be used
     def _im_is_protected(self):
         self.ensure_one()
         protected = [self.env.ref(xmlid, raise_if_not_found=False) for xmlid in PROTECTED_GROUPS]
         return self.share or self in protected
 
-    # Chặn lấy nhóm hệ thống làm nhóm duyệt
+    # Refuse to turn a system group into an approver role
     @api.constrains('im_is_approver_role')
     def _check_im_approver_role(self):
         for group in self:
@@ -30,7 +30,7 @@ class ResGroups(models.Model):
                     "Nhóm “%s” là nhóm hệ thống, không dùng làm nhóm duyệt được.",
                     group.display_name))
 
-    # Người có quyền cấu hình chỉ tạo được nhóm duyệt thường
+    # A config user may only create plain approver groups
     @api.model_create_multi
     def create(self, vals_list):
         if not self.env.su and not self.env.user.has_group('base.group_erp_manager'):
@@ -40,7 +40,7 @@ class ResGroups(models.Model):
             ]
         return super().create(vals_list)
 
-    # Gõ tên mới ở ô Nhóm duyệt thì tạo nhóm luôn
+    # Typing a new name in the approver-group field creates the group
     @api.model
     def name_create(self, name):
         if not self.env.context.get('default_im_is_approver_role'):

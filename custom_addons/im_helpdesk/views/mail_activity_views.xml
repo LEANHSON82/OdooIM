@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!-- Phần mở rộng view mail activity để hiển thị context ticket helpdesk. -->
+<!-- Mail activity view extension showing the helpdesk ticket context. -->
 <odoo>
     <record id="mail_activity_type_action_config_helpdesk" model="ir.actions.act_window">
         <field name="name">Activity Types</field>

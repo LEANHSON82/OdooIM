@@ -1,7 +1,7 @@
 from odoo import api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
-# Mua qua kênh nào: chính hãng, xách tay, OEM
+# Buying channel: official, parallel import, OEM
 ORIGIN_TYPES = [
     ('original', "Chính hãng / đại lý"),
     ('imported', "Xách tay"),
@@ -9,14 +9,14 @@ ORIGIN_TYPES = [
     ('other', "Khác"),
 ]
 
-# Hàng mới, hàng tân trang hay hàng cũ
+# New, refurbished or used goods
 CONDITIONS = [
     ('new', "Mới"),
     ('refurbished', "Tân trang"),
     ('used', "Hàng cũ"),
 ]
 
-# Một báo giá của nhà cung cấp cho dòng hàng
+# One vendor quote for a request line
 class PurchaseRequestQuote(models.Model):
     _name = 'im.purchase.request.quote'
     _description = 'Nguồn mua của đề nghị mua hàng'
@@ -79,13 +79,13 @@ class PurchaseRequestQuote(models.Model):
     currency_id = fields.Many2one(related='line_id.currency_id')
     company_id = fields.Many2one(related='line_id.company_id', store=True)
 
-    # Đánh dấu báo giá sẽ được đặt hàng
+    # Marks the quote that will be ordered
     @api.depends('line_id.selected_quote_id')
     def _compute_is_chosen(self):
         for quote in self:
             quote.is_chosen = quote.line_id.selected_quote_id == quote
 
-    # Lấy theo hồ sơ nhà cung cấp, sửa lại được
+    # Taken from the vendor record, and stays editable
     @api.depends('partner_id')
     def _compute_payment_term_id(self):
         for quote in self:
@@ -93,7 +93,7 @@ class PurchaseRequestQuote(models.Model):
                 quote.payment_term_id
                 or quote.partner_id.property_supplier_payment_term_id)
 
-    # So giá với báo giá rẻ nhất của cùng dòng hàng
+    # Compare with the cheapest quote on the same line
     @api.depends('price_unit', 'line_id.quote_ids.price_unit')
     def _compute_price_comparison(self):
         for line, quotes in self.grouped('line_id').items():
@@ -105,7 +105,7 @@ class PurchaseRequestQuote(models.Model):
                 quote.price_diff_pct = (
                     quote.price_diff / cheapest * 100.0 if cheapest else 0.0)
 
-    # Mỗi dòng hàng chỉ chọn một nhà cung cấp
+    # Only one vendor can be selected per line
     @api.constrains('is_selected', 'line_id')
     def _check_single_selection(self):
         for line in self.line_id:
@@ -114,7 +114,7 @@ class PurchaseRequestQuote(models.Model):
                     "Dòng “%s” đang chọn nhiều nguồn. Mỗi dòng chỉ chọn một.",
                     line.name))
 
-    # Không nhập hai báo giá trùng nhà cung cấp
+    # The same vendor cannot be quoted twice on one line
     @api.constrains('partner_id', 'line_id')
     def _check_distinct_vendor(self):
         for line in self.line_id:
@@ -123,7 +123,7 @@ class PurchaseRequestQuote(models.Model):
                 raise ValidationError(self.env._(
                     "Dòng “%s” có hai nguồn trùng nhà cung cấp.", line.name))
 
-    # Phiếu đã trình duyệt thì không sửa báo giá
+    # Quotes are frozen once the request is submitted
     def _check_request_editable(self):
         for quote in self:
             if quote.request_id.state != 'draft':

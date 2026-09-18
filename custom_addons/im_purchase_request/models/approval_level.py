@@ -3,14 +3,14 @@ from odoo.exceptions import UserError, ValidationError
 from odoo.tools import float_compare
 
 
-# Số tiền có nằm trong dải Từ – Đến hay không
+# Whether the amount falls inside the from-to band
 def amount_in_band(amount, lower, upper, rounding):
     if float_compare(amount, lower, precision_rounding=rounding) <= 0:
         return False
     return not upper or float_compare(amount, upper, precision_rounding=rounding) <= 0
 
 
-# Một cấp phải ký, chọn theo tổng dự toán của phiếu
+# One level to sign, selected by the estimated total
 class PurchaseRequestApprovalLevel(models.Model):
     _name = 'im.purchase.request.approval.level'
     _description = 'Cấp duyệt đề nghị mua hàng'
@@ -45,13 +45,13 @@ class PurchaseRequestApprovalLevel(models.Model):
     currency_id = fields.Many2one('res.currency', compute='_compute_currency_id')
     active = fields.Boolean(string="Đang dùng", default=True)
 
-    # Tiền tệ lấy theo công ty của cấp duyệt
+    # Currency follows the company of the approval level
     @api.depends('company_id')
     def _compute_currency_id(self):
         for level in self:
             level.currency_id = (level.company_id or self.env.company).currency_id
 
-    # Chặn dải ngược: Đến phải lớn hơn Từ
+    # Reject a backwards band: "to" must be above "from"
     @api.constrains('amount_threshold', 'amount_max')
     def _check_amount_range(self):
         for level in self:
@@ -59,10 +59,10 @@ class PurchaseRequestApprovalLevel(models.Model):
                 raise ValidationError(self.env._(
                     "Cấp “%s”: số “Đến” phải lớn hơn số “Từ”.", level.name))
 
-    # Cấp duyệt chỉ nhận nhóm đã đánh dấu là nhóm duyệt
+    # A level only accepts a group marked as an approver role
     @api.constrains('group_id')
     def _check_group_is_approver_role(self):
-        # Bỏ qua khi hệ thống tự chép cấp giữa các công ty
+        # Skipped while the system copies levels between companies
         if self.env.context.get('im_skip_level_group_check'):
             return
         for level in self:
@@ -72,7 +72,7 @@ class PurchaseRequestApprovalLevel(models.Model):
                     "duyệt có sẵn hoặc gõ tên mới để tạo nhóm duyệt.",
                     level=level.name, group=level.group_id.display_name))
 
-    # Cấp đã có lịch sử ký thì chỉ được tắt, không xoá
+    # A level with approval history can only be archived, never deleted
     def unlink(self):
         used = self.env['im.purchase.request.approval'].sudo().search(
             [('level_id', 'in', self.ids)]).level_id
@@ -82,7 +82,7 @@ class PurchaseRequestApprovalLevel(models.Model):
                 "áp dụng cho phiếu mới.", ", ".join("“%s”" % name for name in used.mapped('name'))))
         return super().unlink()
 
-    # Cấp nằm trong thiết lập nào thì lấy công ty của thiết lập đó
+    # A level takes the company of the settings holding it
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
@@ -91,7 +91,7 @@ class PurchaseRequestApprovalLevel(models.Model):
                     vals['config_id']).company_id.id
         return super().create(vals_list)
 
-    # Cấp này có phải ký cho số tiền này không
+    # Does this level have to sign for that amount
     def _applies_to(self, amount, rounding):
         self.ensure_one()
         return amount_in_band(amount, self.amount_threshold, self.amount_max, rounding)

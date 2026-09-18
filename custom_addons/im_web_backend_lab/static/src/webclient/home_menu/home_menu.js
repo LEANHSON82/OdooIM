@@ -156,6 +156,8 @@ export class HomeMenu extends Component {
         }
     }
 
+    // Must match the grid breakpoints in home_menu.scss, or arrow
+    // keys jump to the wrong row.
     _getColCount() {
         const width = window.innerWidth;
         if (width < 576) return 3;

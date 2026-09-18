@@ -1,8 +1,8 @@
-"""Model phân tích ticket dựa trên SQL cho IM Helpdesk.
+"""SQL-based ticket analysis model for IM Helpdesk.
 
-Model này chỉ đọc (`_auto = False`) và được dựng lại dưới dạng PostgreSQL view.
-Nó tổng hợp thời gian xử lý ticket, trạng thái SLA thành công và rating cho
-pivot/graph view mà không cần nhân bản dữ liệu sang bảng riêng.
+The model is read-only (`_auto = False`) and rebuilt as a PostgreSQL view. It aggregates
+ticket handling times, SLA success and ratings for the pivot and graph views, without
+copying the data into a table of its own.
 """
 
 from odoo import fields, models, tools
@@ -11,7 +11,7 @@ from odoo.addons.rating.models.rating_data import RATING_LIMIT_MIN
 
 
 class HelpdeskTicketReportAnalysis(models.Model):
-    """Cung cấp các field báo cáo cấp ticket từ view phân tích SQL."""
+    """Expose the ticket-level reporting fields from the SQL analysis view."""
 
     _name = 'helpdesk.ticket.report.analysis'
     _description = "Ticket Analysis"
@@ -56,10 +56,10 @@ class HelpdeskTicketReportAnalysis(models.Model):
     rating_avg = fields.Float('Average Rating', readonly=True, aggregator='avg')
 
     def _select(self):
-        """Trả về phần SELECT của SQL view phân tích ticket.
+        """Return the SELECT part of the ticket analysis SQL view.
 
-        Các cột tính toán chuyển giá trị thời gian bằng 0 thành NULL để trung
-        bình trong report Odoo bỏ qua record chưa đạt mốc thời gian đó.
+        The computed columns turn a zero duration into NULL, so averages in the
+        Odoo report skip the records that never reached that milestone.
         """
         select_str = """
             SELECT T.id AS id,
@@ -98,14 +98,14 @@ class HelpdeskTicketReportAnalysis(models.Model):
         return select_str
 
     def _group_by(self):
-        """Trả về các cột GROUP BY cần cho tổng hợp ticket và rating."""
+        """Return the GROUP BY columns needed for the ticket and rating aggregates."""
         return """
                 t.id,
                 ht.use_rating
         """
 
     def _from(self):
-        """Trả về các join bảng cho ticket, rating và team helpdesk."""
+        """Return the table joins over tickets, ratings and helpdesk teams."""
         from_str = f"""
             helpdesk_ticket T
                 LEFT JOIN rating_rating rt ON rt.res_id = t.id
@@ -117,7 +117,7 @@ class HelpdeskTicketReportAnalysis(models.Model):
         return from_str
 
     def init(self):
-        """Tạo mới hoặc refresh SQL view dùng bởi model phân tích."""
+        """Create or refresh the SQL view behind the analysis model."""
         tools.drop_view_if_exists(self.env.cr, self._table)
         self.env.cr.execute("""CREATE or REPLACE VIEW %s as (
             %s

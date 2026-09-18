@@ -68,6 +68,10 @@ class EventRegistration(models.Model):
 
     @api.model_create_multi
     def create(self, vals_list):
+        # Stamp the early-bird flag now, at sale time. Deriving it later
+        # would re-price old registrations once the window closes.
+        # `taken` counts this batch too, so one create() cannot overshoot
+        # the max quantity.
         Ticket = self.env['event.event.ticket']
         taken = defaultdict(int)
         for vals in vals_list:
@@ -90,6 +94,11 @@ class EventRegistration(models.Model):
         return res
 
     def _refresh_early_bird_tickets(self):
+        """Force the ticket price to be recomputed after a sale.
+
+        Ticket price depends on how many early-bird seats are gone, which
+        the ORM cannot see from here on its own.
+        """
         tickets = self.event_ticket_id.filtered('is_early_bird')
         if not tickets:
             return
@@ -98,6 +107,7 @@ class EventRegistration(models.Model):
         tickets.flush_recordset()
 
     def _generate_missing_attendance(self):
+        """Create only the missing attendance rows, so it is idempotent."""
         Attendance = self.env['event.session.attendance']
         vals_list = []
         for reg in self:
@@ -116,6 +126,8 @@ class EventRegistration(models.Model):
                  'event_id.session_ids', 'event_id.certificate_threshold')
     def _compute_attendance_stats(self):
         for reg in self:
+            # Excused sessions leave the denominator: someone excused from
+            # 2 of 10 sessions who attends the other 8 still scores 100%.
             excused = reg.attendance_ids.filtered('is_excused').mapped('session_id')
             countable = reg.event_id.session_ids - excused
             reg.total_session_count = len(countable)
@@ -154,6 +166,8 @@ class EventRegistration(models.Model):
             if not code:
                 code = f"CERT/{fields.Date.today().year}/{reg.id:05d}"
 
+            # Freeze the rate and threshold that applied at issue time, so
+            # a later change to the course rules cannot rewrite history.
             reg.write({
                 'certificate_number': code,
                 'certificate_date': fields.Datetime.now(),

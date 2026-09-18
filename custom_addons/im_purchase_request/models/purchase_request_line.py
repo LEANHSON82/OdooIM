@@ -1,14 +1,14 @@
 from odoo import api, fields, models
 from odoo.exceptions import UserError
 
-# Các trường khóa lại khi phiếu đã trình duyệt
+# Fields locked once the request has been submitted
 LOCKED_FIELDS = frozenset({
     'request_id', 'sequence', 'product_id', 'name',
     'product_qty', 'product_uom_id', 'selection_reason',
     'price_unit', 'partner_id',
 })
 
-# Một mặt hàng cần mua, kèm bảng nhà cung cấp
+# One item to buy, with its table of vendor quotes
 class PurchaseRequestLine(models.Model):
     _name = 'im.purchase.request.line'
     _description = 'Dòng hàng đề nghị mua hàng'
@@ -64,7 +64,7 @@ class PurchaseRequestLine(models.Model):
     currency_id = fields.Many2one(related='request_id.currency_id')
     company_id = fields.Many2one(related='request_id.company_id', store=True)
 
-    # Mô tả và đơn vị lấy theo sản phẩm, sửa lại được
+    # Description and unit follow the product, and stay editable
     @api.depends('product_id')
     def _compute_from_product(self):
         for line in self:
@@ -75,7 +75,7 @@ class PurchaseRequestLine(models.Model):
             line.name = line.product_id.display_name
             line.product_uom_id = line.product_id.uom_id
 
-    # Chỉ có một nhà cung cấp thì coi như đã chọn
+    # A single vendor counts as already selected
     @api.depends('quote_ids', 'quote_ids.is_selected')
     def _compute_quote_summary(self):
         for line in self:
@@ -84,7 +84,7 @@ class PurchaseRequestLine(models.Model):
             chosen = quotes.filtered('is_selected')[:1]
             line.selected_quote_id = chosen or (quotes if len(quotes) == 1 else quotes.browse())
 
-    # Số nhà cung cấp tối thiểu, tra trong thiết lập
+    # Minimum number of vendors, read from the settings
     @api.depends('request_id.company_id', 'product_qty', 'price_unit',
                  'quote_ids.price_unit', 'selected_quote_id')
     def _compute_required_quote_count(self):
@@ -94,7 +94,7 @@ class PurchaseRequestLine(models.Model):
             config = Config._for_company(company)
             line.required_quote_count = config._min_quote_count_for(line._quote_basis_amount())
 
-    # Thành tiền dùng để tra dải số nhà cung cấp
+    # Subtotal decides which minimum-vendor band applies
     def _quote_basis_amount(self):
         self.ensure_one()
         if self.selected_quote_id:
@@ -105,7 +105,7 @@ class PurchaseRequestLine(models.Model):
             price = self.price_unit
         return self.product_qty * price
 
-    # Chọn nhà cung cấp nào thì lấy giá của nhà cung cấp đó
+    # Selecting a vendor pulls that vendor's price
     @api.depends('selected_quote_id.partner_id', 'selected_quote_id.price_unit')
     def _compute_price_vendor(self):
         for line in self:
@@ -115,7 +115,7 @@ class PurchaseRequestLine(models.Model):
             line.partner_id = chosen.partner_id
             line.price_unit = chosen.price_unit
 
-    # Tiền trả thêm so với nhà cung cấp rẻ nhất
+    # Extra cost compared with the cheapest vendor
     @api.depends('product_qty', 'selected_quote_id.price_unit',
                  'quote_ids.price_unit')
     def _compute_extra_cost(self):
@@ -127,13 +127,13 @@ class PurchaseRequestLine(models.Model):
                 continue
             line.extra_cost = (chosen.price_unit - min(prices)) * line.product_qty
 
-    # Thành tiền bằng số lượng nhân đơn giá
+    # Subtotal is quantity times unit price
     @api.depends('product_qty', 'price_unit')
     def _compute_price_subtotal(self):
         for line in self:
             line.price_subtotal = line.product_qty * line.price_unit
 
-    # Báo giá thiếu xuất xứ hoặc điều khoản thanh toán
+    # Quotes missing an origin or payment terms
     def _missing_comparison_data(self):
         self.ensure_one()
         problems = []
@@ -150,7 +150,7 @@ class PurchaseRequestLine(models.Model):
                     missing=", ".join(missing)))
         return problems
 
-    # Phiếu đã trình duyệt thì không sửa dòng hàng
+    # Lines are frozen once the request is submitted
     def _check_request_editable(self):
         for line in self:
             if line.request_id.state != 'draft':
@@ -164,7 +164,7 @@ class PurchaseRequestLine(models.Model):
         lines._check_request_editable()
         return lines
 
-    # Kiểm tra cả trước và sau vì dòng có thể đổi sang phiếu khác
+    # Check before and after, because a line can move to another request
     def write(self, vals):
         if LOCKED_FIELDS.intersection(vals):
             self._check_request_editable()

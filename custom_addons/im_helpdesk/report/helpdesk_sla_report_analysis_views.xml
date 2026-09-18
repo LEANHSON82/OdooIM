@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Định nghĩa pivot, graph, search và action cho phân tích trạng thái SLA. -->
+<!-- Pivot, graph, search views and action for the SLA status analysis. -->
 <odoo>
     <record id="helpdesk_sla_report_analysis_view_pivot" model="ir.ui.view">
         <field name="name">helpdesk.sla.report.analysis.pivot</field>

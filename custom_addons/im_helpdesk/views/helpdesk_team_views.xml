@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!-- Giao diện backend, client action dashboard và form cấu hình cho team helpdesk. -->
+<!-- Backend views, dashboard client action and settings form for teams. -->
 <odoo>
 
     <record id="helpdesk_team_view_tree" model="ir.ui.view">

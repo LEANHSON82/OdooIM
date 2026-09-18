@@ -1,8 +1,8 @@
-"""Model ticket Helpdesk và logic nghiệp vụ cấp ticket.
+"""Helpdesk ticket model and the ticket-level business logic.
 
-File này quản lý các field vòng đời ticket, tự động gắn tag/điều hướng team, tự
-phân công, tạo trạng thái SLA, link portal, đồng bộ partner, hành vi mail thread
-và tích hợp rating.
+This file holds the lifecycle fields, keyword auto-tagging and team routing, auto-
+assignment, SLA status creation, portal links, partner synchronisation, mail thread
+behaviour and the rating integration.
 """
 
 import ast
@@ -28,7 +28,7 @@ TICKET_PRIORITY = [
 
 
 class HelpdeskTicket(models.Model):
-    """Biểu diễn một yêu cầu hỗ trợ khách hàng do team helpdesk xử lý."""
+    """One customer support request handled by a helpdesk team."""
 
     _name = 'helpdesk.ticket'
     _description = 'Helpdesk Ticket'
@@ -48,7 +48,7 @@ class HelpdeskTicket(models.Model):
 
     @api.model
     def default_get(self, fields):
-        """Gán mặc định stage và người phụ trách theo team helpdesk đã chọn."""
+        """Default the stage and the assignee from the chosen helpdesk team."""
         result = super().default_get(fields)
         if result.get('team_id') and fields:
             team = self.env['helpdesk.team'].browse(result['team_id'])
@@ -59,7 +59,7 @@ class HelpdeskTicket(models.Model):
         return result
 
     def _default_team_id(self):
-        """Chọn team của user hiện tại, nếu không có thì lấy team đầu tiên."""
+        """Pick a team of the current user, falling back to the first one."""
         team_id = self.env['helpdesk.team'].search([('member_ids', 'in', self.env.uid)], limit=1).id
         if not team_id:
             team_id = self.env['helpdesk.team'].search([], limit=1).id
@@ -67,7 +67,7 @@ class HelpdeskTicket(models.Model):
 
     @api.model
     def _read_group_stage_ids(self, stages, domain):
-        """Mở rộng group kanban theo các stage khả dụng của team mặc định."""
+        """Widen the kanban columns to the stages available on the default team."""
         search_domain = [('id', 'in', stages.ids)]
         if self.env.context.get('default_team_id'):
             search_domain = ['|', ('team_ids', 'in', self.env.context['default_team_id'])] + search_domain
@@ -139,7 +139,7 @@ class HelpdeskTicket(models.Model):
 
     @api.depends('stage_id', 'kanban_state')
     def _compute_kanban_state_label(self):
-        """Thiết lập label kanban hiển thị theo legend của stage và state."""
+        """Set the kanban label from the stage legend and the kanban state."""
         for ticket in self:
             if ticket.kanban_state == 'normal':
                 ticket.kanban_state_label = ticket.legend_normal
@@ -150,7 +150,7 @@ class HelpdeskTicket(models.Model):
 
     @api.depends('team_id')
     def _compute_domain_user_ids(self):
-        """Tính danh sách người có thể được phân công theo visibility và member của team."""
+        """Compute who may be assigned, from team visibility and membership."""
         user_ids = self.env.ref('im_helpdesk.group_helpdesk_user').all_user_ids.ids
         for ticket in self:
             ticket_user_ids = []
@@ -160,14 +160,14 @@ class HelpdeskTicket(models.Model):
             ticket.domain_user_ids = [Command.set(user_ids + ticket_user_ids)]
 
     def _compute_access_url(self):
-        """Thiết lập URL portal được portal.mixin sử dụng."""
+        """Set the portal URL used by portal.mixin."""
         super()._compute_access_url()
         for ticket in self:
             ticket.access_url = '/my/ticket/%s' % ticket.id
 
     @api.depends('sla_status_ids.deadline', 'sla_status_ids.reached_datetime')
     def _compute_sla_reached_late(self):
-        """Đánh dấu ticket có SLA đạt trễ hoặc hiện đang quá hạn."""
+        """Flag tickets whose SLA was reached late, or is overdue right now."""
         mapping = {}
         if self.ids:
             self.env.cr.execute("""
@@ -182,7 +182,7 @@ class HelpdeskTicket(models.Model):
 
     @api.depends('sla_status_ids.deadline', 'sla_status_ids.reached_datetime')
     def _compute_sla_reached(self):
-        """Đánh dấu ticket có ít nhất một SLA hiện đã đạt đúng hạn."""
+        """Flag tickets with at least one SLA already reached in time."""
         sla_status_read_group = self.env['helpdesk.sla.status']._read_group(
             [('exceeded_hours', '<', 0), ('ticket_id', 'in', self.ids)],
             ['ticket_id'],
@@ -193,7 +193,7 @@ class HelpdeskTicket(models.Model):
 
     @api.depends('sla_status_ids.deadline', 'sla_status_ids.reached_datetime')
     def _compute_sla_deadline(self):
-        """Lưu deadline SLA gần nhất chưa đạt và số giờ làm việc còn lại."""
+        """Store the nearest unreached SLA deadline and the working hours left."""
         now = fields.Datetime.now()
         for ticket in self:
             if not ticket.team_id:
@@ -212,7 +212,7 @@ class HelpdeskTicket(models.Model):
 
     @api.depends('sla_deadline', 'sla_reached_late')
     def _compute_sla_fail(self):
-        """Tính ticket có đang fail bất kỳ SLA policy nào hay không."""
+        """Compute whether the ticket is failing any of its SLA policies."""
         now = fields.Datetime.now()
         for ticket in self:
             if ticket.sla_deadline:
@@ -222,19 +222,19 @@ class HelpdeskTicket(models.Model):
 
     @api.depends('partner_email', 'partner_id')
     def _compute_is_partner_email_update(self):
-        """Cho biết email trên ticket có khác email của partner hay không."""
+        """Tell whether the ticket email differs from the partner one."""
         for ticket in self:
             ticket.is_partner_email_update = ticket._get_partner_email_update()
 
     @api.depends('partner_phone', 'partner_id')
     def _compute_is_partner_phone_update(self):
-        """Cho biết số điện thoại trên ticket có khác số của partner hay không."""
+        """Tell whether the ticket phone differs from the partner one."""
         for ticket in self:
             ticket.is_partner_phone_update = ticket._get_partner_phone_update()
 
     @api.model
     def _search_sla_fail(self, operator, value):
-        """Chuyển tìm kiếm SLA failure ảo thành domain trên trường đã lưu."""
+        """Turn a search on the virtual SLA failure into a domain on stored fields."""
         if operator != 'in':
             return NotImplemented
         datetime_now = fields.Datetime.now()
@@ -242,14 +242,14 @@ class HelpdeskTicket(models.Model):
 
     @api.depends('sla_deadline')
     def _compute_sla_success(self):
-        """Tính deadline SLA gần nhất có còn ở tương lai hay không."""
+        """Compute whether the nearest SLA deadline is still in the future."""
         now = fields.Datetime.now()
         for ticket in self:
             ticket.sla_success = (ticket.sla_deadline and ticket.sla_deadline > now)
 
     @api.model
     def _search_sla_success(self, operator, value):
-        """Chuyển tìm kiếm SLA success ảo thành domain theo deadline."""
+        """Turn a search on the virtual SLA success into a deadline domain."""
         if operator != 'in':
             return NotImplemented
         datetime_now = fields.Datetime.now()
@@ -257,7 +257,7 @@ class HelpdeskTicket(models.Model):
 
     @api.depends('team_id')
     def _compute_user_and_stage_ids(self):
-        """Gán mặc định người phụ trách và stage còn thiếu mỗi khi team thay đổi."""
+        """Fill in the missing assignee and stage whenever the team changes."""
         for ticket in self.filtered(lambda ticket: ticket.team_id):
             if not ticket.user_id:
                 ticket.user_id = ticket.team_id._determine_user_to_assign({ticket.team_id: 1})[ticket.team_id.id][0]
@@ -266,33 +266,33 @@ class HelpdeskTicket(models.Model):
 
     @api.depends('partner_id')
     def _compute_partner_name(self):
-        """Đồng bộ tên partner sang trường tên khách hàng đã lưu trên ticket."""
+        """Mirror the partner name into the stored customer name of the ticket."""
         for ticket in self:
             if ticket.partner_id:
                 ticket.partner_name = ticket.partner_id.name
 
     @api.depends('partner_id.email')
     def _compute_partner_email(self):
-        """Đồng bộ email partner sang trường email đã lưu trên ticket."""
+        """Mirror the partner email into the stored email of the ticket."""
         for ticket in self:
             if ticket.partner_id:
                 ticket.partner_email = ticket.partner_id.email
 
     def _inverse_partner_email(self):
-        """Ghi email ticket đã đổi ngược lại partner được liên kết."""
+        """Write an edited ticket email back onto the linked partner."""
         for ticket in self:
             if ticket._get_partner_email_update():
                 ticket.partner_id.email = ticket.partner_email
 
     @api.depends('partner_id.phone')
     def _compute_partner_phone(self):
-        """Đồng bộ số điện thoại partner sang trường điện thoại đã lưu trên ticket."""
+        """Mirror the partner phone into the stored phone of the ticket."""
         for ticket in self:
             if ticket.partner_id:
                 ticket.partner_phone = ticket.partner_id.phone
 
     def _inverse_partner_phone(self):
-        """Ghi số điện thoại ticket đã đổi ngược lại partner được liên kết."""
+        """Write an edited ticket phone back onto the linked partner."""
         for ticket in self:
             if (ticket._get_partner_phone_update() or not ticket.partner_id.phone) and ticket.partner_phone:
                 ticket = ticket.sudo()
@@ -300,7 +300,7 @@ class HelpdeskTicket(models.Model):
 
     @api.depends('partner_id', 'partner_email', 'partner_phone')
     def _compute_partner_ticket_count(self):
-        """Tính các ticket liên quan của cùng commercial partner."""
+        """Count the related tickets of the same commercial partner."""
         for ticket in self:
             partner_tickets = self.search_fetch([("partner_id", "child_of", ticket.partner_id.commercial_partner_id.id)], ['fold']) if ticket.partner_id else ticket
             ticket.partner_ticket_ids = partner_tickets
@@ -311,7 +311,7 @@ class HelpdeskTicket(models.Model):
 
     @api.depends('assign_date')
     def _compute_assign_hours(self):
-        """Tính giờ làm việc từ lúc tạo ticket tới lần phân công đầu tiên."""
+        """Compute the working hours between creation and first assignment."""
         for ticket in self:
             create_date = fields.Datetime.from_string(ticket.create_date)
             if create_date and ticket.assign_date and ticket.team_id.resource_calendar_id:
@@ -322,7 +322,7 @@ class HelpdeskTicket(models.Model):
 
     @api.depends('create_date', 'close_date')
     def _compute_close_hours(self):
-        """Tính giờ làm việc từ lúc tạo ticket tới ngày đóng."""
+        """Compute the working hours between creation and the closing date."""
         for ticket in self:
             create_date = fields.Datetime.from_string(ticket.create_date)
             if create_date and ticket.close_date and ticket.team_id:
@@ -333,7 +333,7 @@ class HelpdeskTicket(models.Model):
 
     @api.depends('close_hours')
     def _compute_open_hours(self):
-        """Tính số giờ thực tế đã trôi qua khi ticket còn mở."""
+        """Compute the real hours elapsed while the ticket stays open."""
         for ticket in self:
             if ticket.create_date:
                 if ticket.close_date:
@@ -346,7 +346,7 @@ class HelpdeskTicket(models.Model):
 
     @api.model
     def _search_open_hours(self, operator, value):
-        """Tìm kiếm giá trị open-hour cho cả ticket đang mở và đã đóng."""
+        """Search on the open-hours value, for open and closed tickets alike."""
         if operator == 'in':
             return Domain.OR(self._search_open_hours('=', v) for v in value)
         if operator == 'not in':
@@ -372,7 +372,7 @@ class HelpdeskTicket(models.Model):
         )
 
     def _get_partner_email_update(self):
-        """Trả về việc email ticket có nên cập nhật vào partner hay không."""
+        """Return whether the ticket email should be pushed onto the partner."""
         self.ensure_one()
         if self.partner_id.email and self.partner_email and self.partner_email != self.partner_id.email:
             ticket_email_normalized = tools.email_normalize(self.partner_email) or self.partner_email or False
@@ -381,7 +381,7 @@ class HelpdeskTicket(models.Model):
         return False
 
     def _get_partner_phone_update(self):
-        """Trả về việc số điện thoại ticket có nên cập nhật vào partner hay không."""
+        """Return whether the ticket phone should be pushed onto the partner."""
         self.ensure_one()
         if self.partner_id.phone and self.partner_phone and self.partner_phone != self.partner_id.phone:
             ticket_phone_formatted = self.partner_phone or False
@@ -390,7 +390,7 @@ class HelpdeskTicket(models.Model):
         return False
 
     def action_customer_preview(self):
-        """Mở ticket theo đúng giao diện khách hàng sẽ thấy trên portal."""
+        """Open the ticket exactly as the customer sees it on the portal."""
         self.ensure_one()
         if self.team_privacy_visibility != 'portal' or not self.partner_id:
             return {
@@ -409,7 +409,7 @@ class HelpdeskTicket(models.Model):
         }
 
     def action_generate_portal_link(self):
-        """Sinh và lưu link truy cập portal có thể chia sẻ cho ticket."""
+        """Generate and store a shareable portal access link for the ticket."""
         self.ensure_one()
         if self.team_privacy_visibility != 'portal' or not self.partner_id:
             return {
@@ -432,13 +432,13 @@ class HelpdeskTicket(models.Model):
         }
 
     # ------------------------------------------------------------
-    # Ghi đè ORM
+    # ORM overrides
     # ------------------------------------------------------------
 
     @api.depends('ticket_ref', 'partner_name')
     @api.depends_context('with_partner')
     def _compute_display_name(self):
-        """Hiển thị subject, mã sequence và tùy chọn kèm tên khách hàng."""
+        """Show the subject, the sequence code and optionally the customer name."""
         display_partner_name = self.env.context.get('with_partner', False)
         ticket_with_name = self.filtered('name')
         for ticket in ticket_with_name:
@@ -452,7 +452,7 @@ class HelpdeskTicket(models.Model):
 
     @api.model
     def get_empty_list_help(self, help_message):
-        """Tùy chỉnh nội dung helper khi danh sách ticket theo team đang trống."""
+        """Tailor the help text shown when a team ticket list is empty."""
         self = self.with_context(
             empty_list_help_id=self.env.context.get('default_team_id'),
             empty_list_help_model='helpdesk.team',
@@ -461,7 +461,7 @@ class HelpdeskTicket(models.Model):
         return super().get_empty_list_help(help_message)
 
     def create_action(self, action_ref, title, search_view_ref):
-        """Tạo dictionary action đã clean, có thể gắn title/search view tùy chọn."""
+        """Build a cleaned action dictionary, with an optional title and search view."""
         action = self.env["ir.actions.actions"]._for_xml_id(action_ref)
         action = clean_action(action, self.env)
         if title:
@@ -474,12 +474,12 @@ class HelpdeskTicket(models.Model):
 
     @api.model
     def _get_tag_ids_from_vals(self, vals):
-        """Lấy tập tag ID cuối cùng từ command values của create/write."""
+        """Extract the final set of tag ids from create/write command values."""
         return set(self._fields['tag_ids'].convert_to_cache(vals.get('tag_ids') or [], self))
 
     @api.model
     def _get_auto_tagging_text(self, vals):
-        """Tạo text đã chuẩn hóa để match keyword tự động gắn tag."""
+        """Build the normalised text used to match the auto-tagging keywords."""
         text_parts = [vals.get('name') or '']
         if vals.get('description'):
             text_parts.append(vals['description'])
@@ -487,7 +487,7 @@ class HelpdeskTicket(models.Model):
 
     @api.model
     def _normalize_classification_text(self, text):
-        """Chuẩn hóa text ticket/keyword để so khớp ổn định cho tiếng Việt."""
+        """Normalise ticket and keyword text for stable Vietnamese matching."""
         text = html2plaintext(text or '')
         text = text.casefold().replace('đ', 'd')
         text = unicodedata.normalize('NFKD', text)
@@ -497,14 +497,14 @@ class HelpdeskTicket(models.Model):
 
     @api.model
     def _classification_keyword_matches(self, content, keyword):
-        """Match keyword theo biên token để tránh dính substring vô tình."""
+        """Match keywords on token boundaries, to avoid accidental substrings."""
         if not content or not keyword:
             return False
         return f' {keyword} ' in f' {content} '
 
     @api.model
     def _score_classification_keywords(self, content, keyword_entries):
-        """Tính tổng điểm keyword khớp trong nội dung ticket đã chuẩn hóa."""
+        """Sum the score of the keywords found in the normalised ticket text."""
         score = 0
         seen_keywords = set()
         for keyword, weight in keyword_entries:
@@ -518,7 +518,7 @@ class HelpdeskTicket(models.Model):
 
     @api.model
     def _apply_auto_tags_to_vals(self, vals_list):
-        """Thêm tag vào values đầu vào khi đạt điểm keyword đã cấu hình."""
+        """Add the tags whose keyword score reaches the configured threshold."""
         keyword_tags = self.env['helpdesk.tag'].sudo().search([('auto_apply_keywords', '!=', False)])
         if not keyword_tags:
             return
@@ -543,7 +543,7 @@ class HelpdeskTicket(models.Model):
 
     @api.model
     def _get_route_scores_by_tag(self, tag_ids):
-        """Trả về điểm route theo team dựa trên tag và trọng số rule."""
+        """Return the routing score per team, from the tags and the rule weights."""
         if not tag_ids:
             return {}, {}
 
@@ -562,11 +562,11 @@ class HelpdeskTicket(models.Model):
 
     @api.model
     def _route_vals_by_tags(self, vals_list):
-        """Chuyển values ticket đầu vào về team phù hợp nhất dựa trên điểm tag.
+        """Route incoming ticket values to the team that scores highest on tags.
 
-        Mỗi tag assignment khớp cộng ``route_weight`` cho team tương ứng. Team có
-        điểm cao nhất thắng; nếu team hiện tại cũng đạt điểm cao nhất thì giữ
-        nguyên để tránh ghi đè lựa chọn đã có.
+        Each matching tag assignment adds its ``route_weight`` to that team. The
+        highest score wins; when the current team is also among the best, it is
+        kept, so an existing choice is never overwritten.
         """
         tag_ids_per_vals = [self._get_tag_ids_from_vals(vals) for vals in vals_list]
         all_tag_ids = set().union(*tag_ids_per_vals) if tag_ids_per_vals else set()
@@ -597,14 +597,14 @@ class HelpdeskTicket(models.Model):
 
     @api.model
     def _prepare_auto_tag_route_vals(self, vals_list):
-        """Áp dụng tự động gắn tag và điều hướng team, trừ khi context tắt luồng này."""
+        """Apply auto-tagging and team routing, unless the context disables it."""
         if self.env.context.get('skip_helpdesk_auto_tag_route'):
             return
         self._apply_auto_tags_to_vals(vals_list)
         self._route_vals_by_tags(vals_list)
 
     def _assign_auto_routed_ticket(self, team, tag_ids):
-        """Chọn người phụ trách sau khi điều hướng theo nội dung làm ticket đổi team."""
+        """Pick an assignee after content routing moved the ticket to another team."""
         self.ensure_one()
         if not team.auto_assignment:
             return False
@@ -617,11 +617,11 @@ class HelpdeskTicket(models.Model):
         return team._determine_user_to_assign({team: 1}).get(team.id, [False])[0]
 
     def _auto_tag_route_assign_from_content(self):
-        """Chạy lại tự gắn tag, điều hướng team và phân công từ nội dung đã lưu của ticket.
+        """Redo tagging, routing and assignment from the stored ticket content.
 
-        Luồng này chủ yếu dùng sau khi body email trở thành mô tả ticket, vì nội
-        dung cuối cùng để tìm kiếm có thể chưa tồn tại lúc tạo ban đầu. Context
-        guard giúp tránh write đệ quy kích hoạt lại cùng luồng.
+        This mostly runs after an email body became the ticket description,
+        because the final searchable text may not exist yet at creation time. A
+        context guard keeps the recursive write from firing the same flow again.
         """
         if self.env.context.get('skip_helpdesk_auto_tag_route'):
             return
@@ -660,11 +660,12 @@ class HelpdeskTicket(models.Model):
 
     @api.model
     def _assign_vals_by_tags(self, vals_list):
-        """Điền ``user_id`` vào dict values bằng rule phân công theo tag.
+        """Fill ``user_id`` in the values dict from the tag assignment rules.
 
-        ``vals_list`` chứa các tuple gồm team ID, tag IDs và một dict values có
-        thể sửa. User khớp rule tag mạnh nhất được ưu tiên, sau đó xét lịch làm
-        việc sớm nhất, số ticket mở và ID để kết quả ổn định.
+        ``vals_list`` holds tuples of team id, tag ids and a mutable values
+        dict. The user matching the strongest tag rule wins, then the earliest
+        working day, then the open ticket count, then the id so the result stays
+        stable.
         """
         if not vals_list:
             return
@@ -753,11 +754,12 @@ class HelpdeskTicket(models.Model):
 
     @api.model_create_multi
     def create(self, vals_list):
-        """Tạo ticket kèm auto-tag, điều hướng team, phân công và thiết lập SLA.
+        """Create tickets with auto-tagging, routing, assignment and SLA setup.
 
-        Hàm chuẩn bị mặc định team/stage/user, tạo partner còn thiếu từ địa chỉ
-        email, subscribe khách hàng và follower CC nội bộ, sinh portal token và
-        áp dụng trạng thái SLA ban đầu.
+        This prepares the default team, stage and user, creates the missing
+        partner from the email address, subscribes the customer and the internal
+        CC followers, generates the portal token and applies the initial SLA
+        statuses.
         """
         now = fields.Datetime.now()
         self._prepare_auto_tag_route_vals(vals_list)
@@ -859,11 +861,11 @@ class HelpdeskTicket(models.Model):
         return tickets
 
     def write(self, vals):
-        """Cập nhật ticket đồng thời giữ đúng ngày vòng đời và trạng thái SLA.
+        """Update tickets while keeping the lifecycle dates and SLA statuses right.
 
-        Ngày phân công, ngày đóng, ngày cập nhật stage gần nhất, tính lại SLA,
-        subscribe follower khách hàng và phân công theo tag đều được xử lý ở đây
-        để thao tác thủ công và write tự động có cùng hành vi.
+        Assignment date, closing date, last stage update, SLA recomputation,
+        customer follower subscription and tag-based assignment are all handled
+        here, so manual edits and automated writes behave the same.
         """
         assigned_tickets = closed_tickets = self.browse()
         if vals.get('user_id'):
@@ -941,7 +943,7 @@ class HelpdeskTicket(models.Model):
         return res
 
     def copy_data(self, default=None):
-        """Nhân bản ticket với hậu tố '(copy)' và giá trị assignee mặc định an toàn."""
+        """Duplicate the ticket with a '(copy)' suffix and a safe default assignee."""
         vals_list = super().copy_data(default=default)
         has_default_user = default and 'user_id' in default
         active_users = self.env['res.users']
@@ -954,23 +956,24 @@ class HelpdeskTicket(models.Model):
         return vals_list
 
     def _unsubscribe_portal_users(self):
-        """Gỡ portal user khỏi follower của ticket khi visibility chuyển sang private."""
+        """Drop portal users from the followers when visibility turns private."""
         self.message_unsubscribe(partner_ids=self.message_partner_ids.filtered('user_ids.share').ids)
 
     # ------------------------------------------------------------
-    # Action và phương thức nghiệp vụ
+    # Actions and business methods
     # ------------------------------------------------------------
 
     @api.model
     def _sla_reset_trigger(self):
-        """Trả về các field khiến trạng thái SLA cần được tính lại."""
+        """Return the fields whose change forces the SLA statuses to be recomputed."""
         return ['team_id', 'priority', 'tag_ids', 'partner_id']
 
     def _sla_apply(self, keep_reached=False):
-        """Áp dụng các SLA policy phù hợp cho ticket.
+        """Apply the matching SLA policies to the tickets.
 
-        Các dòng trạng thái hiện có sẽ được thay thế, trừ khi bật ``keep_reached``;
-        khi đó các trạng thái SLA đã đạt sẽ được giữ lại để đảm bảo lịch sử đúng.
+        Existing status lines are replaced, unless ``keep_reached`` is set; the
+        SLA statuses already reached are then kept, to preserve an accurate
+        history.
         """
         sla_per_tickets = self._sla_find()
 
@@ -987,11 +990,11 @@ class HelpdeskTicket(models.Model):
 
     @api.model
     def _sla_find_false_domain(self):
-        """Trả về nhánh domain SLA cho policy không giới hạn theo khách hàng."""
+        """Return the SLA domain branch for policies not tied to a customer."""
         return [('partner_ids', '=', False)]
 
     def _sla_find_extra_domain(self):
-        """Trả về nhánh domain SLA theo khách hàng của ticket này."""
+        """Return the SLA domain branch for the customer of this ticket."""
         self.ensure_one()
         return [
             '|',
@@ -1000,16 +1003,16 @@ class HelpdeskTicket(models.Model):
         ]
 
     def _sla_find(self):
-        """Nhóm ticket theo các field kích hoạt SLA và tìm policy phù hợp.
+        """Group tickets by their SLA trigger fields and find the matching policies.
 
-        Việc nhóm giúp tránh chạy một lần search SLA cho từng ticket khi nhiều
-        ticket có chung team, priority, tag và tiêu chí khách hàng.
+        Grouping avoids one SLA search per ticket when several tickets share the
+        same team, priority, tags and customer criteria.
         """
         tickets_map = {}
         sla_domain_map = {}
 
         def _generate_key(ticket):
-            """Tạo key có thể hash từ các field ảnh hưởng tới việc chọn SLA."""
+            """Build a hashable key from the fields that drive the SLA selection."""
             fields_list = self._sla_reset_trigger()
             key = list()
             for field_name in fields_list:
@@ -1038,7 +1041,7 @@ class HelpdeskTicket(models.Model):
         return result
 
     def _sla_generate_status_values(self, slas, keep_reached=False):
-        """Chuẩn bị values để tạo record trạng thái SLA cho các ticket này."""
+        """Prepare the values creating the SLA status records of these tickets."""
         exclude_slas_per_ticket = {}
         if keep_reached:
             exclude_slas_per_ticket = dict(self.env['helpdesk.sla.status']._read_group(
@@ -1058,7 +1061,7 @@ class HelpdeskTicket(models.Model):
         return result
 
     def _sla_reach(self, stage_id):
-        """Đánh dấu trạng thái SLA đã đạt khi ticket chuyển tới hoặc vượt qua một stage."""
+        """Mark the SLA statuses reached when a ticket moves to or past a stage."""
         stage = self.env['helpdesk.stage'].browse(stage_id)
         stages = self.env['helpdesk.stage'].search([('sequence', '<=', stage.sequence), ('team_ids', 'in', self.mapped('team_id').ids)])
         sla_status = self.env['helpdesk.sla.status'].search([('ticket_id', 'in', self.ids)])
@@ -1067,7 +1070,7 @@ class HelpdeskTicket(models.Model):
         (sla_status - sla_not_reached).filtered(lambda x: x.sla_stage_id not in stages).write({'reached_datetime': False})
 
     def action_open_helpdesk_ticket(self):
-        """Mở các ticket khác của cùng khách hàng/commercial partner."""
+        """Open the other tickets of the same customer or commercial partner."""
         self.ensure_one()
         action = self.env["ir.actions.actions"]._for_xml_id("im_helpdesk.helpdesk_ticket_action_main_tree")
         action.update({
@@ -1080,7 +1083,7 @@ class HelpdeskTicket(models.Model):
         return action
 
     def action_open_ratings(self):
-        """Mở rating liên kết với ticket này; nếu chỉ có một rating thì mở thẳng form."""
+        """Open the ratings of this ticket, straight in form when there is one."""
         self.ensure_one()
         action = self.env['ir.actions.act_window']._for_xml_id('im_helpdesk.rating_rating_action_helpdesk')
         if self.rating_count == 1:
@@ -1092,11 +1095,11 @@ class HelpdeskTicket(models.Model):
         return action
 
     # ------------------------------------------------------------
-    # API tin nhắn
+    # Messaging API
     # ------------------------------------------------------------
 
     def _get_customer_information(self):
-        """Cung cấp giá trị fallback khách hàng dùng khi mail.thread tìm partner."""
+        """Provide the customer fallback values mail.thread uses to find a partner."""
         email_keys_to_values = super()._get_customer_information()
         for ticket in self:
             email_key = tools.email_normalize(ticket.partner_email) or ticket.partner_email
@@ -1111,11 +1114,11 @@ class HelpdeskTicket(models.Model):
 
     @api.model
     def message_new(self, msg_dict, custom_values=None):
-        """Tạo ticket từ một email gửi vào.
+        """Create a ticket from an incoming email.
 
-        Người gửi trở thành email/tên khách hàng, các recipient và contact CC sẽ
-        được subscribe nếu match được partner, và author partner được liên kết
-        khi không có partner rõ ràng được truyền vào.
+        The sender becomes the customer email and name, recipients and CC
+        contacts are subscribed when they match a partner, and the author
+        partner is linked when no explicit partner was passed in.
         """
         values = dict(custom_values or {}, partner_email=msg_dict.get('from'), partner_name=msg_dict.get('from'), partner_id=msg_dict.get('author_id'))
         ticket = super(HelpdeskTicket, self.with_context(mail_notify_author=True)).message_new(msg_dict, custom_values=values)
@@ -1129,23 +1132,23 @@ class HelpdeskTicket(models.Model):
         return ticket
 
     def message_update(self, msg_dict, update_vals=None):
-        """Subscribe các recipient đã biết khi email gửi vào cập nhật ticket."""
+        """Subscribe the known recipients when an incoming email updates the ticket."""
         for ticket in self:
             if partners := ticket._partner_find_from_emails_single(tools.email_split((msg_dict.get('to') or '') + ',' + (msg_dict.get('cc') or '')), no_create=True):
                 self.message_subscribe(partners.ids)
         return super().message_update(msg_dict, update_vals=update_vals)
 
     def _message_compute_subject(self):
-        """Dùng subject của ticket làm subject cho email thread."""
+        """Use the ticket subject as the subject of the mail thread."""
         self.ensure_one()
         return self.name
 
     def _message_post_after_hook(self, message, msg_vals):
-        """Đồng bộ dữ liệu partner và mô tả sau khi post message.
+        """Sync the partner data and the description after a message is posted.
 
-        Khi email đầu tiên của khách hàng tạo ticket, body email sẽ trở thành mô
-        tả ticket sau khi loại bỏ các chữ ký phổ biến. Nội dung đó sau đó được
-        dùng để tự gắn tag, điều hướng team và phân công.
+        When the first customer email creates the ticket, the email body becomes
+        the ticket description once the usual signatures are stripped. That text
+        then feeds auto-tagging, team routing and assignment.
         """
         if not self.partner_email:
             return super()._message_post_after_hook(message, msg_vals)
@@ -1192,7 +1195,7 @@ class HelpdeskTicket(models.Model):
         return super()._message_post_after_hook(message, msg_vals)
 
     def _send_email_notify_to_cc(self, partners_to_notify):
-        """Thông báo cho partner nội bộ trong CC rằng họ đã được subscribe."""
+        """Tell the internal partners in CC that they have been subscribed."""
         self.ensure_one()
         template_id = self.env['ir.model.data']._xmlid_to_res_id('im_helpdesk.ticket_invitation_follower', raise_if_not_found=False)
         if not template_id:
@@ -1214,7 +1217,7 @@ class HelpdeskTicket(models.Model):
             )
 
     def _track_template(self, changes):
-        """Gửi email template của stage khi ticket đi tới stage đó."""
+        """Send the stage mail template when a ticket arrives in that stage."""
         res = super()._track_template(changes)
         ticket = self[0]
         if 'stage_id' in changes and ticket.stage_id.template_id and ticket.partner_email:
@@ -1227,18 +1230,18 @@ class HelpdeskTicket(models.Model):
         return res
 
     def _creation_subtype(self):
-        """Trả về subtype dùng cho message tạo ticket helpdesk mới."""
+        """Return the subtype used for the creation message of a helpdesk ticket."""
         return self.env.ref('im_helpdesk.mt_ticket_new')
 
     def _track_subtype(self, init_values):
-        """Trả về subtype chatter cho thay đổi stage ticket được tracking."""
+        """Return the chatter subtype for a tracked ticket stage change."""
         self.ensure_one()
         if 'stage_id' in init_values:
             return self.env.ref('im_helpdesk.mt_ticket_stage')
         return super()._track_subtype(init_values)
 
     def _notify_get_reply_to(self, default=None, author_id=False):
-        """Dùng alias của team làm địa chỉ reply-to cho email ticket."""
+        """Use the team alias as the reply-to address of the ticket emails."""
         aliases = self.mapped('team_id').sudo()._notify_get_reply_to(default=default, author_id=author_id)
         res = {ticket.id: aliases.get(ticket.team_id.id) for ticket in self}
         leftover = self.filtered(lambda rec: not rec.team_id)
@@ -1251,9 +1254,9 @@ class HelpdeskTicket(models.Model):
     # ------------------------------------------------------------
 
     def _rating_apply_get_default_subtype_id(self):
-        """Trả về subtype chatter dùng khi khách hàng đánh giá ticket."""
+        """Return the chatter subtype used when a customer rates the ticket."""
         return self.env['ir.model.data']._xmlid_to_res_id("im_helpdesk.mt_ticket_rated")
 
     def _rating_get_parent_field_name(self):
-        """Cho rating.mixin biết rating sẽ được tổng hợp lên team helpdesk."""
+        """Tell rating.mixin that ratings aggregate up to the helpdesk team."""
         return 'team_id'

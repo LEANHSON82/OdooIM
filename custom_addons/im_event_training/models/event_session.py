@@ -1,6 +1,8 @@
 from odoo import models, fields, api, _
 
 class EventSession(models.Model):
+    """One session of a multi-session training course."""
+
     _name = 'event.session'
     _description = 'Event Training Session'
     _order = 'sequence, date_start, id'
@@ -25,6 +27,7 @@ class EventSession(models.Model):
     @api.model_create_multi
     def create(self, vals_list):
         sessions = super().create(vals_list)
+        # A new session needs an attendance row for everyone already enrolled.
         sessions.event_id.registration_ids._generate_missing_attendance()
         return sessions
 
@@ -40,6 +43,8 @@ class EventSession(models.Model):
         }
 
 class EventSessionAttendance(models.Model):
+    """One row per session and attendee: present, absent or excused."""
+
     _name = 'event.session.attendance'
     _description = 'Session Attendance Record'
     _order = 'session_id, registration_id'

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Chatter subtype dùng để tracking tạo ticket, đổi stage và rating helpdesk. -->
+<!-- Chatter subtypes tracking ticket creation, stage changes and ratings. -->
 <odoo><data noupdate="1">
-    <!-- Subtype của ticket -->
+    <!-- Ticket subtypes -->
     <record id="mt_ticket_new" model="mail.message.subtype">
         <field name="name">Ticket Created</field>
         <field name="sequence">0</field>
@@ -27,7 +27,7 @@
         <field name="description">Stage Changed</field>
     </record>
 
-    <!-- Subtype của team (quan hệ cha) -->
+    <!-- Team subtypes (the parent relation) -->
     <record id="mt_team_ticket_new" model="mail.message.subtype">
         <field name="name">Ticket Created</field>
         <field name="sequence">0</field>

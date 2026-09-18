@@ -7,14 +7,14 @@ from odoo.tools.sql import column_exists
 
 _logger = logging.getLogger(__name__)
 
-# Ai cũng được, hoặc giới hạn theo bảng quyền
+# Everyone, or limited by the permission table
 PERMISSION_MODES = [
     ('all', "Ai cũng được"),
     ('limited', "Giới hạn"),
 ]
 
 
-# Màn hình thiết lập chung, mỗi công ty một bản ghi
+# General settings screen, one record per company
 class PurchaseRequestConfig(models.Model):
     _name = 'im.purchase.request.config'
     _description = 'Thiết lập đề nghị mua hàng'
@@ -73,7 +73,7 @@ class PurchaseRequestConfig(models.Model):
     _company_uniq = models.Constraint(
         'unique(company_id)', 'Mỗi công ty chỉ có một thiết lập đề nghị mua hàng.')
 
-    # Dòng quyền mới nhận đúng loại theo danh sách chứa nó
+    # A new permission row inherits the type of the list holding it
     @api.model
     def _with_permission_types(self, vals):
         vals = dict(vals)
@@ -97,7 +97,7 @@ class PurchaseRequestConfig(models.Model):
     def write(self, vals):
         return super().write(self._with_permission_types(vals))
 
-    # Bật hoặc tắt một nhóm cho toàn bộ nhân viên
+    # Grant or revoke a group for every employee
     def _toggle_employee_implied(self, xmlid, wanted):
         employee = self.env.ref('base.group_user').sudo()
         group = self.env.ref(xmlid)
@@ -106,7 +106,7 @@ class PurchaseRequestConfig(models.Model):
         elif not wanted and group in employee.implied_ids:
             employee.implied_ids = [Command.unlink(group.id)]
 
-    # Công tắc cho nhân viên tạo sản phẩm mới
+    # Switch letting employees create new products
     def _compute_product_creation(self):
         employee = self.env.ref('base.group_user').sudo()
         creator = self.env.ref('im_purchase_request.group_product_creator')
@@ -117,7 +117,7 @@ class PurchaseRequestConfig(models.Model):
         self._toggle_employee_implied(
             'im_purchase_request.group_product_creator', any(self.mapped('product_creation')))
 
-    # Công tắc cho nhân viên tạo nhà cung cấp mới
+    # Switch letting employees create new vendors
     def _compute_vendor_creation(self):
         employee = self.env.ref('base.group_user').sudo()
         creator = self.env.ref('im_purchase_request.group_vendor_creator')
@@ -133,7 +133,7 @@ class PurchaseRequestConfig(models.Model):
         elif not wanted and creator in employee.implied_ids:
             employee.implied_ids = [Command.unlink(creator.id)]
 
-    # Lấy thiết lập của công ty, chưa có thì chép từ công ty khác
+    # Get the company settings, copying another company's when missing
     @api.model
     def _for_company(self, company):
         Config = self.sudo()
@@ -153,7 +153,7 @@ class PurchaseRequestConfig(models.Model):
                 {'config_id': config.id, 'company_id': company.id})
         return config
 
-    # Số nhà cung cấp mặc định, lấy từ tham số hệ thống
+    # Default vendor count, taken from a system parameter
     @api.model
     def _default_min_quote_count(self):
         raw = self.env['ir.config_parameter'].sudo().get_param(
@@ -163,14 +163,14 @@ class PurchaseRequestConfig(models.Model):
         except (TypeError, ValueError):
             return 3
 
-    # Số nhà cung cấp tối thiểu không được âm
+    # The minimum vendor count cannot be negative
     @api.constrains('min_quote_count')
     def _check_min_quote_count(self):
         for config in self:
             if config.min_quote_count < 0:
                 raise ValidationError(self.env._("Số nhà cung cấp tối thiểu không được âm."))
 
-    # Số nhà cung cấp tối thiểu cho dòng hàng có thành tiền này
+    # Minimum vendors required for a line of this subtotal
     def _min_quote_count_for(self, amount):
         self.ensure_one()
         if self.quote_count_mode == 'by_amount':
@@ -180,7 +180,7 @@ class PurchaseRequestConfig(models.Model):
                     return max(0, rule.min_quote_count)
         return max(0, self.min_quote_count)
 
-    # Mức cho phép vượt mặc định, lấy từ tham số hệ thống
+    # Default tolerance, taken from a system parameter
     @api.model
     def _default_tolerance(self):
         raw = self.env['ir.config_parameter'].sudo().get_param(
@@ -190,7 +190,7 @@ class PurchaseRequestConfig(models.Model):
         except (TypeError, ValueError):
             return 10.0
 
-    # Menu Thiết lập mở thẳng bản ghi của công ty hiện tại
+    # The Settings menu opens the current company's record directly
     @api.model
     def action_open(self):
         config = self._for_company(self.env.company)
@@ -203,17 +203,17 @@ class PurchaseRequestConfig(models.Model):
             'target': 'current',
         }
 
-    # Chạy khi cài và khi nâng cấp, gom dữ liệu cũ về thiết lập
+    # Runs on install and upgrade, folding old data into the settings
     @api.model
     def _ensure_company_configs(self):
         cr = self.env.cr
         previous_modes = {}
-        # Hai chế độ này từng nằm trên res.company
+        # These two modes used to live on res.company
         if column_exists(cr, 'res_company', 'im_po_creator_mode'):
             cr.execute("SELECT id, im_po_creator_mode, im_overrun_approval_mode FROM res_company")
             previous_modes = {row[0]: row[1:] for row in cr.fetchall()}
 
-        # Nhóm đang dùng ở cấp duyệt cũ được đánh dấu là nhóm duyệt
+        # Groups already used by old levels become approver roles
         level_groups = self.env['im.purchase.request.approval.level'].sudo().with_context(
             active_test=False).search([]).group_id
         for group in level_groups.filtered(lambda group: not group.im_is_approver_role):
@@ -225,7 +225,7 @@ class PurchaseRequestConfig(models.Model):
                 group.im_is_approver_role = True
 
         Config = self.sudo()
-        # Mỗi công ty một thiết lập, công ty chính làm mẫu
+        # One settings record per company, the main company as template
         main = self.env.ref('base.main_company', raise_if_not_found=False)
         companies = self.env['res.company'].sudo().search([])
         companies = (main & companies) | companies if main else companies
@@ -243,7 +243,7 @@ class PurchaseRequestConfig(models.Model):
                 })
             configs[company.id] = config
 
-        # Cấp duyệt cũ chưa gắn thiết lập thì gắn vào đây
+        # Old levels with no settings are attached here
         levels = self.env['im.purchase.request.approval.level'].sudo().with_context(
             active_test=False).search([('config_id', '=', False)])
         for level in levels:
@@ -256,7 +256,7 @@ class PurchaseRequestConfig(models.Model):
                 level.with_context(im_skip_level_group_check=True).copy(
                     {'config_id': config.id, 'company_id': config.company_id.id})
 
-        # Công ty chưa có cấp nào thì chép cấp của công ty mẫu
+        # A company with no level copies the template company's levels
         template = configs.get(main.id) if main else None
         template = template or next(iter(configs.values()), Config)
         template_levels = template.with_context(active_test=False).level_ids
@@ -268,7 +268,7 @@ class PurchaseRequestConfig(models.Model):
                     level.with_context(im_skip_level_group_check=True).copy(
                         {'config_id': config.id, 'company_id': config.company_id.id})
 
-        # Dòng quyền cũ từng tick “người ký cấp duyệt” đã bỏ
+        # Old rows ticking "level signers", a flag that no longer exists
         legacy_signers = set()
         if column_exists(cr, 'im_purchase_request_permission', 'include_level_signers'):
             cr.execute("SELECT id FROM im_purchase_request_permission "
@@ -290,7 +290,7 @@ class PurchaseRequestConfig(models.Model):
                     signers = config.level_ids.filtered(
                         lambda level: level.active and level.sequence >= lowest)
                     rule.group_ids = [Command.link(group.id) for group in signers.group_id]
-            # Dòng quyền không còn ai thì xóa và ghi log
+            # A permission row allowing nobody is dropped, with a log line
             if not (rule.group_ids or rule.user_ids):
                 _logger.warning(
                     "Purchase request permission %s (%s, %s-%s) allowed nobody after the "

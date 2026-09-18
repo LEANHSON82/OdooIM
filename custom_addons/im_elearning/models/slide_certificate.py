@@ -6,6 +6,7 @@ from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
+# No 0/O and no 1/I: people retype this code from a printed sheet.
 SUFFIX_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
 SUFFIX_LENGTH = 6
 
@@ -76,6 +77,8 @@ class SlideCertificate(models.Model):
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
+            # Readable serial plus a random suffix: counting up must not
+            # reveal somebody else's certificate.
             if not vals.get('code') or vals['code'] == _('Cấp tự động'):
                 serial = self.env['ir.sequence'].next_by_code('slide.certificate')
                 vals['code'] = '%s-%s' % (serial, self._generate_code_suffix())

@@ -11,6 +11,8 @@ class EventType(models.Model):
     )
 
 class EventEvent(models.Model):
+    """Training course: sessions, attendance threshold, certificates."""
+
     _inherit = 'event.event'
 
     is_training = fields.Boolean(
@@ -90,6 +92,7 @@ class EventEvent(models.Model):
         }
 
     def unlink(self):
+        # Deleting would take attendance history and certificates with it.
         blocked = self.filtered('registration_ids')
         if blocked:
             raise UserError(_(

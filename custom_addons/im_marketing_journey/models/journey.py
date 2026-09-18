@@ -4,6 +4,8 @@ from odoo.exceptions import ValidationError
 from odoo.addons.base.models.res_partner import _tz_get
 
 class ImJourney(models.Model):
+    """A nurturing scenario: entry stage plus the nodes to walk through."""
+
     _name = 'im.journey'
     _description = 'Marketing Automation Journey'
     _order = 'id desc'

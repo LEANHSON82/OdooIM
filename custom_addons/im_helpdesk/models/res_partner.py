@@ -1,10 +1,10 @@
-"""Phần mở rộng partner cho ticket Helpdesk và SLA policy."""
+"""Partner extension for helpdesk tickets and per-customer SLA policies."""
 
 from odoo import fields, models, _
 
 
 class ResPartner(models.Model):
-    """Hiển thị bộ đếm ticket và các SLA policy riêng theo khách hàng."""
+    """Expose the ticket counter and the customer-specific SLA policies."""
 
     _inherit = 'res.partner'
 
@@ -15,11 +15,11 @@ class ResPartner(models.Model):
         help="SLA Policies that will automatically apply to the tickets submitted by this customer.")
 
     def _compute_ticket_count(self):
-        """Đếm ticket cho từng partner, bao gồm cả contact con.
+        """Count the tickets of each partner, child contacts included.
 
-        Query read-group đếm ticket theo partner trực tiếp trên ticket, sau đó
-        cộng dồn theo cây commercial/contact để company cha hiển thị tổng số
-        ticket của cả nhóm.
+        A read-group counts the tickets per direct partner, then the numbers are
+        rolled up the commercial/contact tree so a parent company shows the
+        whole group total.
         """
         all_partners_subquery = self.with_context(active_test=False)._search([('id', 'child_of', self.ids)])
 
@@ -35,10 +35,11 @@ class ResPartner(models.Model):
                 partner = partner.with_context(prefetch_fields=False).parent_id
 
     def action_open_helpdesk_ticket(self):
-        """Mở ticket helpdesk của partner từ smart button.
+        """Open the helpdesk tickets of the partner from its smart button.
 
-        Nếu chỉ có một ticket thì mở thẳng form view. Nếu có nhiều ticket thì
-        mở list view với domain gồm partner hiện tại và toàn bộ contact con.
+        A single ticket opens straight in form view. Several tickets open the
+        list view, with a domain covering the partner and all of its child
+        contacts.
         """
         self.ensure_one()
         action = {

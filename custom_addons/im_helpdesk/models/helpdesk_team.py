@@ -1,7 +1,8 @@
-"""Model team Helpdesk và tự động hóa cấp team.
+"""Helpdesk team model and team-level automation.
 
-File này quản lý cấu hình team, chỉ số dashboard, thiết lập mail alias, bật/tắt
-group tính năng, thuật toán phân công và cron tự đóng ticket không hoạt động.
+This file holds the team configuration, the dashboard figures, the mail alias setup, the
+feature group toggles, the assignment algorithms and the cron that closes inactive
+tickets.
 """
 
 import ast
@@ -21,7 +22,7 @@ from odoo.addons.web.controllers.utils import clean_action
 
 
 class HelpdeskTeam(models.Model):
-    """Cấu hình cách một team helpdesk nhận, phân công và đóng ticket."""
+    """How one helpdesk team receives, assigns and closes its tickets."""
 
     _name = 'helpdesk.team'
     _inherit = ['mail.alias.mixin', 'mail.thread', 'rating.parent.mixin']
@@ -30,7 +31,7 @@ class HelpdeskTeam(models.Model):
     _rating_satisfaction_days = 7
 
     def _default_stage_ids(self):
-        """Trả về bộ stage mặc định dùng khi tạo team mới."""
+        """Return the default set of stages used when a team is created."""
         default_stages = self.env['helpdesk.stage']
         for xml_id in ['stage_new', 'stage_in_progress', 'stage_solved', 'stage_cancelled']:
             stage = self.env.ref('im_helpdesk.%s' % xml_id, raise_if_not_found=False)
@@ -109,10 +110,10 @@ class HelpdeskTeam(models.Model):
 
     @api.depends('auto_close_ticket', 'stage_ids')
     def _compute_assign_stage_id(self):
-        """Chọn stage đích dùng khi tự động đóng ticket.
+        """Pick the target stage used when tickets are closed automatically.
 
-        Stage ưu tiên là stage folded đầu tiên theo sequence. Nếu không có stage
-        folded, stage cuối cùng đã cấu hình sẽ được dùng làm fallback.
+        The first folded stage by sequence wins. With no folded stage, the last
+        configured stage is used as a fallback.
         """
         stages_dict = {stage['id']: 1 if stage['fold'] else 2 for stage in self.env['helpdesk.stage'].search_read([('id', 'in', self.stage_ids.ids), ('fold', '=', True)], ['id', 'fold'])}
         for team in self:
@@ -125,17 +126,17 @@ class HelpdeskTeam(models.Model):
             team.to_stage_id = stage_ids[0][1] if stage_ids else team.stage_ids and team.stage_ids.ids[-1]
 
     def _compute_alias_email_from(self):
-        """Tính địa chỉ reply-to hiển thị cho mail alias của team."""
+        """Compute the reply-to address shown for the team mail alias."""
         res = self._notify_get_reply_to()
         for team in self:
             team.alias_email_from = res.get(team.id, False)
 
     def _compute_has_external_mail_server(self):
-        """Đánh dấu hệ thống có cấu hình mail server ngoài ở cấp toàn cục hay không."""
+        """Flag whether an external mail server is configured globally."""
         self.has_external_mail_server = self.env['ir.config_parameter'].sudo().get_param('base_setup.default_external_email_server')
 
     def _compute_unassigned_tickets(self):
-        """Đếm ticket đang mở trong team nhưng chưa có người phụ trách."""
+        """Count the open tickets of the team that have no assignee."""
         ticket_data = self.env['helpdesk.ticket']._read_group([
             ('user_id', '=', False),
             ('team_id', 'in', self.ids),
@@ -146,7 +147,7 @@ class HelpdeskTeam(models.Model):
             team.unassigned_tickets = mapped_data.get(team.id, 0)
 
     def _compute_ticket_closed(self):
-        """Đếm ticket team đã đóng trong bảy ngày gần nhất."""
+        """Count the tickets the team closed over the last seven days."""
         dt = datetime.datetime.combine(datetime.date.today() - relativedelta.relativedelta(days=6), datetime.time.min)
         ticket_data = self.env['helpdesk.ticket']._read_group([
             ('team_id', 'in', self.ids),
@@ -158,10 +159,10 @@ class HelpdeskTeam(models.Model):
             team.ticket_closed = mapped_data.get(team.id, 0)
 
     def _compute_success_rate(self):
-        """Tính tỷ lệ SLA thành công trong bảy ngày của team.
+        """Compute the seven-day SLA success rate of the team.
 
-        Team không bật SLA nhận giá trị -1 để widget dashboard có thể ẩn hoặc
-        xử lý riêng metric này thay vì hiển thị số 0 dễ gây hiểu nhầm.
+        A team without SLA gets -1, so the dashboard widget can hide or special-
+        case the metric instead of showing a misleading zero.
         """
         dt = datetime.datetime.combine(datetime.date.today() - relativedelta.relativedelta(days=6), datetime.time.min)
         sla_teams = self.filtered('use_sla')
@@ -193,7 +194,7 @@ class HelpdeskTeam(models.Model):
         (self - sla_teams).success_rate = -1
 
     def _compute_urgent_ticket(self):
-        """Đếm ticket urgent đang mở của từng team."""
+        """Count the open urgent tickets of each team."""
         ticket_data = self.env['helpdesk.ticket']._read_group([
             ('team_id', 'in', self.ids),
             ('stage_id.fold', "=", False),
@@ -204,7 +205,7 @@ class HelpdeskTeam(models.Model):
             team.urgent_ticket = mapped_data.get(team.id, 0)
 
     def _compute_sla_failed(self):
-        """Đếm ticket đang mở có trạng thái SLA hiện tại đang fail."""
+        """Count the open tickets whose current SLA status is failing."""
         ticket_data = self.env['helpdesk.ticket']._read_group([
             ('team_id', 'in', self.ids),
             ('stage_id.fold', '=', False),
@@ -215,7 +216,7 @@ class HelpdeskTeam(models.Model):
             team.sla_failed = mapped_data.get(team.id, 0)
 
     def _compute_open_ticket_count(self):
-        """Đếm ticket đang mở của từng team."""
+        """Count the open tickets of each team."""
         ticket_data = self.env['helpdesk.ticket']._read_group([
             ('team_id', 'in', self.ids), ('stage_id.fold', '=', False)
         ], ['team_id'], ['__count'])
@@ -224,7 +225,7 @@ class HelpdeskTeam(models.Model):
             team.open_ticket_count = mapped_data.get(team.id, 0)
 
     def _compute_sla_policy_count(self):
-        """Đếm số SLA policy đã cấu hình cho từng team."""
+        """Count the SLA policies configured on each team."""
         sla_data = self.env['helpdesk.sla']._read_group([('team_id', 'in', self.ids)], ['team_id'], ['__count'])
         mapped_data = {team.id: count for team, count in sla_data}
         for team in self:
@@ -232,7 +233,7 @@ class HelpdeskTeam(models.Model):
 
     @api.onchange('use_alias', 'name')
     def _onchange_use_alias(self):
-        """Xóa hoặc sinh alias name khi cấu hình alias thay đổi."""
+        """Clear or generate the alias name when the alias setup changes."""
         if not self.use_alias:
             self.alias_name = False
         if self._origin.id and self.use_alias and not self.alias_name and self.name:
@@ -240,7 +241,7 @@ class HelpdeskTeam(models.Model):
 
     @api.depends('privacy_visibility')
     def _compute_privacy_visibility_warning(self):
-        """Hiển thị cảnh báo khi thay đổi visibility có ảnh hưởng tới follower."""
+        """Warn when a visibility change affects the current followers."""
         for team in self:
             if not team.ids:
                 team.privacy_visibility_warning = ''
@@ -253,7 +254,7 @@ class HelpdeskTeam(models.Model):
 
     @api.depends('privacy_visibility')
     def _compute_access_instruction_message(self):
-        """Giải thích ai có thể được mời dựa trên chế độ visibility đã chọn."""
+        """Explain who can be invited under the chosen visibility mode."""
         for team in self:
             if team.privacy_visibility == 'portal':
                 team.access_instruction_message = _('Grant portal users access to your helpdesk team or tickets by adding them as followers.')
@@ -264,18 +265,18 @@ class HelpdeskTeam(models.Model):
 
     @api.onchange('auto_assignment')
     def _onchange_assign_method(self):
-        """Đảm bảo auto-assignment có ít nhất một thành viên trong team."""
+        """Make sure auto-assignment has at least one team member to pick from."""
         if not self.member_ids:
             self.member_ids = [Command.set(self.env.user.ids)]
 
     # ------------------------------------------------------------
-    # Ghi đè ORM
+    # ORM overrides
     # ------------------------------------------------------------
 
     @api.depends('company_id')
     @api.depends_context('allowed_company_ids')
     def _compute_display_name(self):
-        """Thêm tên company vào team mặc định trong context multi-company."""
+        """Append the company name to the default team in a multi-company context."""
         super()._compute_display_name()
         if len(self.env.context.get('allowed_company_ids', [])) <= 1:
             return
@@ -286,7 +287,7 @@ class HelpdeskTeam(models.Model):
 
     @api.model_create_multi
     def create(self, vals_list):
-        """Tạo team và đồng bộ group SLA/rating cùng trạng thái cron."""
+        """Create the team and sync the SLA/rating groups and the cron state."""
         teams = super(HelpdeskTeam, self.with_context(mail_create_nosubscribe=True)).create(vals_list)
         teams.sudo()._check_sla_group()
         teams.sudo()._check_rating_group()
@@ -295,7 +296,7 @@ class HelpdeskTeam(models.Model):
         return teams
 
     def write(self, vals):
-        """Cập nhật team và giữ ticket liên quan, group, cron được đồng bộ."""
+        """Update the team, keeping tickets, groups and cron in sync."""
         if vals.get('privacy_visibility'):
             self._change_privacy_visibility(vals['privacy_visibility'])
         if 'alias_name' in vals and not vals['alias_name'] and (vals['use_alias'] if 'use_alias' in vals else self.use_alias):
@@ -314,22 +315,22 @@ class HelpdeskTeam(models.Model):
         return result
 
     def unlink(self):
-        """Xóa các stage chỉ được dùng bởi những team đang bị xóa."""
+        """Delete the stages used only by the teams being deleted."""
         stages = self.mapped('stage_ids').filtered(lambda stage: stage.team_ids <= self)
         stages.unlink()
         return super().unlink()
 
     def copy_data(self, default=None):
-        """Nhân bản team với hậu tố '(copy)' dễ nhận biết."""
+        """Duplicate the team with a recognisable '(copy)' suffix."""
         vals_list = super().copy_data(default=default)
         return [dict(vals, name=self.env._("%s (copy)", team.name)) for team, vals in zip(self, vals_list)]
 
     def _change_privacy_visibility(self, new_visibility):
-        """Áp dụng tác động phụ lên follower khi visibility của team thay đổi.
+        """Apply the follower side effects of a team visibility change.
 
-        Chuyển sang visibility portal public sẽ subscribe khách hàng của ticket
-        để họ truy cập được ticket. Rời khỏi portal visibility sẽ gỡ portal user
-        khỏi follower của team và ticket để giữ riêng tư.
+        Moving to portal-public visibility subscribes the ticket customers so
+        they can reach their tickets. Leaving portal visibility removes portal
+        users from the team and ticket followers, to keep things private.
         """
         for team in self:
             if team.privacy_visibility == new_visibility:
@@ -344,7 +345,7 @@ class HelpdeskTeam(models.Model):
 
     @api.model
     def _update_cron(self):
-        """Bật hoặc tắt cron tự đóng ticket theo cấu hình team."""
+        """Enable or disable the auto-close cron according to the team setup."""
         cron = self.env.ref('im_helpdesk.ir_cron_auto_close_ticket', raise_if_not_found=False)
         cron and cron.toggle(model=self._name, domain=[
             ('auto_close_ticket', '=', True),
@@ -352,33 +353,33 @@ class HelpdeskTeam(models.Model):
         ])
 
     def _get_helpdesk_user_group(self):
-        """Trả về nhóm bảo mật Helpdesk User cơ bản."""
+        """Return the base Helpdesk User security group."""
         return self.env.ref('im_helpdesk.group_helpdesk_user')
 
     def _get_helpdesk_use_sla_group(self):
-        """Trả về nhóm tùy chọn dùng để hiển thị tính năng SLA."""
+        """Return the optional group that reveals the SLA features."""
         return self.env.ref('im_helpdesk.group_use_sla')
 
     def _get_helpdesk_use_rating_group(self):
-        """Trả về nhóm tùy chọn dùng để hiển thị tính năng rating."""
+        """Return the optional group that reveals the rating features."""
         return self.env.ref('im_helpdesk.group_use_rating')
 
     def _check_sla_feature_enabled(self, check_user_has_group=False):
-        """Trả về việc SLA có được bật ở đâu đó và tùy chọn kiểm tra theo user."""
+        """Return whether SLA is enabled anywhere, optionally checking one user."""
         user_has_group = self.env.user.has_group('im_helpdesk.group_use_sla') if check_user_has_group else True
         return user_has_group and self.env['helpdesk.team'].search([('use_sla', '=', True)], limit=1)
 
     def _check_rating_feature_enabled(self, check_user_has_group=False):
-        """Trả về việc rating có được bật ở đâu đó và tùy chọn kiểm tra theo user."""
+        """Return whether rating is enabled anywhere, optionally checking one user."""
         user_has_group = self.env.user.has_group('im_helpdesk.group_use_rating') if check_user_has_group else True
         return user_has_group and self.env['helpdesk.team'].search([('use_rating', '=', True)], limit=1)
 
     def _check_sla_group(self):
-        """Đồng bộ SLA policy và implied group theo cấu hình team.
+        """Sync the SLA policies and the implied group with the team setup.
 
-        Bật SLA trên bất kỳ team nào sẽ cấp group tính năng SLA thông qua group
-        helpdesk cơ bản. Tắt SLA trên team cuối cùng sẽ gỡ implied group đó và
-        deactivate policy của các team không còn dùng SLA.
+        Enabling SLA on any team grants the SLA feature group through the base
+        helpdesk group. Disabling it on the last team removes that implied group
+        and deactivates the policies of the teams that no longer use SLA.
         """
         sla_teams = self.filtered('use_sla')
         non_sla_teams = self - sla_teams
@@ -403,7 +404,7 @@ class HelpdeskTeam(models.Model):
                 use_sla_group.write({'user_ids': [Command.clear()]})
 
     def _check_rating_group(self):
-        """Đồng bộ template rating và implied group theo cấu hình team."""
+        """Sync the rating templates and the implied group with the team setup."""
         rating_teams = self.filtered('use_rating')
         user_has_use_rating_group = self.env.user.has_group('im_helpdesk.group_use_rating')
         rating_helpdesk_email_template = self.env.ref('im_helpdesk.rating_ticket_request_email_template')
@@ -427,7 +428,7 @@ class HelpdeskTeam(models.Model):
     # ------------------------------------------------------------
 
     def _alias_get_creation_values(self):
-        """Chuẩn bị mặc định mail alias để email gửi vào tạo ticket."""
+        """Prepare the mail alias defaults so incoming email opens a ticket."""
         values = super()._alias_get_creation_values()
         values['alias_model_id'] = self.env['ir.model']._get('helpdesk.ticket').id
         if self._origin.id:
@@ -439,7 +440,7 @@ class HelpdeskTeam(models.Model):
         return values
 
     def _ensure_unique_email_alias(self, email_alias):
-        """Trả về alias name đã sanitize và không trùng alias hiện có."""
+        """Return a sanitised alias name that no existing alias already uses."""
         existing_aliases = self._get_existing_email_aliases(email_alias)
         modified_email_alias = email_alias
         counter = 2
@@ -449,21 +450,21 @@ class HelpdeskTeam(models.Model):
         return self.env['mail.alias']._sanitize_alias_name(modified_email_alias)
 
     def _get_existing_email_aliases(self, email_alias):
-        """Trả về các alias hiện có giống alias gốc được yêu cầu."""
+        """Return the existing aliases that look like the requested one."""
         existing_aliases = self.env['mail.alias'].search([('alias_name', 'ilike', email_alias)])
         return {alias.alias_name for alias in existing_aliases}
 
     # ------------------------------------------------------------
-    # Phương thức nghiệp vụ
+    # Business methods
     # ------------------------------------------------------------
 
     @api.model
     def retrieve_dashboard(self):
-        """Tạo dữ liệu dashboard helpdesk cho user hiện tại.
+        """Build the helpdesk dashboard payload for the current user.
 
-        Dictionary trả về chứa chỉ tiêu, các nhóm ticket mở cá nhân, metric ticket
-        đã đóng hôm nay, metric bảy ngày, metric rating và dữ liệu demo khi database
-        chưa có ticket.
+        The returned dictionary holds the personal targets, the groups of open
+        personal tickets, the tickets closed today, the seven-day metrics, the
+        rating metrics, and demo figures while the database still has no ticket.
         """
         user_uses_sla = self._check_sla_feature_enabled(check_user_has_group=True)
 
@@ -497,13 +498,13 @@ class HelpdeskTeam(models.Model):
             return result
 
         def _is_sla_failed(data):
-            """Trả về việc một row ticket từ search_read có đang fail SLA hay không."""
+            """Return whether a ticket row from search_read is failing its SLA."""
             deadline = data.get('sla_deadline')
             sla_deadline = fields.Datetime.now() > deadline if deadline else False
             return sla_deadline or data.get('sla_reached_late')
 
         def add_to(ticket, key="my_all"):
-            """Cộng dồn một row ticket vào nhóm dữ liệu dashboard."""
+            """Add one ticket row into a dashboard data bucket."""
             result[key]['count'] += 1
             result[key]['hours'] += ticket['open_hours']
             if _is_sla_failed(ticket):
@@ -581,7 +582,7 @@ class HelpdeskTeam(models.Model):
                 rating_stat['count'] += 1
 
             def average_score(d):
-                """Trả về điểm rating trung bình đã làm tròn để hiển thị dashboard."""
+                """Return the average rating score, rounded for the dashboard."""
                 return fields.Float.round(d['score'] / d['count'] if d['count'] > 0 else 0.0, 2)
 
             result['today']['rating'] = average_score(today_rating_stat)
@@ -589,11 +590,11 @@ class HelpdeskTeam(models.Model):
         return result
 
     def _action_view_rating(self, period=False, only_closed_tickets=False, user_id=None):
-        """Trả về action mở rating của các team được chọn.
+        """Return the action opening the ratings of the selected teams.
 
-        Tham số tùy chọn giúp thu hẹp ticket nguồn theo trạng thái đóng hoặc user.
-        Tham số ``period`` được giữ cho caller mô tả tile dashboard nào đã mở
-        action; domain thật sự được dựng bên dưới.
+        The optional arguments narrow the source tickets by closed state or by
+        user. The ``period`` argument only lets the caller say which dashboard
+        tile opened the action; the real domain is built below.
         """
         action = self.env["ir.actions.actions"]._for_xml_id("im_helpdesk.rating_rating_action_helpdesk")
         action = clean_action(action, self.env)
@@ -613,13 +614,13 @@ class HelpdeskTeam(models.Model):
         return action
 
     def action_view_ticket(self):
-        """Mở action ticket chung của team."""
+        """Open the generic ticket action of the team."""
         action = self.env["ir.actions.actions"]._for_xml_id("im_helpdesk.helpdesk_ticket_action_team")
         action['display_name'] = self.name
         return action
 
     def _get_action_view_ticket_params(self, is_ticket_closed=False):
-        """Trả về tham số action dùng chung cho ticket đang mở hoặc mới đóng gần đây."""
+        """Return the action parameters shared by open and recently closed tickets."""
         domain = Domain('team_id', 'in', self.ids)
         context = {
             'search_default_is_open': not is_ticket_closed,
@@ -636,7 +637,7 @@ class HelpdeskTeam(models.Model):
         }
 
     def action_view_closed_ticket(self):
-        """Mở các ticket của team đã đóng gần đây."""
+        """Open the tickets the team closed recently."""
         action = self.action_view_ticket()
         action_params = self._get_action_view_ticket_params(True)
         action.update({
@@ -646,7 +647,7 @@ class HelpdeskTeam(models.Model):
         return action
 
     def action_view_success_rate(self):
-        """Mở các ticket đã đóng gần đây và lọc theo SLA success."""
+        """Open the recently closed tickets, filtered on SLA success."""
         action = self.action_view_ticket()
         action_params = self._get_action_view_ticket_params(True)
         action.update(
@@ -664,13 +665,13 @@ class HelpdeskTeam(models.Model):
         return action
 
     def action_view_customer_satisfaction(self):
-        """Mở các rating khách hàng đã consumed cho những team được chọn."""
+        """Open the consumed customer ratings of the selected teams."""
         action = self._action_view_rating(period='seven_days')
         action['context'] = {**self.env.context, **action['context'], 'search_default_my_ratings': False}
         return action
 
     def action_view_open_ticket(self):
-        """Mở các ticket hiện đang mở của team."""
+        """Open the tickets of the team that are still open."""
         action = self.action_view_ticket()
         action_params = self._get_action_view_ticket_params()
         action.update({
@@ -680,7 +681,7 @@ class HelpdeskTeam(models.Model):
         return action
 
     def action_view_urgent(self):
-        """Mở các ticket đang mở có priority urgent."""
+        """Open the open tickets with urgent priority."""
         action = self.action_view_ticket()
         action_params = self._get_action_view_ticket_params()
         action.update({
@@ -692,7 +693,7 @@ class HelpdeskTeam(models.Model):
         return action
 
     def action_view_sla_failed(self):
-        """Mở các ticket đang mở có SLA đã fail."""
+        """Open the open tickets whose SLA has failed."""
         action = self.action_view_ticket()
         action_params = self._get_action_view_ticket_params()
         action.update({
@@ -705,15 +706,15 @@ class HelpdeskTeam(models.Model):
         return action
 
     def action_view_rating_today(self):
-        """Mở rating hôm nay của các team mà user hiện tại là thành viên."""
+        """Open today's ratings of the teams the current user belongs to."""
         return self.search([('member_ids', 'in', self.env.uid)])._action_view_rating(period='today', user_id=self.env.uid)
 
     def action_view_rating_7days(self):
-        """Mở rating bảy ngày của các team mà user hiện tại là thành viên."""
+        """Open the seven-day ratings of the teams the current user belongs to."""
         return self.search([('member_ids', 'in', self.env.uid)])._action_view_rating(period='seven_days', user_id=self.env.uid)
 
     def action_view_team_rating(self):
-        """Mở rating của team, chuyển sang form view nếu chỉ có đúng một rating."""
+        """Open the team ratings, switching to form view when there is only one."""
         self.ensure_one()
         action = self._action_view_rating()
         ratings = self.env['rating.rating'].search(action['domain'])
@@ -728,7 +729,7 @@ class HelpdeskTeam(models.Model):
         return action
 
     def action_view_open_ticket_view(self):
-        """Mở ticket đang mở từ smart button trên form team."""
+        """Open the open tickets from the smart button of the team form."""
         action = self.action_view_ticket()
         action.update({
             'display_name': _("Tickets"),
@@ -737,7 +738,7 @@ class HelpdeskTeam(models.Model):
         return action
 
     def action_view_sla_policy(self):
-        """Mở SLA policy của team, hoặc mở thẳng form nếu chỉ có một policy."""
+        """Open the SLA policies of the team, or the form when there is only one."""
         self.ensure_one()
         action = self.env["ir.actions.actions"]._for_xml_id("im_helpdesk.helpdesk_sla_action")
         if self.sla_policy_count == 1:
@@ -753,11 +754,11 @@ class HelpdeskTeam(models.Model):
         return action
 
     def _determine_user_to_assign(self, count_per_team, force_method=False):
-        """Chọn người phụ trách cho team dùng kiểu random hoặc balanced.
+        """Pick the assignee for a team, either randomly or balanced.
 
-        ``count_per_team`` ánh xạ record team tới số ticket cần người phụ trách.
-        Kết quả ánh xạ team ID tới danh sách user ID có thứ tự, ưu tiên user có
-        lịch làm việc sớm nhất theo calendar của họ.
+        ``count_per_team`` maps a team record to how many tickets need an
+        assignee. The result maps each team id to an ordered list of user ids,
+        favouring the users whose calendar puts them at work soonest.
         """
         team_without_manually = self.env['helpdesk.team'].browse({
             team.id
@@ -802,25 +803,25 @@ class HelpdeskTeam(models.Model):
         return result
 
     def _determine_stage(self):
-        """Trả về stage đầu tiên theo sequence cho từng team trong ``self``."""
+        """Return the first stage by sequence for every team in ``self``."""
         result = dict.fromkeys(self.ids, self.env['helpdesk.stage'])
         for team in self:
             result[team.id] = self.env['helpdesk.stage'].search([('team_ids', 'in', team.id)], order='sequence', limit=1)
         return result
 
     def _get_closing_stage(self):
-        """Trả về stage dùng khi ticket được đóng từ portal hoặc automation."""
+        """Return the stage used when a ticket is closed from portal or automation."""
         closed_stage = self.stage_ids.filtered(lambda stage: stage.fold)
         if not closed_stage:
             closed_stage = self.stage_ids[-1]
         return closed_stage
 
     def _cron_auto_close_tickets(self):
-        """Tác vụ định kỳ dùng để đóng ticket không hoạt động của các team đã cấu hình.
+        """Scheduled job closing the inactive tickets of the configured teams.
 
-        Một ticket được xem là không hoạt động khi lần write gần nhất cũ hơn
-        ngưỡng của team và ticket nằm trong stage nguồn đã cấu hình; nếu không
-        cấu hình stage nguồn thì áp dụng cho mọi stage chưa folded.
+        A ticket counts as inactive when its last write is older than the team
+        threshold and it sits in one of the configured source stages; with no
+        source stage configured, every unfolded stage qualifies.
         """
         teams = self.env['helpdesk.team'].search_read(
             domain=[
@@ -842,7 +843,8 @@ class HelpdeskTeam(models.Model):
         tickets = self.env['helpdesk.ticket'].search(tickets_domain)
 
         def is_inactive_ticket(ticket):
-            """Trả về việc ticket có khớp điều kiện auto-close của team hay không."""
+            """Return whether the ticket matches the auto-close conditions of its team.
+            """
             team = teams_dict[ticket.team_id.id]
             is_write_date_ok = ticket.write_date <= team['threshold_date']
             if team['from_stage_ids']:
@@ -857,6 +859,6 @@ class HelpdeskTeam(models.Model):
                 ticket.write({'stage_id': teams_dict[ticket.team_id.id]['to_stage_id'][0]})
 
     def _local_midnight_as_utc(self):
-        """Trả về mốc nửa đêm local hôm nay đã chuyển sang datetime UTC naive."""
+        """Return today's local midnight as a naive UTC datetime."""
         now = fields.Datetime.context_timestamp(self, fields.Datetime.now())
         return datetime.datetime.combine(now.date(), datetime.time.min, now.tzinfo).astimezone(pytz.utc).replace(tzinfo=None)

@@ -44,6 +44,8 @@ class ImWebsiteSlides(WebsiteSlidesSurvey):
         if slide_sudo.slide_category != 'video' or slide_sudo.video_source_type != 'local':
             raise werkzeug.exceptions.NotFound()
 
+        # Membership check, not just read access: portal users can read
+        # slide.slide, so /web/content would hand the file to anyone.
         channel = slide_sudo.channel_id
         if not (channel.is_member or channel.can_publish):
             raise werkzeug.exceptions.Forbidden(

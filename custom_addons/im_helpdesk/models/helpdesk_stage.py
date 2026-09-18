@@ -1,8 +1,8 @@
-"""Model stage của Helpdesk.
+"""Helpdesk stage model.
 
-Stage định nghĩa vòng đời của ticket. Stage được fold sẽ được xem là đã đóng,
-và thao tác archive/delete stage sẽ đi qua wizard để tránh việc user vô tình ẩn
-hoặc xóa lịch sử ticket.
+Stages define the ticket lifecycle. A folded stage counts as closed, and archiving or
+deleting a stage goes through a wizard so nobody hides or destroys ticket history by
+accident.
 """
 
 from odoo import fields, models, _
@@ -10,14 +10,14 @@ from odoo.tools.misc import unique
 
 
 class HelpdeskStage(models.Model):
-    """Biểu diễn một stage ticket có thể dùng chung bởi một hoặc nhiều team helpdesk."""
+    """One ticket stage, shared by one or several helpdesk teams."""
 
     _name = 'helpdesk.stage'
     _description = 'Helpdesk Stage'
     _order = 'sequence, id'
 
     def _default_team_ids(self):
-        """Gán team mặc định cho stage mới theo team đang mở trong context hiện tại."""
+        """Attach a new stage to the team currently open in the context."""
         team_id = self.env.context.get('default_team_id')
         if team_id:
             return [(4, team_id, 0)]
@@ -46,7 +46,7 @@ class HelpdeskStage(models.Model):
     color = fields.Integer(string='Color', export_string_translation=False)
 
     def _compute_ticket_count(self):
-        """Tính số ticket hiện đang nằm trong từng stage."""
+        """Count the tickets sitting in each stage."""
         res = self.env['helpdesk.ticket']._read_group(
             [('stage_id', 'in', self.ids)],
             ['stage_id'], ['__count'])
@@ -55,13 +55,13 @@ class HelpdeskStage(models.Model):
             stage.ticket_count = stage_data.get(stage.id, 0)
 
     def write(self, vals):
-        """Lưu trữ các ticket cùng lúc khi stage bị lưu trữ."""
+        """Archive the tickets of a stage at the same time as the stage itself."""
         if 'active' in vals and not vals['active']:
             self.env['helpdesk.ticket'].search([('stage_id', 'in', self.ids)]).write({'active': False})
         return super().write(vals)
 
     def action_unarchive(self):
-        """Khôi phục stage và hỏi user có muốn khôi phục ticket trong stage đó không."""
+        """Restore the stage and ask whether its tickets should come back too."""
         res = super().action_unarchive()
         stage_active = self.filtered(self._active_name)
         if stage_active and sum(stage_active.with_context(active_test=False).mapped('ticket_count')) > 0:
@@ -80,10 +80,10 @@ class HelpdeskStage(models.Model):
         return res
 
     def action_unlink_wizard(self, stage_view=False):
-        """Mở wizard delete/archive trước khi xóa stage.
+        """Open the delete/archive wizard before a stage is removed.
 
-        Wizard nhận tất cả team đang dùng stage hoặc đang có ticket trong stage
-        đó, để user thấy đúng phạm vi ảnh hưởng trước khi xác nhận.
+        The wizard receives every team using the stage or holding tickets in it,
+        so the user sees the real blast radius before confirming.
         """
         self = self.with_context(active_test=False)
         readgroup = self.with_context(active_test=False).env['helpdesk.ticket']._read_group(
@@ -110,7 +110,7 @@ class HelpdeskStage(models.Model):
         }
 
     def action_open_helpdesk_ticket(self):
-        """Mở danh sách ticket đã lọc theo stage này từ smart button của stage."""
+        """Open the tickets of this stage from its smart button."""
         self.ensure_one()
         action = self.env["ir.actions.actions"]._for_xml_id("im_helpdesk.helpdesk_ticket_action_main_tree")
         action.update({

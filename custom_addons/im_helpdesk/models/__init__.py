@@ -1,7 +1,7 @@
-"""Bộ nạp gói model cho IM Helpdesk.
+"""Model package loader for IM Helpdesk.
 
-Thứ tự import đặt các object nền tảng trước, sau đó đến ticket/logic nghiệp vụ,
-và cuối cùng là các model Odoo kế thừa để thêm field hoặc hook riêng cho helpdesk.
+Import order puts the foundation objects first, then the ticket and business logic, and
+finally the inherited Odoo models that add helpdesk fields or hooks.
 """
 
 from . import helpdesk_team

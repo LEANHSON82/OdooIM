@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Email template dùng cho thông báo ticket, lời mời follower và yêu cầu rating. -->
+<!-- Mail templates for ticket notices, follower invites and rating requests. -->
 <odoo><data noupdate="1">
     <record id="new_ticket_request_email_template" model="mail.template">
         <field name="name">Helpdesk: Ticket Received</field>

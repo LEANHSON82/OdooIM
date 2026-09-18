@@ -1,8 +1,8 @@
-"""Các route portal cho IM Helpdesk.
+"""Portal routes for IM Helpdesk.
 
-Controller này cho phép khách hàng liệt kê, tạo, xem và đóng ticket helpdesk
-từ website portal, đồng thời vẫn kiểm tra quyền hiển thị team và access token
-theo framework portal của Odoo.
+This controller lets customers list, create, read and close helpdesk tickets from the
+website portal, while still checking team visibility and access tokens the way the Odoo
+portal framework expects.
 """
 
 from operator import itemgetter
@@ -20,20 +20,19 @@ from odoo.addons.portal.controllers.portal import pager as portal_pager
 
 
 class CustomerPortal(portal.CustomerPortal):
-    """Mở rộng portal chuẩn bằng các trang ticket helpdesk."""
+    """Extend the standard portal with the helpdesk ticket pages."""
 
     def _prepare_portal_layout_values(self):
-        """Trả về các giá trị layout dùng chung cho portal.
+        """Return the layout values shared by the portal pages.
 
-        Hiện tại hàm này chỉ gọi implementation của class cha, nhưng vẫn được
-        giữ lại như một hook cục bộ để sau này dễ bổ sung giá trị layout riêng
-        cho helpdesk.
+        For now this only calls the parent implementation; it is kept as a local
+        hook so helpdesk-specific layout values are easy to add later.
         """
         values = super()._prepare_portal_layout_values()
         return values
 
     def _prepare_home_portal_values(self, counters):
-        """Thêm bộ đếm ticket hiển thị trên trang chủ portal."""
+        """Add the ticket counter shown on the portal home page."""
         values = super()._prepare_home_portal_values(counters)
         if 'ticket_count' in counters:
             values['ticket_count'] = (
@@ -44,11 +43,11 @@ class CustomerPortal(portal.CustomerPortal):
         return values
 
     def _prepare_helpdesk_tickets_domain(self):
-        """Tạo domain ticket cơ bản mà portal user hiện tại được phép xem.
+        """Build the base ticket domain the current portal user may read.
 
-        Portal user chỉ xem được ticket của team public khi họ là khách hàng
-        hoặc follower của ticket. Internal user giữ hành vi không giới hạn của
-        portal cha và không cần thêm domain phụ.
+        A portal user only sees tickets of a public team when they are the
+        customer or a follower. Internal users keep the unrestricted behaviour
+        of the parent portal and need no extra domain.
         """
         if request.env.user._is_portal():
             partner = request.env.user.partner_id
@@ -61,10 +60,11 @@ class CustomerPortal(portal.CustomerPortal):
         return []
 
     def _portal_can_access_ticket(self, ticket, access_token=None):
-        """Kiểm tra request hiện tại có được mở ticket cụ thể hay không.
+        """Check whether the current request may open one given ticket.
 
-        Access token hợp lệ luôn cho phép truy cập URL ticket. Nếu không có
-        token, portal user phải là khách hàng của ticket hoặc là follower.
+        A valid access token always grants access to the ticket URL. Without a
+        token, the portal user has to be the ticket customer or one of its
+        followers.
         """
         if access_token and ticket.access_token and consteq(ticket.access_token, access_token):
             return True
@@ -74,7 +74,7 @@ class CustomerPortal(portal.CustomerPortal):
         return bool(partner and (ticket.partner_id == partner or partner in ticket.message_partner_ids))
 
     def _get_portal_ticket_teams(self):
-        """Trả về các team public đang active và cho phép tạo ticket từ portal."""
+        """Return the active public teams that accept tickets from the portal."""
         return request.env['helpdesk.team'].sudo().search([
             ('active', '=', True),
             ('privacy_visibility', '=', 'portal'),
@@ -82,7 +82,7 @@ class CustomerPortal(portal.CustomerPortal):
         ])
 
     def _prepare_portal_create_ticket_values(self, error=None, post=None):
-        """Chuẩn bị dữ liệu template cho form tạo ticket trên portal."""
+        """Prepare the template values for the portal ticket form."""
         partner = request.env.user.partner_id
         teams = self._get_portal_ticket_teams()
         return {
@@ -96,7 +96,7 @@ class CustomerPortal(portal.CustomerPortal):
         }
 
     def _ticket_get_page_view_values(self, ticket, access_token, **kwargs):
-        """Chuẩn bị dữ liệu template cho trang chi tiết một ticket trên portal."""
+        """Prepare the template values for one ticket detail page."""
         values = {
             'page_name': 'ticket',
             'ticket': ticket,
@@ -108,7 +108,7 @@ class CustomerPortal(portal.CustomerPortal):
         return self._get_page_view_values(ticket, access_token, values, 'my_tickets_history', False, **kwargs)
 
     def _ticket_get_searchbar_inputs(self):
-        """Trả về các field có thể tìm kiếm trong danh sách ticket portal."""
+        """Return the fields that can be searched in the portal ticket list."""
         return {
             'name': {'input': 'name', 'label': _(
                 'Search%(left)s Tickets%(right)s',
@@ -122,7 +122,7 @@ class CustomerPortal(portal.CustomerPortal):
         }
 
     def _ticket_get_searchbar_groupby(self):
-        """Trả về các lựa chọn group-by hiển thị trong danh sách ticket portal."""
+        """Return the group-by choices offered in the portal ticket list."""
         return {
             'none': {'label': _('None'), 'sequence': 10},
             'user_id': {'label': _('Assigned to'), 'sequence': 20},
@@ -133,7 +133,7 @@ class CustomerPortal(portal.CustomerPortal):
         }
 
     def _ticket_get_search_domain(self, search_in, search):
-        """Chuyển input tìm kiếm trên portal thành domain ORM."""
+        """Turn the portal search input into an ORM domain."""
         if search_in == 'name':
             return ['|', ('name', 'ilike', search), ('ticket_ref', 'ilike', search)]
         elif search_in == 'user_id':
@@ -145,10 +145,10 @@ class CustomerPortal(portal.CustomerPortal):
             return ['|', ('name', 'ilike', search), ('ticket_ref', 'ilike', search)]
 
     def _prepare_my_tickets_values(self, page=1, date_begin=None, date_end=None, sortby=None, filterby='all', search=None, groupby='none', search_in='name'):
-        """Chuẩn bị danh sách ticket portal có phân trang.
+        """Prepare the paginated portal ticket list.
 
-        Hàm này gom toàn bộ filter, sort, group, search và trạng thái pager vào
-        một chỗ, để route chỉ cần render template cuối cùng.
+        Filtering, sorting, grouping, searching and pager state all live here,
+        so the route itself only has to render the final template.
         """
         values = self._prepare_portal_layout_values()
         domain = Domain(self._prepare_helpdesk_tickets_domain())
@@ -221,23 +221,23 @@ class CustomerPortal(portal.CustomerPortal):
 
     @http.route(['/my/tickets', '/my/tickets/page/<int:page>'], type='http', auth="user", website=True)
     def my_helpdesk_tickets(self, page=1, date_begin=None, date_end=None, sortby=None, filterby='all', search=None, groupby='none', search_in='name', **kw):
-        """Hiển thị danh sách ticket portal của user hiện tại."""
+        """Render the portal ticket list of the current user."""
         values = self._prepare_my_tickets_values(page, date_begin, date_end, sortby, filterby, search, groupby, search_in)
         return request.render("im_helpdesk.portal_helpdesk_ticket", values)
 
     @http.route(['/my/tickets/new'], type='http', auth="user", website=True)
     def my_helpdesk_ticket_new(self, **kw):
-        """Hiển thị form tạo ticket trên portal."""
+        """Render the ticket creation form on the portal."""
         values = self._prepare_portal_create_ticket_values(post=kw)
         return request.render("im_helpdesk.portal_create_ticket", values)
 
     @http.route(['/my/tickets/create'], type='http', auth="user", website=True, methods=['POST'])
     def my_helpdesk_ticket_create(self, **post):
-        """Kiểm tra dữ liệu form portal và tạo ticket helpdesk mới.
+        """Validate the portal form and create the helpdesk ticket.
 
-        Việc tạo ticket dùng sudo vì portal user thường không có quyền tạo trực
-        tiếp toàn bộ field backend. Ticket sau khi tạo vẫn được gắn với partner
-        portal và được bảo vệ bằng access token đã sinh ra.
+        Creation runs in sudo because a portal user usually cannot write every
+        backend field directly. The new ticket is still tied to the portal
+        partner and stays protected by the access token generated for it.
         """
         teams = self._get_portal_ticket_teams()
         team_id = post.get('team_id')
@@ -283,7 +283,7 @@ class CustomerPortal(portal.CustomerPortal):
         '/my/ticket/<int:ticket_id>/<access_token>'
     ], type='http', auth="public", website=True)
     def tickets_followup(self, ticket_id=None, access_token=None, **kw):
-        """Hiển thị trang theo dõi ticket sau khi kiểm tra token và follower."""
+        """Render the ticket follow-up page once token and follower are checked."""
         try:
             ticket_sudo = self._document_check_access('helpdesk.ticket', ticket_id, access_token)
         except (AccessError, MissingError):
@@ -300,11 +300,11 @@ class CustomerPortal(portal.CustomerPortal):
         '/my/ticket/close/<int:ticket_id>/<access_token>',
     ], type='http', auth="public", website=True)
     def ticket_close(self, ticket_id=None, access_token=None, **kw):
-        """Đóng ticket từ portal khi team cho phép.
+        """Close a ticket from the portal when the team allows it.
 
-        Đường dẫn này chấp nhận link public có token và portal user đã đăng nhập.
-        Nó chuyển ticket sang stage đóng của team, đánh dấu khách hàng đã đóng
-        ticket và post một ghi chú nội bộ để dễ kiểm tra lịch sử.
+        This route accepts both a public link carrying a token and a logged-in
+        portal user. It moves the ticket to the team closing stage, records that
+        the customer closed it and posts an internal note for the audit trail.
         """
         try:
             ticket_sudo = self._document_check_access('helpdesk.ticket', ticket_id, access_token)

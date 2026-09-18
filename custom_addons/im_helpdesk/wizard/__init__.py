@@ -1,3 +1,3 @@
-"""Gói transient wizard cho IM Helpdesk."""
+"""Transient wizard package for IM Helpdesk."""
 
 from . import helpdesk_stage_delete

@@ -31,6 +31,11 @@ class EventTicket(models.Model):
             )
 
     def _is_early_bird_now(self, extra_sold=0):
+        """Early-bird is over once the deadline passes or seats run out.
+
+        `extra_sold` covers registrations created in the same batch that
+        are not stored yet.
+        """
         self.ensure_one()
         if not self.is_early_bird:
             return False
@@ -58,6 +63,8 @@ class EventTicket(models.Model):
     @api.depends('product_id', 'is_early_bird', 'early_bird_deadline', 'early_bird_max_qty',
                  'price_early_bird', 'price_standard')
     def _compute_price(self):
+        # super() runs on the non early-bird subset only. Calling it on
+        # self would reset our two-tier prices back to the product price.
         fallback = self.browse()
         for ticket in self:
             target = ticket._get_early_bird_price()
@@ -82,6 +89,7 @@ class EventTicket(models.Model):
 
     @api.model
     def _cron_refresh_early_bird(self):
+        """Recompute early-bird prices; nothing fires when a deadline passes."""
         tickets = self.search([('is_early_bird', '=', True)])
         if not tickets:
             return

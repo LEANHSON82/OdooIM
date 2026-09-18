@@ -3,14 +3,14 @@ from odoo.exceptions import ValidationError
 
 from .approval_level import amount_in_band
 
-# Hai quyền cấu hình được theo dải giá trị
+# The two rights that are configurable by amount band
 PERMISSION_TYPES = [
     ('po_creator', "Tạo đơn mua"),
     ('overrun', "Duyệt vượt dự toán"),
 ]
 
 
-# Một dòng quyền: dải tiền và những ai được phép
+# One permission row: an amount band and who it allows
 class PurchaseRequestPermission(models.Model):
     _name = 'im.purchase.request.permission'
     _description = 'Quyền theo dải giá trị của đề nghị mua hàng'
@@ -38,14 +38,14 @@ class PurchaseRequestPermission(models.Model):
         'res.users', 'im_purchase_request_permission_user_rel', 'permission_id', 'user_id',
         string="Người cụ thể", domain=[('share', '=', False)])
 
-    # Chặn dải ngược: Đến phải lớn hơn Từ
+    # Reject a backwards band: "to" must be above "from"
     @api.constrains('amount_threshold', 'amount_max')
     def _check_amount_range(self):
         for rule in self:
             if rule.amount_max and rule.amount_max <= rule.amount_threshold:
                 raise ValidationError(self.env._("Số “Đến” phải lớn hơn số “Từ”."))
 
-    # Mỗi dòng phải chọn ít nhất một nhóm hoặc một người
+    # Every row must name at least one group or one user
     @api.constrains('permission_type', 'group_ids', 'user_ids')
     def _check_someone_selected(self):
         for rule in self:
@@ -53,7 +53,7 @@ class PurchaseRequestPermission(models.Model):
                 raise ValidationError(self.env._(
                     "Mỗi dòng giới hạn phải chọn ít nhất một nhóm hoặc một người."))
 
-    # Dòng nằm trong thiết lập nào thì lấy công ty của thiết lập đó
+    # A row takes the company of the settings holding it
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
@@ -62,17 +62,17 @@ class PurchaseRequestPermission(models.Model):
                     vals['config_id']).company_id.id
         return super().create(vals_list)
 
-    # Dòng này có áp cho số tiền này không
+    # Does this row apply to that amount
     def _applies_to(self, amount, rounding):
         self.ensure_one()
         return amount_in_band(amount, self.amount_threshold, self.amount_max, rounding)
 
-    # Người dùng có trong nhóm hoặc danh sách người không
+    # Is the user in one of the groups, or named directly
     def _allows(self, user):
         self.ensure_one()
         return bool(user in self.user_ids or self.group_ids & user.all_group_ids)
 
-    # Ghép tên nhóm và tên người để ghi vào câu lỗi
+    # Join group and user names for the error message
     def _describe(self):
         self.ensure_one()
         return ", ".join(self.group_ids.mapped('display_name') + self.user_ids.mapped('name'))

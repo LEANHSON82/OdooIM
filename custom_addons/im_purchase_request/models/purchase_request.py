@@ -3,16 +3,16 @@ from odoo.exceptions import AccessError, UserError
 from odoo.fields import Command
 from odoo.tools import float_compare
 
-# Các trường khóa lại khi phiếu rời trạng thái Nháp
+# Fields locked once the request leaves draft
 LOCKED_FIELDS = frozenset({
     'requester_id', 'department_id', 'name', 'date_request',
     'date_required', 'company_id', 'note',
 })
 
-# Hóa đơn mua và hóa đơn hoàn của nhà cung cấp
+# Vendor bills and vendor refunds
 VENDOR_BILL_TYPES = ('in_invoice', 'in_refund')
 
-# Vòng đời phiếu: nháp, chờ duyệt, đã duyệt, tạo đơn mua
+# Request lifecycle: draft, waiting, approved, purchase orders created
 STATES = [
     ('draft', "Nháp"),
     ('to_approve', "Chờ duyệt"),
@@ -21,7 +21,7 @@ STATES = [
     ('po_created', "Đã tạo đơn mua"),
 ]
 
-# Phiếu đề nghị mua hàng, ký nhiều cấp trước khi ra đơn mua
+# Internal purchase request, signed level by level before any order
 class PurchaseRequest(models.Model):
     _name = 'im.purchase.request'
     _description = 'Đề nghị mua hàng'
@@ -110,38 +110,38 @@ class PurchaseRequest(models.Model):
         string="Có hóa đơn vượt dự toán chờ duyệt", compute='_compute_overrun_pending')
     overrun_detail = fields.Text(compute='_compute_overrun_pending')
 
-    # Bộ phận lấy từ hồ sơ nhân viên của người đề nghị
+    # Department comes from the requester's employee record
     @api.depends('requester_id', 'company_id')
     def _compute_department_id(self):
         for request in self:
             request.department_id = request._requester_department()
 
-    # Dùng sudo vì nhân viên thường không đọc được hồ sơ người khác
+    # sudo: a plain employee cannot read another employee record
     def _requester_department(self):
         self.ensure_one()
         company = self.company_id or self.env.company
         employee = self.requester_id.sudo().with_company(company).employee_id
         return employee.department_id.sudo(False)
 
-    # Tổng dự toán bằng tổng thành tiền các dòng hàng
+    # Estimated total is the sum of the line subtotals
     @api.depends('line_ids.price_subtotal')
     def _compute_amount_total(self):
         for request in self:
             request.amount_total = sum(request.line_ids.mapped('price_subtotal'))
 
-    # Tổng tiền trả thêm vì không chọn nguồn rẻ nhất
+    # Extra money paid for not taking the cheapest source
     @api.depends('line_ids.extra_cost')
     def _compute_extra_cost_total(self):
         for request in self:
             request.extra_cost_total = sum(request.line_ids.mapped('extra_cost'))
 
-    # Dùng sudo vì người đề nghị không có quyền xem đơn mua
+    # sudo: the requester has no access to purchase orders
     @api.depends('purchase_order_ids')
     def _compute_purchase_order_count(self):
         for request in self.sudo():
             request.purchase_order_count = len(request.purchase_order_ids)
 
-    # Số hóa đơn, tiền đã xuất, tình trạng hóa đơn và thanh toán
+    # Bill count, invoiced amount, invoice status and payment state
     @api.depends('purchase_order_ids.invoice_ids.state',
                  'purchase_order_ids.invoice_ids.payment_state',
                  'purchase_order_ids.invoice_status')
@@ -155,7 +155,7 @@ class PurchaseRequest(models.Model):
             request.invoice_status = request._aggregate_invoice_status(orders)
             request.payment_state = request._aggregate_payment_state(posted)
 
-    # Gộp tình trạng hóa đơn của nhiều đơn mua thành một
+    # Merge the invoice status of several orders into one
     def _aggregate_invoice_status(self, orders):
         statuses = set(orders.mapped('invoice_status'))
         if 'to invoice' in statuses:
@@ -164,7 +164,7 @@ class PurchaseRequest(models.Model):
             return 'invoiced'
         return 'no'
 
-    # Gộp tình trạng thanh toán của các hóa đơn đã vào sổ
+    # Merge the payment state of the posted bills
     def _aggregate_payment_state(self, posted_moves):
         if not posted_moves:
             return 'no'
@@ -175,7 +175,7 @@ class PurchaseRequest(models.Model):
             return 'partial'
         return 'not_paid'
 
-    # Chỉ cộng dòng hóa đơn thuộc đơn mua của phiếu này
+    # Only count bill lines belonging to orders of this request
     def _invoiced_total(self, moves):
         self.ensure_one()
         order_lines = self.sudo().purchase_order_ids.order_line
@@ -184,24 +184,24 @@ class PurchaseRequest(models.Model):
             for line in moves.sudo().invoice_line_ids
             if line.purchase_line_id in order_lines)
 
-    # Phần trăm cho phép vượt, lấy từ thiết lập
+    # Overrun tolerance percentage, read from the settings
     def _overrun_tolerance(self):
         self.ensure_one()
         return self._config().overrun_tolerance_pct
 
-    # Trần chi: tổng đã duyệt cộng phần trăm cho phép vượt
+    # Spending ceiling: approved total plus the tolerance percentage
     def _overrun_ceiling(self):
         self.ensure_one()
         return self.amount_total * (1.0 + self._overrun_tolerance() / 100.0)
 
-    # Tổng đã xuất nếu tính thêm hóa đơn này
+    # Invoiced total including this bill
     def _invoiced_total_with(self, move):
         self.ensure_one()
         others = self.sudo().purchase_order_ids.invoice_ids.filtered(
             lambda other: other.state == 'posted' and other != move)
         return self._invoiced_total(others) + self._invoiced_total(move)
 
-    # Câu lỗi khi hóa đơn này làm phiếu vượt trần
+    # Error message when this bill pushes the request past the ceiling
     def _invoice_ceiling_error(self, move):
         self.ensure_one()
         total = self._invoiced_total_with(move)
@@ -221,7 +221,7 @@ class PurchaseRequest(models.Model):
             pct=self._overrun_tolerance(),
             approver=self._overrun_approver_label(total))
 
-    # Hóa đơn nháp đang bị chặn vì vượt trần
+    # Draft bills currently blocked for passing the ceiling
     def _pending_overrun_moves(self):
         self.ensure_one()
         return self.sudo().purchase_order_ids.invoice_ids.filtered(
@@ -230,12 +230,12 @@ class PurchaseRequest(models.Model):
             and not move.im_overrun_reason
             and self._invoice_ceiling_error(move))
 
-    # Thiết lập của công ty, chưa có thì tạo mới
+    # Company settings, created on the fly when missing
     def _config(self):
         self.ensure_one()
         return self.env['im.purchase.request.config']._for_company(self.company_id)
 
-    # Các dòng quyền có dải chứa số tiền này
+    # Permission rows whose band contains this amount
     def _permission_rules(self, permission_type, amount):
         self.ensure_one()
         config = self._config()
@@ -244,7 +244,7 @@ class PurchaseRequest(models.Model):
         rounding = self.currency_id.rounding
         return rules.filtered(lambda rule: rule._applies_to(amount, rounding))
 
-    # Trả None nếu được phép, ngược lại trả câu lỗi
+    # Return None when allowed, otherwise the error message
     def _permission_error(self, permission_type, amount, action_label):
         self.ensure_one()
         rules = self._permission_rules(permission_type, amount)
@@ -260,7 +260,7 @@ class PurchaseRequest(models.Model):
             amount=self.currency_id.format(amount), action=action_label,
             who="; ".join(rule._describe() for rule in rules))
 
-    # Tên người được duyệt vượt, để ghi vào câu lỗi
+    # Who may approve the overrun, named in the error message
     def _overrun_approver_label(self, amount):
         self.ensure_one()
         if self._config().overrun_approval_mode == 'all':
@@ -270,7 +270,7 @@ class PurchaseRequest(models.Model):
             return self.env._("người được cấu hình duyệt vượt dự toán")
         return "; ".join(rule._describe() for rule in rules)
 
-    # Không ai được tự duyệt vượt cho phiếu của mình
+    # Nobody approves an overrun on their own request
     def _overrun_approver_error(self, amount):
         self.ensure_one()
         if self._config().overrun_approval_mode == 'all':
@@ -279,7 +279,7 @@ class PurchaseRequest(models.Model):
             return self.env._("Không tự duyệt vượt dự toán cho phiếu của mình.")
         return self._permission_error('overrun', amount, self.env._("duyệt vượt dự toán"))
 
-    # Kiểm tra quyền bấm nút Tạo đơn mua
+    # Check the right to press Create purchase orders
     def _po_creator_error(self):
         self.ensure_one()
         if self.env.su or self._config().po_creator_mode == 'all':
@@ -287,7 +287,7 @@ class PurchaseRequest(models.Model):
         return self._permission_error(
             'po_creator', self.amount_total, self.env._("tạo đơn mua"))
 
-    # Quyết định ẩn hiện các nút trên form
+    # Drives which buttons show on the form
     @api.depends_context('uid')
     @api.depends('state', 'company_id', 'requester_id')
     def _compute_user_permissions(self):
@@ -300,7 +300,7 @@ class PurchaseRequest(models.Model):
                 not request._overrun_approver_error(request._invoiced_total_with(move))
                 for move in moves)
 
-    # Cảnh báo đỏ trên phiếu khi có hóa đơn vượt trần
+    # Red warning on the request when a bill sits above the ceiling
     def _compute_overrun_pending(self):
         for request in self:
             moves = request._pending_overrun_moves() if request.state == 'po_created' else []
@@ -309,7 +309,7 @@ class PurchaseRequest(models.Model):
                 "%s: %s" % (move.name or move.ref or '/', request._invoice_ceiling_error(move))
                 for move in moves) or False
 
-    # Hủy hết đơn mua thì phiếu quay lại Đã duyệt
+    # When every order is cancelled the request returns to approved
     def _reopen_if_orders_cancelled(self):
         for request in self:
             if request.state != 'po_created':
@@ -320,7 +320,7 @@ class PurchaseRequest(models.Model):
                 request.message_post(body=request.env._(
                     "Mọi đơn mua đã bị hủy, phiếu mở lại để tạo đơn khác."))
 
-    # Đếm số cấp phải ký, gom cấp theo công ty cho nhanh
+    # Count the levels to sign, grouping by company for speed
     @api.depends('amount_total', 'requester_id', 'department_id')
     def _compute_required_level_count(self):
         levels_by_company = {}
@@ -331,7 +331,7 @@ class PurchaseRequest(models.Model):
             request.required_level_count = len(
                 request._build_approval_chain(levels_by_company[company_id]))
 
-    # Phiếu có đang chờ chính người đang xem ký không
+    # Is this request waiting for the current user to sign
     @api.depends_context('uid')
     @api.depends('state', 'approval_ids.state')
     def _compute_is_my_turn(self):
@@ -341,31 +341,31 @@ class PurchaseRequest(models.Model):
                 request.state == 'to_approve' and approval
                 and not request._approver_error(approval))
 
-    # Cho lọc “Chờ tôi duyệt” trên danh sách
+    # Powers the "Waiting for me" filter on the list
     def _search_is_my_turn(self, operator, value):
         if operator != 'in':
             return NotImplemented
         waiting = self.search([('state', '=', 'to_approve')]).filtered('is_my_turn')
         return [('id', 'in' if True in value else 'not in', waiting.ids)]
 
-    # Tham số hệ thống: có cho tự duyệt phiếu của mình không
+    # System parameter: may a requester approve their own request
     def _allow_self_approval(self):
         return self.env['ir.config_parameter'].sudo().get_param(
             'im_purchase_request.allow_self_approval') in ('1', 'True', 'true')
 
-    # Người đề nghị là người duy nhất ký được cấp này
+    # The requester is the only person who can sign this level
     def _requester_is_approver(self, level):
         self.ensure_one()
         approvers = self._level_approver_users(level)
         return bool(approvers) and approvers == self.requester_id
 
-    # Cấp duyệt của công ty phiếu, kèm cấp dùng chung
+    # Levels of the request's company, plus the shared ones
     def _get_levels(self):
         return self.env['im.purchase.request.approval.level'].search([
             ('company_id', 'in', [False, self.company_id.id]),
         ])
 
-    # Các cấp phải ký với số tiền này, theo thứ tự
+    # Levels that must sign for this amount, in order
     def _build_approval_chain(self, levels=None, amount=None):
         self.ensure_one()
         levels = self._get_levels() if levels is None else levels
@@ -373,13 +373,13 @@ class PurchaseRequest(models.Model):
         rounding = self.currency_id.rounding
         return levels.filtered(lambda level: level._applies_to(amount, rounding))
 
-    # Cấp đang chờ ký, tức dòng chờ đầu tiên
+    # The level waiting for a signature: the first pending row
     def _current_approval(self):
         self.ensure_one()
         pending = self.approval_ids.filtered(lambda a: a.state == 'pending')
         return pending.sorted('sequence')[:1]
 
-    # Ai ký được cấp này: thành viên nhóm, lọc theo phòng nếu cần
+    # Who can sign this level: group members, narrowed by department
     def _level_approver_users(self, level):
         self.ensure_one()
         members = self.env['res.users'].sudo().search([
@@ -391,7 +391,7 @@ class PurchaseRequest(models.Model):
             return manager & members
         return members
 
-    # Liệt kê cấp chưa có ai ký được, nêu tên cụ thể
+    # List the levels nobody can sign, naming each one
     def _missing_approver_errors(self, levels):
         self.ensure_one()
         problems = []
@@ -410,7 +410,7 @@ class PurchaseRequest(models.Model):
                     level=level.name, group=level.group_id.display_name))
         return problems
 
-    # Trả None nếu người đang xem ký được cấp này
+    # Return None when the current user may sign this level
     def _approver_error(self, approval):
         self.ensure_one()
         user = self.env.user
@@ -437,7 +437,7 @@ class PurchaseRequest(models.Model):
 
         return None
 
-    # Giao việc cần làm cho người ký cấp tiếp theo
+    # Schedule an activity for the next level's approvers
     def _activity_next_approver(self):
         self.ensure_one()
         approval = self._current_approval()
@@ -456,7 +456,7 @@ class PurchaseRequest(models.Model):
                 "Chờ %(level)s ký, nhưng nhóm %(group)s chưa có ai.",
                 level=level.name, group=level.group_id.display_name))
 
-    # Nút Trình duyệt: kiểm tra đủ điều kiện rồi dựng chuỗi ký
+    # Submit button: run every check, then build the approval chain
     def action_submit(self):
         for request in self:
             request._check_is_requester()
@@ -472,7 +472,7 @@ class PurchaseRequest(models.Model):
             request._check_sources_compared()
             request._check_lines_complete()
 
-            # Bộ phận có thể đã đổi bên nhân sự từ lúc lập nháp
+            # HR may have moved the requester since the draft was written
             department = request._requester_department()
             if request.department_id != department:
                 request.department_id = department
@@ -489,7 +489,7 @@ class PurchaseRequest(models.Model):
                     "Nhờ quản trị tick “Là người duyệt” cho đúng người rồi trình lại.",
                     "\n".join(problems)))
 
-            # Xóa chuỗi cũ rồi dựng lại, mỗi cấp một dòng chờ ký
+            # Wipe the old chain and rebuild it, one pending row per level
             request.approval_ids.sudo().unlink()
             self.env['im.purchase.request.approval'].sudo().create([
                 {
@@ -507,7 +507,7 @@ class PurchaseRequest(models.Model):
             request._activity_next_approver()
         return True
 
-    # Chỉ người đề nghị mới thao tác được trên phiếu
+    # Only the requester can act on the request
     def _check_is_requester(self):
         self.ensure_one()
         if not self.env.su and self.env.user != self.requester_id:
@@ -515,7 +515,7 @@ class PurchaseRequest(models.Model):
                 "Chỉ người đề nghị (%s) mới làm được thao tác này trên phiếu.",
                 self.requester_id.display_name))
 
-    # Câu lỗi khi số tiền không rơi vào cấp duyệt nào
+    # Error message when the amount matches no approval level
     def _no_level_error(self, all_levels):
         self.ensure_one()
         if all_levels:
@@ -530,7 +530,7 @@ class PurchaseRequest(models.Model):
             "Chưa cấu hình cấp duyệt nào cho công ty này. "
             "Thêm ở Đề nghị mua hàng / Cấu hình / Thiết lập.")
 
-    # Có cấp theo phòng thì phiếu phải biết bộ phận
+    # A department-scoped level needs the request to know its department
     def _check_department_known(self, levels):
         self.ensure_one()
         by_dept = levels.filtered(lambda level: level.scope == 'department')
@@ -541,7 +541,7 @@ class PurchaseRequest(models.Model):
                 user=self.requester_id.display_name,
                 levels=", ".join(by_dept.mapped('name'))))
 
-    # Mỗi dòng phải có đơn giá và nhà cung cấp gợi ý
+    # Every line needs a unit price and a suggested vendor
     def _check_lines_complete(self):
         self.ensure_one()
         problems = []
@@ -559,7 +559,7 @@ class PurchaseRequest(models.Model):
             raise UserError(self.env._(
                 "Dòng hàng chưa đủ thông tin:\n%s", "\n".join(problems)))
 
-    # Đủ nhà cung cấp, đã chọn một, có lý do nếu không rẻ nhất
+    # Enough vendors, one selected, with a reason when not the cheapest
     def _check_sources_compared(self):
         self.ensure_one()
         problems = []
@@ -585,7 +585,7 @@ class PurchaseRequest(models.Model):
             raise UserError(self.env._(
                 "Thông tin nhà cung cấp chưa đủ:\n%s", "\n".join(problems)))
 
-    # Lấy cấp đang chờ, không ký được thì báo lỗi
+    # Take the pending level, or raise when the user cannot sign
     def _pending_approval_for_me(self):
         self.ensure_one()
         approval = self._current_approval()
@@ -596,7 +596,7 @@ class PurchaseRequest(models.Model):
             raise AccessError(error)
         return approval
 
-    # Nút Duyệt: ký cấp hiện tại rồi chuyển sang cấp sau
+    # Approve button: sign the current level, then move to the next
     def action_approve(self):
         for request in self:
             approval = request._pending_approval_for_me()
@@ -616,7 +616,7 @@ class PurchaseRequest(models.Model):
                 request.sudo().state = 'approved'
         return True
 
-    # Nút Từ chối: mở hộp thoại hỏi lý do
+    # Refuse button: open the dialog asking for a reason
     def action_refuse(self):
         self._pending_approval_for_me()
         return {
@@ -628,7 +628,7 @@ class PurchaseRequest(models.Model):
             'context': {'default_request_id': self.id},
         }
 
-    # Hộp thoại từ chối gọi vào đây để ghi lý do
+    # The refuse dialog calls in here to store the reason
     def _apply_refusal(self, reason):
         approval = self._pending_approval_for_me()
         approval.sudo().write({
@@ -644,7 +644,7 @@ class PurchaseRequest(models.Model):
             user=self.env.user.display_name, level=approval.level_id.name,
             reason=reason))
 
-    # Phiếu bị từ chối quay về Nháp để sửa lại
+    # A refused request goes back to draft for editing
     def action_reset_to_draft(self):
         for request in self:
             request._check_is_requester()
@@ -657,7 +657,7 @@ class PurchaseRequest(models.Model):
                 "Đưa về Nháp, đã xoá chuỗi ký cũ."))
         return True
 
-    # Người đề nghị rút phiếu khi chưa cấp nào ký
+    # The requester withdraws while no level has signed yet
     def action_withdraw(self):
         for request in self:
             if request.state != 'to_approve':
@@ -673,7 +673,7 @@ class PurchaseRequest(models.Model):
             request.message_post(body=request.env._("Người đề nghị đã rút phiếu."))
         return True
 
-    # Nút Tạo đơn mua: gộp dòng hàng theo nhà cung cấp
+    # Create orders button: group the lines by vendor
     def action_create_purchase_orders(self):
         self.ensure_one()
         if self.state != 'approved':
@@ -696,7 +696,7 @@ class PurchaseRequest(models.Model):
 
         date_planned = (fields.Datetime.to_datetime(self.date_required)
                         or fields.Datetime.now())
-        # Gộp dòng hàng theo nhà cung cấp, mỗi nhà cung cấp một đơn
+        # Group lines by vendor, one order per vendor
         lines_by_vendor = self.line_ids.grouped('partner_id')
 
         orders = self.env['purchase.order'].sudo().create([
@@ -722,7 +722,7 @@ class PurchaseRequest(models.Model):
             for partner, lines in lines_by_vendor.items()
         ])
 
-        # Nối dòng phiếu với dòng đơn để theo dõi hóa đơn sau này
+        # Link request lines to order lines to follow the bills later
         for lines, order in zip(lines_by_vendor.values(), orders):
             for request_line, order_line in zip(lines, order.order_line):
                 request_line.sudo().purchase_line_id = order_line
@@ -732,7 +732,7 @@ class PurchaseRequest(models.Model):
         self.message_post(body=self.env._(
             "Đã tạo %(count)s đơn mua: %(orders)s", count=len(orders), orders=names))
 
-        # Không có quyền xem đơn mua thì chỉ hiện thông báo
+        # Without access to purchase orders, only show a notification
         if self.env['purchase.order'].has_access('read'):
             return self.action_view_purchase_orders()
         return {
@@ -748,7 +748,7 @@ class PurchaseRequest(models.Model):
             },
         }
 
-    # Nút Duyệt vượt dự toán: mở hộp thoại hỏi lý do
+    # Approve overrun button: open the dialog asking for a reason
     def action_open_overrun_wizard(self):
         self.ensure_one()
         if not self.can_approve_overrun:
@@ -765,7 +765,7 @@ class PurchaseRequest(models.Model):
             'context': {'default_request_id': self.id},
         }
 
-    # Nút thông minh mở các đơn mua của phiếu
+    # Smart button opening the purchase orders of this request
     def action_view_purchase_orders(self):
         self.ensure_one()
         action = {
@@ -782,12 +782,12 @@ class PurchaseRequest(models.Model):
             })
         return action
 
-    # Hóa đơn của mọi đơn mua thuộc phiếu
+    # Bills of every purchase order of this request
     def _invoices(self):
         self.ensure_one()
         return self.sudo().purchase_order_ids.invoice_ids
 
-    # Nút thông minh mở các hóa đơn của phiếu
+    # Smart button opening the bills of this request
     def action_view_invoices(self):
         self.ensure_one()
         moves = self._invoices()
@@ -803,7 +803,7 @@ class PurchaseRequest(models.Model):
             action.update({'view_mode': 'form', 'res_id': moves.id})
         return action
 
-    # Chặn sửa trạng thái trực tiếp, bắt buộc bấm nút
+    # Block direct state writes; the buttons are the only way
     def _check_state_transition(self, previous_states):
         for request in self:
             before = previous_states[request.id]
@@ -847,7 +847,7 @@ class PurchaseRequest(models.Model):
                     "Dùng nút trên phiếu.",
                     name=request.name, state=dict(STATES)[after], reason=reason))
 
-    # Khóa nội dung sau khi trình duyệt, canh cả trạng thái
+    # Freeze the content after submission, and guard the state
     def write(self, vals):
         if 'requester_id' in vals and not self.env.su and any(
                 request.requester_id.id != vals['requester_id'] for request in self):
@@ -873,7 +873,7 @@ class PurchaseRequest(models.Model):
             self._check_state_transition(previous_states)
         return res
 
-    # Phiếu mới luôn là Nháp, người tạo là người đề nghị
+    # A new request is always draft, created by its requester
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
@@ -886,7 +886,7 @@ class PurchaseRequest(models.Model):
                     company_id).next_by_code('im.purchase.request') or '/'
         return super().create(vals_list)
 
-    # Chỉ xóa được phiếu Nháp, phiếu đã trình thì lưu trữ
+    # Only draft requests are deletable; submitted ones are archived
     def unlink(self):
         if any(request.state != 'draft' for request in self):
             raise UserError(self.env._(

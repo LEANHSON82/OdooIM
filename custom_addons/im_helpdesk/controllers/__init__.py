@@ -1,3 +1,3 @@
-"""Gói controller HTTP cho các route portal của IM Helpdesk."""
+"""HTTP controller package for the IM Helpdesk portal routes."""
 
 from . import portal

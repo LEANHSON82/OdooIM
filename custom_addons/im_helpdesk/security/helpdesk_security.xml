@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Nhóm bảo mật và record rule kiểm soát quyền truy cập helpdesk. -->
+<!-- Security groups and record rules driving helpdesk access. -->
 <odoo>
     <record model="res.groups.privilege" id="res_groups_privilege_helpdesk">
         <field name="name">Helpdesk</field>
@@ -39,7 +39,7 @@
             <field name="implied_ids" eval="[(4, ref('im_helpdesk.group_helpdesk_manager'))]"/>
         </record>
 
-        <!-- Quản lý: toàn quyền truy cập -->
+        <!-- Managers: full access -->
         <record id="helpdesk_manager_rule" model="ir.rule">
             <field name="name">Helpdesk Administrator</field>
             <field name="model_id" ref="model_helpdesk_team"/>
@@ -53,7 +53,7 @@
             <field name="groups" eval="[(4, ref('group_helpdesk_manager'))]"/>
         </record>
 
-        <!-- Người dùng: team của mình hoặc team mở -->
+        <!-- Users: their own teams, or the open ones -->
         <record id="helpdesk_user_rule" model="ir.rule">
             <field name="name">Helpdesk User</field>
             <field name="model_id" ref="model_helpdesk_team"/>
@@ -74,7 +74,7 @@
             <field name="groups" eval="[(4, ref('base.group_user'))]"/>
         </record>
 
-        <!-- Đa công ty -->
+        <!-- Multi-company -->
         <record id="helpdesk_ticket_company_rule" model="ir.rule">
             <field name="name">Ticket: multi-company</field>
             <field name="model_id" ref="model_helpdesk_ticket"/>
@@ -104,7 +104,7 @@
             <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
         </record>
 
-        <!-- Rule cho báo cáo -->
+        <!-- Rules for the reports -->
         <record id="helpdesk_sla_report_analysis_rule_manager" model="ir.rule">
             <field name="name">Helpdesk SLA Report: multi-company</field>
             <field name="model_id" ref="model_helpdesk_sla_report_analysis"/>

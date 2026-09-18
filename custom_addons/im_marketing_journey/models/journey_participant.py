@@ -2,12 +2,19 @@ import pytz
 from datetime import timedelta
 from odoo import models, fields, api, _
 
+# Messages are never sent between 22:00 and 07:00 local time.
 QUIET_START_HOUR = 22
 QUIET_END_HOUR = 7
 
 DEFAULT_STEP_MINUTES = 5
 
 class ImJourneyParticipant(models.Model):
+    """One lead travelling through one journey.
+
+    Position is `current_node_id`; the cron picks the participant up again
+    once `next_execution_time` is due.
+    """
+
     _name = 'im.journey.participant'
     _description = 'Marketing Journey Participant'
     _order = 'id desc'
@@ -33,6 +40,8 @@ class ImJourneyParticipant(models.Model):
 
     @api.model
     def _cron_process_participants(self):
+        """Advance every participant that is due. Runs every 5 minutes."""
+        # Paused journeys are skipped, and their participants keep their place.
         now = fields.Datetime.now()
         participants = self.search([
             ('journey_id.state', '=', 'running'),
@@ -47,6 +56,11 @@ class ImJourneyParticipant(models.Model):
         return timedelta(minutes=self.journey_id.step_delay_minutes or DEFAULT_STEP_MINUTES)
 
     def _get_quiet_hours_deferral(self):
+        """Return when to retry if we are inside quiet hours, else False.
+
+        The timezone comes from the journey, not from the user running the
+        cron: that would break silently the day OdooBot gets a timezone.
+        """
         self.ensure_one()
         tz_name = self.journey_id.quiet_hours_tz or 'Asia/Ho_Chi_Minh'
         local_tz = pytz.timezone(tz_name)
@@ -55,6 +69,7 @@ class ImJourneyParticipant(models.Model):
         if QUIET_END_HOUR <= local_dt.hour < QUIET_START_HOUR:
             return False
 
+        # Before midnight we defer to tomorrow morning, after midnight to today.
         target = local_dt + timedelta(days=1) if local_dt.hour >= QUIET_START_HOUR else local_dt
         naive_target = target.replace(
             tzinfo=None, hour=QUIET_END_HOUR, minute=0, second=0, microsecond=0
@@ -73,7 +88,15 @@ class ImJourneyParticipant(models.Model):
         })
 
     def _send_node_message(self, node):
+        """Send one message for this node, at most once per run.
+
+        NOT WIRED YET: this only writes the log row. Plug the real Zalo ZNS
+        call or mail.mail here, keep the already_sent guard, and log
+        'failed' instead of 'success' when the channel refuses.
+        """
         self.ensure_one()
+        # The log is the source of truth against double sending; run_number
+        # keeps a re-enrolled lead from being blocked by its older run.
         already_sent = self.env['im.journey.log'].search_count([
             ('participant_id', '=', self.id),
             ('node_id', '=', node.id),
@@ -89,6 +112,7 @@ class ImJourneyParticipant(models.Model):
         return True
 
     def _check_exit_condition(self):
+        """Leave the journey when the lead is archived or changed stage."""
         self.ensure_one()
         lead = self.lead_id
 
@@ -111,6 +135,7 @@ class ImJourneyParticipant(models.Model):
         return False
 
     def process_next_step(self, ignore_quiet_hours=False):
+        """Run the current node and move the participant to the next one."""
         self.ensure_one()
         if self.state != 'running' or self.journey_id.state != 'running':
             return False
@@ -123,6 +148,8 @@ class ImJourneyParticipant(models.Model):
             self.write({'state': 'done'})
             return False
 
+        # Default due date is now + the journey's minimum gap; a wait node
+        # replaces it with its own duration below.
         now = fields.Datetime.now()
         step_due = now + self._get_step_delay()
 
@@ -169,6 +196,8 @@ class ImJourneyParticipant(models.Model):
         return True
 
     def action_restart_run(self):
+        """Send the lead through the journey again as a new run."""
+        # Old logs stay; the higher run_count is what unblocks the sends.
         for participant in self:
             first_node = participant.journey_id.node_ids.sorted('sequence')[:1]
             participant.write({

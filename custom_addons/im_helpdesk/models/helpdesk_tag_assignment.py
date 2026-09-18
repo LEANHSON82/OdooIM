@@ -1,15 +1,15 @@
-"""Quy tắc phân công theo tag cho IM Helpdesk.
+"""Tag-based assignment rules for IM Helpdesk.
 
-Mỗi record liên kết một tag, một team tùy chọn và các user có thể nhận ticket
-chứa tag đó. Khi tạo ticket, hệ thống dùng các rule này để route theo tag và
-chọn người xử lý theo tag.
+Each record ties a tag, an optional team and the users allowed to take tickets carrying
+that tag. On ticket creation these rules drive both routing by tag and the choice of
+assignee.
 """
 
 from odoo import fields, models
 
 
 class HelpdeskTagAssignment(models.Model):
-    """Ánh xạ tag của ticket tới các nhân viên đủ điều kiện trong một team helpdesk."""
+    """Map a ticket tag to the eligible agents of a helpdesk team."""
 
     _name = 'helpdesk.tag.assignment'
     _description = "Helpdesk Tag Assignment"

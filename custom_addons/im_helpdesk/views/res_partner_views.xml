@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!-- Phần mở rộng form partner cho bộ đếm ticket helpdesk và SLA policy. -->
+<!-- Partner form extension: helpdesk ticket counter and SLA policies. -->
 <odoo>
     <record id="view_partner_form_inherit_helpdesk" model="ir.ui.view">
         <field name="name">res.partner.form.inherit.helpdesk</field>

@@ -30,7 +30,7 @@ const homeMenuService = {
             }
         }
 
-        // Auto-close khi action manager load content mới
+        // Close the grid as soon as an action renders behind it.
         env.bus.addEventListener("ACTION_MANAGER:UPDATE", ({ detail }) => {
             if (detail && detail.Component && state.isOpen) {
                 state.isOpen = false;

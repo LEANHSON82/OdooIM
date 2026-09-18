@@ -1,7 +1,7 @@
 from odoo import api, fields, models
 from odoo.exceptions import AccessError, UserError
 
-# Hộp thoại hỏi lý do trước khi cho hóa đơn vượt trần
+# Dialog asking for a reason before a bill passes the ceiling
 class PurchaseRequestOverrun(models.TransientModel):
     _name = 'im.purchase.request.overrun'
     _description = 'Duyệt hóa đơn vượt dự toán'
@@ -11,14 +11,14 @@ class PurchaseRequestOverrun(models.TransientModel):
     detail = fields.Text(string="Chênh lệch", compute='_compute_detail')
     reason = fields.Text(string="Lý do duyệt vượt", required=True)
 
-    # Hiện chênh lệch của từng hóa đơn vượt trần
+    # Show the gap for each bill above the ceiling
     @api.depends('request_id')
     def _compute_detail(self):
         for wizard in self:
             wizard.detail = wizard.request_id.overrun_detail or self.env._(
                 "Phiếu này không có hóa đơn nào vượt dự toán.")
 
-    # Ghi lý do và người duyệt lên các hóa đơn vượt
+    # Write the reason and approver onto the overrun bills
     def action_confirm(self):
         self.ensure_one()
         request = self.request_id

@@ -23,6 +23,7 @@ class SurveyUserInput(models.Model):
 
     def _im_issue_certificates(self):
         """Issue a certificate for every passing course exam attempt."""
+        # The membership, not the attempt, is what a certificate belongs to.
         Certificate = self.env['slide.certificate']
         ChannelPartner = self.env['slide.channel.partner'].sudo()
         for attempt in self._im_course_exam_attempts().filtered('scoring_success'):
@@ -54,6 +55,7 @@ class SurveyUserInput(models.Model):
                 continue
             if not (attempt.partner_id.email or attempt.email):
                 continue
+            # No attempt left means CE already mailed this learner.
             if not attempt.survey_id.sudo()._has_attempts_left(
                     attempt.partner_id, attempt.email, attempt.invite_token):
                 continue

@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!-- Giao diện backend cho rule phân công tag sang team/user. -->
+<!-- Backend views for the tag assignment rules, team and users. -->
 <odoo>
 
     <record id="helpdesk_tag_assignment_view_list" model="ir.ui.view">

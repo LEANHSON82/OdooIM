@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Sequence mã ticket dùng để sinh ticket ID helpdesk dễ đọc. -->
+<!-- Ticket code sequence, for readable helpdesk ticket ids. -->
 <odoo>
     <data noupdate="1">
         <record id="seq_helpdesk_ticket" model="ir.sequence">

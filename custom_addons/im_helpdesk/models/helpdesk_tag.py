@@ -1,7 +1,8 @@
-"""Model tag của ticket trong IM Helpdesk.
+"""Ticket tag model for IM Helpdesk.
 
-Tag vừa là nhãn hiển thị trên ticket, vừa là dữ liệu đầu vào cho tự động gắn tag
-theo keyword, chuyển ticket về team phù hợp và chọn nhân viên xử lý.
+A tag is both a label shown on the ticket and the input of the automations: keyword
+auto-tagging, routing the ticket to the right team, and picking the agent who will
+handle it.
 """
 
 import re
@@ -11,14 +12,14 @@ from odoo import api, fields, models
 
 
 class HelpdeskTag(models.Model):
-    """Biểu diễn một tag helpdesk có thể tái sử dụng và có keyword tự gắn tùy chọn."""
+    """A reusable helpdesk tag, with optional auto-apply keywords."""
 
     _name = 'helpdesk.tag'
     _description = 'Helpdesk Tags'
     _order = 'name'
 
     def _get_default_color(self):
-        """Chọn ngẫu nhiên mã màu kanban khi tạo tag."""
+        """Pick a random kanban colour when a tag is created."""
         return randint(1, 11)
 
     name = fields.Char(required=True, translate=True)
@@ -42,10 +43,10 @@ class HelpdeskTag(models.Model):
 
     @api.model
     def name_create(self, name):
-        """Dùng lại tag đã có khi quick-create nhận cùng một tên.
+        """Reuse an existing tag when quick-create is given the same name.
 
-        Luồng quick-create của Odoo có thể được gọi từ widget many2many. Override
-        này tránh tạo tag trùng chỉ khác chữ hoa/thường hoặc khoảng trắng.
+        Odoo quick-create can fire from a many2many widget. This override avoids
+        tags that differ only by case or surrounding spaces.
         """
         existing_tag = self.search([('name', '=ilike', name.strip())], limit=1)
         if existing_tag:
@@ -53,11 +54,10 @@ class HelpdeskTag(models.Model):
         return super().name_create(name)
 
     def _get_auto_apply_keywords(self):
-        """Trả về danh sách keyword đã chuẩn hóa để tự động gắn tag.
+        """Return the normalised keywords used for auto-tagging.
 
-        Keyword có thể được phân tách bằng dấu phẩy, dấu chấm phẩy hoặc xuống
-        dòng. Kết quả được casefold để match không phân biệt hoa/thường và ổn
-        định hơn với cả text non-ASCII.
+        Keywords may be separated by commas, semicolons or newlines. The result
+        is casefolded so matching ignores case and behaves on non-ASCII text.
         """
         self.ensure_one()
         return [
@@ -67,10 +67,10 @@ class HelpdeskTag(models.Model):
         ]
 
     def _get_auto_apply_keyword_entries(self):
-        """Trả về các keyword tự gắn tag cùng trọng số cấu hình.
+        """Return the auto-apply keywords together with their configured weight.
 
-        Dữ liệu cũ như ``invoice`` vẫn có trọng số 1. Cú pháp mới
-        ``keyword::3`` cho phép keyword đó đóng góp 3 điểm vào tag.
+        Legacy data such as ``invoice`` still weighs 1. The newer ``keyword::3``
+        syntax lets one keyword contribute 3 points to the tag.
         """
         self.ensure_one()
         entries = []

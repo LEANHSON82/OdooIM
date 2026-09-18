@@ -2,6 +2,8 @@ from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 
 class ImJourneyNode(models.Model):
+    """One step of a journey: wait, send a message, or branch."""
+
     _name = 'im.journey.node'
     _description = 'Marketing Journey Node'
     _order = 'sequence, id'
@@ -72,6 +74,12 @@ class ImJourneyNode(models.Model):
 
     @api.model
     def _check_journey_has_no_cycle(self, journey):
+        """Refuse a journey whose nodes loop back on themselves.
+
+        Iterative DFS with the three-colour marking: an edge reaching a
+        GREY node closes a cycle, and a participant inside it would never
+        reach the end.
+        """
         successors = {
             node.id: node._get_next_nodes().ids
             for node in journey.node_ids

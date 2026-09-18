@@ -12,6 +12,11 @@ class CrmLead(models.Model):
             lead.journey_count = len(lead.participant_ids)
 
     def _enroll_in_running_journeys(self):
+        """Enroll these leads into every running journey they now match.
+
+        Called on create and whenever stage_id changes, which is also how a
+        lead leaves another journey.
+        """
         running_journeys = self.env['im.journey'].search([('state', '=', 'running')])
         if not running_journeys:
             return
@@ -31,6 +36,8 @@ class CrmLead(models.Model):
             for journey in running_journeys:
                 if lead.stage_id != journey.trigger_stage_id:
                     continue
+                # One participant per (journey, lead) by constraint, so an
+                # existing one is restarted rather than duplicated.
                 participant = by_key.get((journey.id, lead.id))
                 if participant:
                     if journey.allow_re_enroll and participant.state in ('done', 'exited'):

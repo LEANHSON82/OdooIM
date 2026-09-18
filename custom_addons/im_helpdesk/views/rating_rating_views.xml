@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Giao diện và hành động rating đã lọc cho chỉ số hài lòng của ticket helpdesk. -->
+<!-- Filtered rating views and actions for the ticket satisfaction figures. -->
 <odoo>
     <record id="rating_rating_view_search_inherit_helpdesk" model="ir.ui.view">
         <field name="name">rating.rating.search.helpdesk</field>

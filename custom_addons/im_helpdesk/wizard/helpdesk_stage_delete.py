@@ -1,4 +1,4 @@
-"""Wizard để lưu trữ, khôi phục hoặc xóa stage helpdesk một cách an toàn."""
+"""Wizard to archive, restore or delete helpdesk stages safely."""
 
 import ast
 
@@ -6,7 +6,7 @@ from odoo import api, fields, models, _
 
 
 class HelpdeskStageDeleteWizard(models.TransientModel):
-    """Dẫn user qua luồng xóa stage khi ticket có thể bị ảnh hưởng."""
+    """Walk the user through stage deletion when tickets may be affected."""
 
     _name = 'helpdesk.stage.delete.wizard'
     _description = 'Helpdesk Stage Delete Wizard'
@@ -17,19 +17,19 @@ class HelpdeskStageDeleteWizard(models.TransientModel):
     stages_active = fields.Boolean(compute='_compute_stages_active', export_string_translation=False)
 
     def _compute_ticket_count(self):
-        """Đếm ticket đang hoạt động và đã lưu trữ đang dùng các stage được chọn."""
+        """Count the active and archived tickets using the selected stages."""
         HelpdeskTicket = self.with_context(active_test=False).env['helpdesk.ticket']
         for wizard in self:
             wizard.ticket_count = HelpdeskTicket.search_count([('stage_id', 'in', wizard.stage_ids.ids)])
 
     @api.depends('stage_ids')
     def _compute_stages_active(self):
-        """Cho giao diện biết tất cả stage được chọn hiện có đang hoạt động hay không."""
+        """Tell the interface whether every selected stage is still active."""
         for wizard in self:
             wizard.stages_active = all(wizard.stage_ids.mapped('active'))
 
     def action_archive(self):
-        """Lưu trữ ngay nếu chỉ một team, hoặc hỏi xác nhận nếu có nhiều team."""
+        """Archive straight away for a single team, ask for confirmation otherwise."""
         if len(self.team_ids) <= 1:
             return self.action_confirm()
         return {
@@ -44,24 +44,24 @@ class HelpdeskStageDeleteWizard(models.TransientModel):
         }
 
     def action_confirm(self):
-        """Lưu trữ các stage được chọn và toàn bộ ticket trong các stage đó."""
+        """Archive the selected stages and every ticket sitting in them."""
         tickets = self.with_context(active_test=False).env['helpdesk.ticket'].search([('stage_id', 'in', self.stage_ids.ids)])
         tickets.write({'active': False})
         self.stage_ids.write({'active': False})
         return self._get_action()
 
     def action_unarchive_ticket(self):
-        """Khôi phục các ticket đã bị lưu trữ do những stage này."""
+        """Restore the tickets that these stages archived."""
         tickets = self.env['helpdesk.ticket'].with_context(active_test=False).search([('stage_id', 'in', self.stage_ids.ids)])
         tickets.action_unarchive()
 
     def action_unlink(self):
-        """Xóa các stage được chọn sau khi wizard xác nhận."""
+        """Delete the selected stages once the wizard is confirmed."""
         self.stage_ids.unlink()
         return self._get_action()
 
     def _get_action(self):
-        """Trả về hành động phù hợp nhất sau thao tác lưu trữ/xóa."""
+        """Return the most useful action to run after archiving or deleting."""
         team_id = self.env.context.get('default_team_id')
         if team_id:
             action = self.env["ir.actions.actions"]._for_xml_id('im_helpdesk.helpdesk_ticket_action_team')

@@ -1,4 +1,4 @@
-"""Phần mở rộng user cho chỉ tiêu dashboard Helpdesk và helper lịch làm việc."""
+"""User extension for the helpdesk dashboard targets and working-time helpers."""
 
 from collections import defaultdict
 
@@ -9,7 +9,7 @@ from odoo import fields, models
 
 
 class ResUsers(models.Model):
-    """Thêm chỉ tiêu KPI Helpdesk theo từng user và tiện ích tính thời gian làm việc."""
+    """Add the per-user helpdesk KPI targets and working-time utilities."""
 
     _inherit = 'res.users'
 
@@ -32,7 +32,7 @@ class ResUsers(models.Model):
 
     @property
     def SELF_READABLE_FIELDS(self):
-        """Cho phép user đọc các field chỉ tiêu KPI helpdesk của chính họ."""
+        """Let a user read their own helpdesk KPI target fields."""
         return super().SELF_READABLE_FIELDS + [
             'helpdesk_target_closed',
             'helpdesk_target_rating',
@@ -41,7 +41,7 @@ class ResUsers(models.Model):
 
     @property
     def SELF_WRITEABLE_FIELDS(self):
-        """Cho phép user cập nhật các field chỉ tiêu KPI helpdesk của chính họ."""
+        """Let a user update their own helpdesk KPI target fields."""
         return super().SELF_WRITEABLE_FIELDS + [
             'helpdesk_target_closed',
             'helpdesk_target_rating',
@@ -49,7 +49,7 @@ class ResUsers(models.Model):
         ]
 
     def _get_working_user_interval(self, start_dt, end_dt, calendar, compute_leaves=True):
-        """Trả về các khoảng thời gian làm việc của resource user trên một calendar."""
+        """Return the working intervals of the user resource on a calendar."""
         return calendar._work_intervals_batch(
             start_dt,
             end_dt,
@@ -58,10 +58,11 @@ class ResUsers(models.Model):
         )
 
     def _get_working_users_per_first_working_day(self):
-        """Nhóm user theo ngày làm việc sớm nhất tiếp theo của họ.
+        """Group users by their next working day, earliest first.
 
-        Auto-assignment dùng danh sách đã sắp xếp này để ưu tiên user đi làm
-        sớm hơn, đồng thời vẫn tôn trọng calendar cá nhân nếu user có cấu hình.
+        Auto-assignment walks this sorted list to favour the agents who start
+        work sooner, while still honouring a personal calendar when the user has
+        one.
         """
         tz = timezone(self.env.context.get('tz') or 'UTC')
         start_dt = fields.Datetime.now().astimezone(tz)

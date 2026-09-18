@@ -5,7 +5,7 @@ from odoo.tools import float_compare
 from .approval_level import amount_in_band
 
 
-# Số nhà cung cấp tối thiểu theo dải thành tiền dòng hàng
+# Minimum vendors per line, by subtotal band
 class PurchaseRequestQuoteRule(models.Model):
     _name = 'im.purchase.request.quote.rule'
     _description = 'Số nhà cung cấp tối thiểu theo thành tiền dòng hàng'
@@ -27,7 +27,7 @@ class PurchaseRequestQuoteRule(models.Model):
         string="Số NCC tối thiểu", default=1,
         help="0 là không bắt buộc báo giá cho dải này.")
 
-    # Dải phải thuận và số nhà cung cấp không được âm
+    # The band must read forwards and the vendor count stay positive
     @api.constrains('amount_threshold', 'amount_max', 'min_quote_count')
     def _check_values(self):
         for rule in self:
@@ -36,7 +36,7 @@ class PurchaseRequestQuoteRule(models.Model):
             if rule.min_quote_count < 0:
                 raise ValidationError(self.env._("Số nhà cung cấp tối thiểu không được âm."))
 
-    # Dải bắt đầu từ 0 áp cho cả dòng chưa có tiền
+    # A band starting at 0 also covers lines with no amount yet
     def _applies_to(self, amount, rounding):
         self.ensure_one()
         if not self.amount_threshold and float_compare(amount, 0.0, precision_rounding=rounding) <= 0:

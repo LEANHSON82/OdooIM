@@ -2,7 +2,7 @@ from odoo import fields, models
 from odoo.exceptions import UserError
 from odoo.tools import float_compare
 
-# Đơn mua sinh từ phiếu đề nghị, kèm kiểm tra trần chi
+# Purchase orders born from a request, with the ceiling check
 class PurchaseOrder(models.Model):
     _inherit = 'purchase.order'
 
@@ -11,19 +11,19 @@ class PurchaseOrder(models.Model):
         readonly=True, copy=False, ondelete='restrict', index='btree_not_null',
         help="Phiếu đã sinh ra đơn mua này.")
 
-    # Xác nhận đơn: tổng các đơn không được vượt trần của phiếu
+    # On confirm: the orders together must stay under the request ceiling
     def button_confirm(self):
         for order in self.filtered('im_request_id'):
             order._check_request_ceiling()
         return super().button_confirm()
 
-    # Hủy hết đơn thì mở lại phiếu để tạo đơn khác
+    # Cancelling every order reopens the request for new ones
     def button_cancel(self):
         res = super().button_cancel()
         self.im_request_id.sudo()._reopen_if_orders_cancelled()
         return res
 
-    # Cộng mọi đơn chưa hủy, quy về tiền tệ của phiếu
+    # Sum every order that is not cancelled, in the request currency
     def _check_request_ceiling(self):
         self.ensure_one()
         request = self.im_request_id

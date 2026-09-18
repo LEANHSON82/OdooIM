@@ -1,7 +1,7 @@
-"""Model phân tích trạng thái SLA dựa trên SQL cho IM Helpdesk.
+"""SQL-based SLA status analysis model for IM Helpdesk.
 
-Report này tách ticket theo từng trạng thái SLA được liên kết, giúp phân tích
-riêng các rule SLA đã đạt, đang chạy và đã fail.
+The report splits tickets per linked SLA status, so reached, ongoing and failed SLA
+rules can be analysed separately.
 """
 
 from odoo import api, fields, models, tools
@@ -10,7 +10,7 @@ from odoo.addons.rating.models.rating_data import RATING_LIMIT_MIN
 
 
 class HelpdeskSlaReportAnalysis(models.Model):
-    """Cung cấp các field báo cáo trạng thái SLA từ PostgreSQL view."""
+    """Expose the SLA status reporting fields from a PostgreSQL view."""
 
     _name = 'helpdesk.sla.report.analysis'
     _description = "SLA Status Analysis"
@@ -64,10 +64,11 @@ class HelpdeskSlaReportAnalysis(models.Model):
     ], string='Kanban State', readonly=True)
 
     def _select(self):
-        """Trả về các cột SELECT cho view phân tích trạng thái SLA.
+        """Return the SELECT columns of the SLA status analysis view.
 
-        SQL tính trạng thái SLA trực tiếp từ deadline/reached timestamp để report
-        luôn nhất quán với model trạng thái SLA của ticket.
+        The SQL derives the SLA status straight from the deadline and reached
+        timestamps, so the report always agrees with the ticket SLA status
+        model.
         """
         return """
             SELECT DISTINCT T.id as id,
@@ -119,7 +120,7 @@ class HelpdeskSlaReportAnalysis(models.Model):
         """
 
     def _group_by(self):
-        """Trả về các cột GROUP BY cần cho tổng hợp SLA và rating."""
+        """Return the GROUP BY columns needed for the SLA and rating aggregates."""
         return """
                 t.id,
                 STAGE.fold,
@@ -131,7 +132,7 @@ class HelpdeskSlaReportAnalysis(models.Model):
         """
 
     def _from(self):
-        """Trả về các join cho ticket, stage, record trạng thái SLA và rating."""
+        """Return the joins over tickets, stages, SLA status records and ratings."""
         return f"""
             helpdesk_ticket T
             LEFT JOIN rating_rating rt ON rt.res_id = t.id
@@ -144,19 +145,19 @@ class HelpdeskSlaReportAnalysis(models.Model):
         """
 
     def _where(self):
-        """Giới hạn report SLA chỉ lấy các ticket đang active."""
+        """Restrict the SLA report to active tickets."""
         return """
             T.active = true
         """
 
     def _order_by(self):
-        """Giữ thứ tự row ổn định theo ticket và stage mục tiêu của SLA."""
+        """Keep row order stable, by ticket and by SLA target stage."""
         return """
             id, sla_stage_id
         """
 
     def init(self):
-        """Tạo mới hoặc refresh SQL view dùng bởi model phân tích SLA."""
+        """Create or refresh the SQL view behind the SLA analysis model."""
         tools.drop_view_if_exists(self.env.cr, self._table)
         self.env.cr.execute("""CREATE or REPLACE VIEW %s as (
             %s

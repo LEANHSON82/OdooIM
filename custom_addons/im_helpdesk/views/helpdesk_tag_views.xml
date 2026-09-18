@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!-- Giao diện backend cho tag helpdesk và cấu hình tự gắn tag theo keyword. -->
+<!-- Backend views for helpdesk tags and their auto-apply keywords. -->
 <odoo>
 
     <record id="helpdesk_tag_view_list" model="ir.ui.view">

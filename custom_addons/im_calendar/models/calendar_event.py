@@ -1,5 +1,6 @@
 import uuid
 import logging
+from datetime import datetime, timedelta, timezone
 
 from odoo import models, api
 from odoo.addons.google_calendar.models.google_sync import google_calendar_token
@@ -36,14 +37,19 @@ class CalendarEvent(models.Model):
         return 'discuss'
 
     def _create_google_meet_link(self, token):
-        """Create a temporary Google Calendar event to get a Meet link."""
+        """Create a temporary Google Calendar event to get a Meet link.
+
+        Google has no endpoint that mints a bare Meet link. The only way
+        is to create an event asking for conferenceData, read the link
+        back, then delete that throwaway event.
+        """
         try:
             from odoo.addons.google_calendar.utils.google_calendar import GoogleCalendarService
             google_service = self.env['google.service']
             cal_service = GoogleCalendarService(google_service)
 
-            from datetime import datetime, timedelta
-            now = datetime.utcnow()
+            # Naive UTC: the dateTime values below append their own 'Z'.
+            now = datetime.now(timezone.utc).replace(tzinfo=None)
             values = {
                 'summary': 'Odoo Meeting',
                 'start': {'dateTime': now.isoformat() + 'Z'},
@@ -69,6 +75,8 @@ class CalendarEvent(models.Model):
                 ]
                 meet_url = video_entries[0].get('uri') if video_entries else None
 
+                # Drop the throwaway event; a failure here only leaves
+                # one stray hour on the user's Google calendar.
                 google_event_id = result.get('id')
                 if google_event_id:
                     try:
