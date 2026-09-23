@@ -413,12 +413,36 @@ class TestTheRecord(TransactionCase):
         self.assertIn('name="state" optional="hide"', view.arch)
         self.assertIn('name="note" optional="hide"', view.arch)
 
-    def test_cron_runs_on_an_empty_queue(self):
+    def test_an_empty_queue_starts_no_worker(self):
         self.env['business.status.check'].search(
             [('state', '=', 'queued')]).write({'state': 'done'})
-        self.assertTrue(self.env['business.status.check']._cron_lookup())
+        self.assertEqual(self.env['business.status.check'].process_queue(), 0)
 
-    def test_cron_uses_one_portal_client_for_the_whole_batch(self):
+    def test_the_batch_handles_every_queued_record(self):
+        # The screen calls this, so the queue never waits for the cron.
+        self.env['ir.config_parameter'].sudo().set_param(
+            PREFIX + 'request_delay', '0')
+        for tax_code in ('5400530931', '0100109106'):
+            self.env['business.status.check'].create({'vat': tax_code})
+        info = dkkd_portal.BasicInfo(
+            status_text='Đang hoạt động',
+            fields={'name': 'CÔNG TY X', 'tax_code': '5400530931'})
+        with patch.object(dkkd_portal.DkkdPortal, 'fetch_basic_info', return_value=info):
+            processed = self.env['business.status.check'].process_queue()
+        self.assertEqual(processed, 2)
+        self.assertFalse(self.env['business.status.check'].search_count(
+            [('state', '=', 'queued')]))
+
+    def test_one_worker_at_a_time_keeps_the_captcha_bill_low(self):
+        # A second worker would solve a second captcha for the same rows.
+        checks = self.env['business.status.check']
+        key = self.env['ir.model']._get_id('business.status.check')
+        self.assertTrue(checks._queue_is_free())
+        with self.registry.cursor() as other:
+            other.execute("SELECT pg_try_advisory_xact_lock(%s)", [key])
+            self.assertFalse(other.fetchone()[0])
+
+    def test_the_batch_uses_one_portal_client(self):
         self.env['ir.config_parameter'].sudo().set_param(
             'im_business_status_checker.request_delay', '0')
         for tax_code in ('5400530931', '0100109106', '0300588560'):
@@ -429,10 +453,11 @@ class TestTheRecord(TransactionCase):
         with patch.object(dkkd_portal, 'DkkdPortal') as factory:
             factory.return_value.fetch_basic_info.return_value = info
             factory.return_value.is_broken = False
-            self.env['business.status.check']._cron_lookup()
+            self.assertEqual(
+                self.env['business.status.check'].process_queue(), 3)
         self.assertEqual(factory.call_count, 1)
 
-    def test_cron_rebuilds_the_session_after_a_broken_portal(self):
+    def test_the_batch_rebuilds_the_session_after_a_broken_portal(self):
         # A broken session must not infect the next record.
         self.env['ir.config_parameter'].sudo().set_param(
             'im_business_status_checker.request_delay', '0')
@@ -442,7 +467,7 @@ class TestTheRecord(TransactionCase):
             factory.return_value.fetch_basic_info.side_effect = (
                 dkkd_portal.DkkdBroken('cổng lỗi'))
             factory.return_value.is_broken = True
-            self.env['business.status.check']._cron_lookup()
+            self.env['business.status.check'].process_queue()
         self.assertEqual(factory.call_count, 3)
         self.assertEqual(
             self.env['business.status.check'].search_count(

@@ -73,7 +73,7 @@ Bảng gộp để khỏi phải mở từng module:
 | im_event_training | Refresh Early Bird Pricing (15 phút/lần, bật sẵn) | không |
 | im_marketing_journey | Engine Process Participants (5 phút/lần, bật sẵn) | không |
 | im_helpdesk | Automatically close the tickets (1 ngày/lần, **mặc định tắt**) | không |
-| im_business_status_checker | Tra cứu hàng đợi trên cổng đăng ký doanh nghiệp (5 phút/lần, bật sẵn; nút Tra cứu đánh thức cron ngay) | `captcha_provider`, `captcha_api_key`, `captcha_timeout` (180), `batch_size` (10), `request_delay` (3), `portal_timeout` (45), `portal_retries` (1) |
+| im_business_status_checker | Tra cứu hàng đợi trên cổng đăng ký doanh nghiệp (màn hình danh sách chạy hàng đợi; cron 5 phút/lần là lưới an toàn) | `captcha_provider`, `captcha_api_key`, `captcha_timeout` (180), `batch_size` (10), `request_delay` (3), `portal_timeout` (45), `portal_retries` (1) |
 | im_purchase_request | không | `allow_self_approval` (0), `overrun_tolerance_pct` (10), `min_quote_count` (3) |
 | im_brevo_mail | không | `brevo.api_key`, `brevo.sender_email`, `brevo.sender_name` |
 

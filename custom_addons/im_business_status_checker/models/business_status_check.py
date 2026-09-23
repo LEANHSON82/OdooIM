@@ -121,12 +121,27 @@ class BusinessStatusCheck(models.Model):
         self.write(values)
 
     @api.model
+    def process_queue(self):
+        # The list view drains the queue, so a slow cron cannot block it.
+        return self._cron_lookup()
+
+    @api.model
+    def _queue_is_free(self):
+        # One worker at a time, or two lookups pay for two captchas.
+        key = self.env['ir.model']._get_id('business.status.check')
+        self.env.cr.execute("SELECT pg_try_advisory_xact_lock(%s)", [key])
+        return self.env.cr.fetchone()[0]
+
+    @api.model
     def _cron_lookup(self):
+        if not self._queue_is_free():
+            return 0
         records = self.search(
             [('state', '=', 'queued')],
             limit=self._setting_int('batch_size', 10), order='id')
         if not records:
-            return True
+            return 0
+        _logger.info('Looking up %s queued records', len(records))
         delay = self._setting_int('request_delay', 3)
         client = None
         solver = self._solver()
@@ -141,4 +156,4 @@ class BusinessStatusCheck(models.Model):
             except Exception:  # pragma: no cover
                 _logger.exception('Lookup failed for %s', record.display_name)
                 record.write({'state': 'error', 'note': 'Lỗi không mong đợi.'})
-        return True
+        return len(records)

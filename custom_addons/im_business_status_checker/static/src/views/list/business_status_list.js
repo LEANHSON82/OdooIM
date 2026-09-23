@@ -43,6 +43,9 @@ export class BusinessStatusListController extends ListController {
             );
             if (rows.some((row) => row.state !== "queued")) {
                 await this.model.load();
+            } else if (await this.orm.call("business.status.check", "process_queue", [])) {
+                // The cron may be off, so this screen runs the queue itself.
+                await this.model.load();
             }
         } catch {
             // A failed poll must never break the screen.

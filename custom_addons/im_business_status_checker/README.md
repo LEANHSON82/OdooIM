@@ -21,9 +21,10 @@ Bấm nút **Tra cứu** trên thanh công cụ (thay cho nút Thêm mới, vì 
 được tạo từ đây), nhập mã số thuế, rồi bấm **Tra cứu**.
 
 Cổng trả lời trong **1–3 phút** vì phải chờ dịch vụ giải captcha, nên việc tra
-cứu do cron chạy nền: bản ghi hiện ra ngay ở trạng thái *Chờ tra cứu*. Danh sách
-tự nạp lại khi tra xong, không phải bấm F5. Nút **Tra cứu lại** trên form của
-bản ghi dùng khi muốn tra mới.
+cứu chạy nền: bản ghi hiện ra ngay ở trạng thái *Chờ tra cứu*. Chính màn hình
+danh sách đang mở sẽ chạy hàng đợi, nên không phải chờ cron và không phải bấm
+F5 — danh sách tự nạp lại khi tra xong. Nút **Tra cứu lại** trên form của bản
+ghi dùng khi muốn tra mới.
 
 ## Cấu hình
 
@@ -44,13 +45,16 @@ bảng này để tra nhanh khoá và giá trị mặc định.
 | `im_business_status_checker.captcha_provider` | `none` | `none`, `2captcha`, `capsolver`, `anticaptcha` |
 | `im_business_status_checker.captcha_api_key` | rỗng | Khóa dịch vụ captcha |
 | `im_business_status_checker.captcha_timeout` | `180` | Số giây chờ token tối đa |
-| `im_business_status_checker.batch_size` | `10` | Số doanh nghiệp mỗi lần cron chạy |
+| `im_business_status_checker.batch_size` | `10` | Số doanh nghiệp mỗi lô |
 | `im_business_status_checker.request_delay` | `3` | Nghỉ giữa hai lần gọi cổng (giây) |
 | `im_business_status_checker.portal_timeout` | `45` | Số giây chờ cổng mỗi request |
 | `im_business_status_checker.portal_retries` | `1` | Số lần thử lại khi cổng bận hoặc chậm |
 
-Cron **Tình trạng doanh nghiệp: tra cứu hàng đợi** chạy 5 phút một lần, xử
-lý các bản ghi đang *Chờ tra cứu*. Bấm nút Tra cứu là cron được đánh thức ngay.
+Màn hình danh sách chạy hàng đợi: thấy bản ghi *Chờ tra cứu* là gọi
+`business.status.check.process_queue()`, mỗi lô tối đa `batch_size` bản ghi.
+Cron **Tình trạng doanh nghiệp: tra cứu hàng đợi** (5 phút một lần) chỉ là lưới
+an toàn cho lô không ai mở màn hình xem. Một khóa advisory của PostgreSQL bảo
+đảm hai nơi không chạy trùng một lô — nếu không thì mỗi bên trả một lần captcha.
 
 ## Cách hoạt động
 
@@ -70,7 +74,7 @@ Một lượt tra cứu mất 30–200 giây, chủ yếu là chờ dịch vụ 
 form và đọc kết quả chỉ vài chục giây.
 
 Cổng chỉ kiểm captcha **một lần cho mỗi phiên**: vé đã qua dùng lại được cho
-những lượt tra sau, nên cron dùng chung một phiên cho cả lô. Đổi lại, sau khi mở
+những lượt tra sau, nên cả lô dùng chung một phiên. Đổi lại, sau khi mở
 trang chi tiết của một doanh nghiệp thì cổng chỉ vẽ lại kết quả cũ chứ không tra
 mới, nên mỗi lượt tra tiếp theo phải mở lại form tra cứu — mở lại form thì không
 tốn thêm captcha. Đo thật với 2captcha: **bốn mã số thuế chỉ tốn một lần giải
