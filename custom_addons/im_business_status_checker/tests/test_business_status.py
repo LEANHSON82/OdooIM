@@ -187,6 +187,12 @@ class TestReadingThePage(BaseCase):
         self.assertTrue(dkkd_portal.has_result_rows(FILTER_PAGE))
         self.assertFalse(dkkd_portal.has_result_rows('<p>Danh sách trống</p>'))
 
+    def test_page_hint_keeps_the_status_line(self):
+        hint = dkkd_portal.page_hint(
+            '<html><body><div>Mã số: 1, Tình trạng doanh nghiệp: Tạm ngừng</div></body></html>')
+        self.assertIn('Tình trạng doanh nghiệp: Tạm ngừng', hint)
+        self.assertEqual(dkkd_portal.page_hint('<p>  Xin   chào </p>'), 'Xin chào')
+
     def test_matches_term_refuses_another_company(self):
         info = dkkd_portal.BasicInfo(
             status_text='Tạm ngừng kinh doanh',
@@ -354,6 +360,31 @@ class TestTalkingToThePortal(BaseCase):
             dkkd_portal.Enterprise(tax_code='5400530931'), solver=solver)
         self.assertEqual(solver.calls, 1)
         self.assertEqual(info.status_text, 'Tạm ngừng kinh doanh')
+
+    def test_a_lost_detail_page_is_retried_with_a_fresh_form(self):
+        # The portal sometimes answers the row click without the status.
+        portal, _session = self._portal(
+            [_FakeResponse(FILTER_PAGE), _FakeResponse(FILTER_PAGE)]
+            + _reopen_responses()
+            + [_FakeResponse(FILTER_PAGE), _FakeResponse(ORDER_PAGE)])
+        info = portal.fetch_basic_info(
+            dkkd_portal.Enterprise(tax_code='5400530931'), solver=_FakeSolver())
+        self.assertEqual(info.status_text, 'Tạm ngừng kinh doanh')
+
+    def test_a_row_without_status_is_not_reported_as_missing(self):
+        portal, _session = self._portal(
+            [_FakeResponse(FILTER_PAGE), _FakeResponse(FILTER_PAGE)]
+            + _reopen_responses()
+            + [_FakeResponse(FILTER_PAGE), _FakeResponse(FILTER_PAGE)])
+        with self.assertLogs(
+                'odoo.addons.im_business_status_checker.tools.dkkd_portal',
+                'WARNING') as logs:
+            with self.assertRaises(dkkd_portal.DkkdError) as caught:
+                portal.fetch_basic_info(
+                    dkkd_portal.Enterprise(tax_code='5400530931'),
+                    solver=_FakeSolver())
+        self.assertIn('không trả tình trạng', str(caught.exception))
+        self.assertIn('No status for 5400530931', logs.output[0])
 
     def test_the_matching_row_is_opened_before_the_others(self):
         targets = dkkd_portal.DkkdPortal._result_row_targets(

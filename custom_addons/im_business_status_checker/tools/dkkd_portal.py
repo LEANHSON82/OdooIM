@@ -138,6 +138,13 @@ def has_result_rows(html_text):
     return bool(re.search(r'UC_ENT_LIST1\$CtlList\$ctl\d+\$Cmd', html_text or ''))
 
 
+def page_hint(html_text, size=180):
+    # The excerpt around the status label makes a remote failure readable.
+    text = clean_text(re.sub(r'<[^>]+>', ' ', html_text or ''))
+    match = re.search(r'.{0,60}Tình trạng.{0,80}', text)
+    return text[:size] if not match else match.group(0)
+
+
 def matches_term(info, term):
     # Portal re-renders old rows, so never store another company.
     wanted = re.sub(r'\D', '', term or '')
@@ -374,6 +381,17 @@ class DkkdPortal:
                 return info
         return info
 
+    def _search(self, term, token):
+        # The portal answers from many nodes, so retry a lost detail page.
+        for attempt in (0, 1):
+            response = self.submit_filter(term, token)
+            info = self.read_status_from_results(
+                response.text, str(response.url), term)
+            if info.status_text or attempt or not self._row_matches(
+                    response.text, term):
+                return response, info
+            self.open_catalog(force=True)
+
     def fetch_basic_info(self, enterprise, solver=None):
         term = (enterprise.tax_code or enterprise.name or '').strip()
         if not term:
@@ -400,9 +418,7 @@ class DkkdPortal:
             # Detail page blocks new searches, so reopen the form.
             self.open_catalog(force=True)
             solved = time.monotonic()
-            response = self.submit_filter(term, self.captcha_token)
-            info = self.read_status_from_results(
-                response.text, str(response.url), term)
+            response, info = self._search(term, self.captcha_token)
             if info.status_text and matches_term(info, term):
                 self.remember_captcha(self.captcha_token)
             else:
@@ -416,9 +432,7 @@ class DkkdPortal:
                                     "Cài đặt → Tra cứu đăng ký doanh nghiệp.")
             token = solver.solve_recaptcha(self.captcha_sitekey, self.catalog_url)
             solved = time.monotonic()
-            response = self.submit_filter(term, token)
-            info = self.read_status_from_results(
-                response.text, str(response.url), term)
+            response, info = self._search(term, token)
             if info.status_text:
                 self.remember_captcha(token)
 
@@ -427,6 +441,7 @@ class DkkdPortal:
             opened - started, 'reopened form, reused pass' if reused
             else 'captcha solved', solved - opened, time.monotonic() - solved)
         if not info.status_text:
+            _logger.warning('No status for %s: %s', term, page_hint(response.text))
             if not has_result_rows(response.text) or not self._row_matches(
                     response.text, term):
                 raise DkkdNotFound(
