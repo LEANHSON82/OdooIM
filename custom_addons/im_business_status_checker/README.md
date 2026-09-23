@@ -32,7 +32,9 @@ nhà cung cấp captcha. Vào **Cài đặt → Tra cứu đăng ký doanh nghi�
 (2captcha, Capsolver, Anti-Captcha) và dán khóa. Không có khóa thì bản ghi báo
 lỗi kèm hướng dẫn, không có đường vòng miễn phí.
 
-Có thể đặt khóa qua biến môi trường `CAPTCHA_API_KEY` thay vì lưu trong database.
+Có thể đặt cả hai qua biến môi trường thay vì lưu trong database:
+`CAPTCHA_PROVIDER` và `CAPTCHA_API_KEY`. Cấu hình trong Cài đặt được ưu tiên hơn;
+biến môi trường chỉ dùng khi database chưa có giá trị.
 
 Mọi tham số dưới đây chỉnh được ở **Cài đặt → Tra cứu đăng ký doanh nghiệp**;
 bảng này để tra nhanh khoá và giá trị mặc định.

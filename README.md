@@ -85,6 +85,8 @@ Hướng dẫn tạo project, gắn Postgres, gắn volume và trỏ tên miền
 | `ODOO_ADMIN_LOGIN`, `ODOO_ADMIN_PASSWORD` | không | Đổi tài khoản admin trong lần khởi động đầu |
 | `BREVO_API_KEY` | có, nếu cần gửi mail | Railway chặn cổng SMTP nên mail phải đi qua HTTP API |
 | `BREVO_SENDER_EMAIL` | đi kèm khoá trên | Địa chỉ người gửi đã xác thực bên Brevo |
+| `CAPTCHA_PROVIDER` | có, nếu dùng tra cứu đăng ký doanh nghiệp | `2captcha`, `capsolver` hoặc `anticaptcha` |
+| `CAPTCHA_API_KEY` | đi kèm biến trên | Khoá của dịch vụ giải captcha |
 | `SKIP_UPGRADE` | không | Đặt `1` để bỏ bước nâng cấp module lúc khởi động |
 
 ## Lưu ý khi vận hành

@@ -1,4 +1,5 @@
 import json
+import os
 import time
 from unittest.mock import patch
 
@@ -446,6 +447,17 @@ class TestTheRecord(TransactionCase):
         self.assertEqual(
             self.env['business.status.check'].search_count(
                 [('state', '=', 'error')]), 3)
+
+    def test_the_captcha_provider_can_come_from_the_environment(self):
+        # Hosting sets the provider by environment, not in the settings screen.
+        record = self.env['business.status.check']
+        env = {'CAPTCHA_PROVIDER': '2captcha', 'CAPTCHA_API_KEY': 'env-key'}
+        with patch.dict(os.environ, env):
+            self.assertEqual(record._solver().provider, '2captcha')
+        self.env['ir.config_parameter'].sudo().set_param(
+            PREFIX + 'captcha_provider', 'capsolver')
+        with patch.dict(os.environ, env):
+            self.assertEqual(record._solver().provider, 'capsolver')
 
     def test_the_portal_client_follows_the_settings(self):
         self.env['ir.config_parameter'].sudo().set_param(

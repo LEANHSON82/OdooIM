@@ -1,6 +1,6 @@
 {
     'name': 'InMotion - Business Status Checker',
-    'version': '19.0.2.6.0',
+    'version': '19.0.2.7.0',
     'category': 'Sales/CRM',
     'summary': 'Tra tình trạng hoạt động doanh nghiệp theo mã số thuế',
     'description': """

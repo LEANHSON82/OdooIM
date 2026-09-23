@@ -51,10 +51,13 @@ class BusinessStatusCheck(models.Model):
 
     @api.model
     def _solver(self):
-        provider = self._setting('captcha_provider', 'none')
-        if not provider or provider == 'none':
+        # Settings win, environment is the fallback for hosting.
+        provider = (self._setting('captcha_provider', '')
+                    or os.environ.get('CAPTCHA_PROVIDER', '')
+                    or 'none').strip().lower()
+        if provider == 'none':
             return None
-        key = (self._setting('captcha_api_key')
+        key = (self._setting('captcha_api_key', '')
                or os.environ.get('CAPTCHA_API_KEY', '')).strip()
         if not key:
             _logger.warning('No captcha service key for %s', provider)
