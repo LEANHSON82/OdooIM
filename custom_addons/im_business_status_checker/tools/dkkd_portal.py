@@ -138,11 +138,13 @@ def has_result_rows(html_text):
     return bool(re.search(r'UC_ENT_LIST1\$CtlList\$ctl\d+\$Cmd', html_text or ''))
 
 
-def page_hint(html_text, size=180):
-    # The excerpt around the status label makes a remote failure readable.
+def page_hint(html_text, size=90):
+    # Title plus a short excerpt makes a remote answer recognizable.
+    title = re.search(r'<title[^>]*>(.*?)</title>', html_text or '', re.S | re.I)
     text = clean_text(re.sub(r'<[^>]+>', ' ', html_text or ''))
-    match = re.search(r'.{0,60}Tình trạng.{0,80}', text)
-    return text[:size] if not match else match.group(0)
+    match = re.search(r'.{0,40}(?:Tình trạng|reCAPTCHA|lỗi).{0,60}', text, re.I)
+    body = (match.group(0) if match else text)[:size]
+    return '%s | %s' % (clean_text(title.group(1)), body) if title else body
 
 
 def matches_term(info, term):
@@ -441,13 +443,15 @@ class DkkdPortal:
             opened - started, 'reopened form, reused pass' if reused
             else 'captcha solved', solved - opened, time.monotonic() - solved)
         if not info.status_text:
-            _logger.warning('No status for %s: %s', term, page_hint(response.text))
+            hint = page_hint(response.text)
+            _logger.warning('No status for %s: %s', term, hint)
             if not has_result_rows(response.text) or not self._row_matches(
                     response.text, term):
                 raise DkkdNotFound(
                     "Cổng không tra được '%s'. Chi nhánh thì dùng mã công ty mẹ."
                     % term)
-            raise DkkdError("Cổng không trả tình trạng cho '%s'." % term)
+            raise DkkdError("Cổng không trả tình trạng cho '%s'. Cổng trả: %s"
+                            % (term, hint))
         if not matches_term(info, term):
             raise DkkdError("Cổng trả về doanh nghiệp khác '%s'." % term)
         return info

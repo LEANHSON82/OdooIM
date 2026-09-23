@@ -189,7 +189,9 @@ class TestReadingThePage(BaseCase):
 
     def test_page_hint_keeps_the_status_line(self):
         hint = dkkd_portal.page_hint(
-            '<html><body><div>Mã số: 1, Tình trạng doanh nghiệp: Tạm ngừng</div></body></html>')
+            '<html><head><title>Tra cứu doanh nghiệp</title></head><body>'
+            '<div>Mã số: 1, Tình trạng doanh nghiệp: Tạm ngừng</div></body></html>')
+        self.assertIn('Tra cứu doanh nghiệp', hint)
         self.assertIn('Tình trạng doanh nghiệp: Tạm ngừng', hint)
         self.assertEqual(dkkd_portal.page_hint('<p>  Xin   chào </p>'), 'Xin chào')
 

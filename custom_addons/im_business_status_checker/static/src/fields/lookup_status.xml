@@ -11,7 +11,7 @@
                   t-att-title="info.note or ''" t-esc="info.label"/>
             <small t-if="info.note"
                    class="text-muted text-truncate d-inline-block align-middle"
-                   style="max-width: 22rem" t-att-title="info.note" t-esc="info.note"/>
+                   style="max-width: 40rem" t-att-title="info.note" t-esc="info.note"/>
         </span>
     </t>
 
