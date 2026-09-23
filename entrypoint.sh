@@ -120,8 +120,12 @@ else
     if [ -n "$TO_UPGRADE" ]; then
       terminate_others
       echo ">> Nang cap module custom: ${TO_UPGRADE}"
-      odoo -c /etc/odoo/odoo.conf -d "$DB_NAME" "${DB_ARGS[@]}" \
-        -u "$TO_UPGRADE" --stop-after-init
+      # Nang cap loi KHONG duoc lam chet service: Odoo van khoi dong duoc voi
+      # module dang o trang thai 'to upgrade', va lan deploy sau se thu lai.
+      if ! odoo -c /etc/odoo/odoo.conf -d "$DB_NAME" "${DB_ARGS[@]}" \
+        -u "$TO_UPGRADE" --stop-after-init; then
+        echo ">> !! Nang cap loi -> van khoi dong Odoo, xem log phia tren."
+      fi
       echo ">> Nang cap xong."
     else
       echo ">> Khong co module custom nao dang cai -> bo qua nang cap."
