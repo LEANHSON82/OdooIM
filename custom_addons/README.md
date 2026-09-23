@@ -2,7 +2,7 @@
 
 ## Mô tả
 
-11 module chạy trên Odoo 19 Community, deploy bằng Docker lên Railway. Không
+12 module chạy trên Odoo 19 Community, deploy bằng Docker lên Railway. Không
 module nào phụ thuộc Odoo Enterprise.
 
 Mỗi module có `README.md` riêng theo cùng một bố cục: mô tả, tính năng, phân
@@ -31,6 +31,7 @@ câu: module nào phục vụ nghiệp vụ nào, và cài cái nào thì phải
 |---|---|---|
 | [im_helpdesk](im_helpdesk/) | Ticket, SLA, portal khách hàng, tự phân loại theo keyword | Độc lập |
 | [im_marketing_journey](im_marketing_journey/) | Kịch bản nuôi dưỡng lead nhiều bước trên `crm.lead` | Cần `crm`. Phần gửi tin chưa nối |
+| [im_business_status_checker](im_business_status_checker/) | Tra tình trạng hoạt động của doanh nghiệp theo mã số thuế | Module tự chứa, một menu riêng, không sửa Liên hệ. Cổng chặn bằng reCAPTCHA nên cần khóa dịch vụ của 2captcha / Capsolver / Anti-Captcha; cổng chỉ kiểm captcha một lần mỗi phiên nên cả lô dùng chung một phiên, danh sách tự nạp lại khi tra xong |
 
 ### Hạ tầng và giao diện
 
@@ -56,6 +57,7 @@ im_user_default_app  -> web
 im_website_branding  -> website
 im_calendar          -> calendar, google_calendar
 im_brevo_mail        -> base
+im_business_status_checker -> base, web (Python: requests, lxml)
 ```
 
 Chỉ có một quan hệ giữa các module nhà: `im_theme` phụ thuộc `im_elearning`. Còn
@@ -71,5 +73,16 @@ Bảng gộp để khỏi phải mở từng module:
 | im_event_training | Refresh Early Bird Pricing (15 phút/lần, bật sẵn) | không |
 | im_marketing_journey | Engine Process Participants (5 phút/lần, bật sẵn) | không |
 | im_helpdesk | Automatically close the tickets (1 ngày/lần, **mặc định tắt**) | không |
+| im_business_status_checker | Tra cứu hàng đợi trên cổng đăng ký doanh nghiệp (5 phút/lần, bật sẵn; nút Tra cứu đánh thức cron ngay) | `captcha_provider`, `captcha_api_key`, `captcha_timeout` (180), `batch_size` (10), `request_delay` (3), `portal_timeout` (45), `portal_retries` (1) |
 | im_purchase_request | không | `allow_self_approval` (0), `overrun_tolerance_pct` (10), `min_quote_count` (3) |
 | im_brevo_mail | không | `brevo.api_key`, `brevo.sender_email`, `brevo.sender_name` |
+
+## Quy ước viết code
+
+- Tên biến, tên hàm, tên model, câu log, commit message: tiếng Anh.
+- Comment và docstring: tiếng Anh, câu ngắn, không quá 15 chữ một dòng. Comment
+  trả lời vì sao, không lặp lại điều code đã nói rõ.
+- Nhãn trường, chuỗi hiển thị, thông báo lỗi cho người dùng: tiếng Việt (riêng
+  `im_helpdesk` để tiếng Anh và dịch qua `i18n/`).
+- Mỗi module giữ `README.md` riêng theo đúng bố cục 5 mục, và phần `description`
+  trong `__manifest__.py` đủ để người mới biết module làm gì.

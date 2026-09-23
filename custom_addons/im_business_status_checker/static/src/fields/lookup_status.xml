@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="im_business_status_checker.LookupStatusField">
+        <span t-if="info.kind === 'wait'" class="text-muted">
+            <i class="fa fa-spinner fa-spin me-1" role="img" aria-label="Đang tra cứu"/>
+            <t t-esc="info.label"/>
+        </span>
+        <span t-else="" t-attf-class="badge #{info.cls}"
+              t-att-title="info.note or ''" t-esc="info.label"/>
+    </t>
+
+</templates>

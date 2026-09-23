@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <record id="ir_cron_lookup" model="ir.cron">
+        <field name="name">Tình trạng doanh nghiệp: tra cứu hàng đợi</field>
+        <field name="model_id" ref="model_business_status_check"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_lookup()</field>
+        <field name="active" eval="True"/>
+        <field name="interval_number">5</field>
+        <field name="interval_type">minutes</field>
+        <field name="nextcall" eval="(DateTime.now() + timedelta(minutes=5)).strftime('%Y-%m-%d %H:%M:%S')"/>
+    </record>
+
+</odoo>

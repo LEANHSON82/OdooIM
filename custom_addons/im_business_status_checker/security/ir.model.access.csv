@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_business_status_check,business.status.check,model_business_status_check,base.group_user,1,1,1,1
+access_business_status_lookup,business.status.lookup,model_business_status_lookup,base.group_user,1,1,1,1

@@ -99,6 +99,16 @@ Hướng dẫn tạo project, gắn Postgres, gắn volume và trỏ tên miền
 - Một số module cần cron hoặc tham số hệ thống mới chạy đủ. Bảng tổng hợp nằm ở
   [custom_addons/README.md](custom_addons/README.md#cron-và-tham-số-hệ-thống).
 
+## Quy ước phát triển
+
+- Định danh, tên model, commit message: tiếng Anh.
+- Comment và docstring: tiếng Anh, câu ngắn, không quá 15 chữ một dòng.
+- Nhãn trường và chuỗi hiển thị cho người dùng: tiếng Việt.
+- Mỗi module giữ `README.md` riêng và phần `description` trong `__manifest__.py`.
+
+Chi tiết trong
+[custom_addons/README.md](custom_addons/README.md#quy-ước-viết-code).
+
 ## Giấy phép
 
 Các module trong repo khai `LGPL-3` trong `__manifest__.py`.
