@@ -6,8 +6,13 @@
             <i class="fa fa-spinner fa-spin me-1" role="img" aria-label="Đang tra cứu"/>
             <t t-esc="info.label"/>
         </span>
-        <span t-else="" t-attf-class="badge #{info.cls}"
-              t-att-title="info.note or ''" t-esc="info.label"/>
+        <span t-else="" class="d-inline-flex align-items-center gap-1">
+            <span t-attf-class="badge #{info.cls}"
+                  t-att-title="info.note or ''" t-esc="info.label"/>
+            <small t-if="info.note"
+                   class="text-muted text-truncate d-inline-block align-middle"
+                   style="max-width: 22rem" t-att-title="info.note" t-esc="info.note"/>
+        </span>
     </t>
 
 </templates>
