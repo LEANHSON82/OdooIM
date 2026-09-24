@@ -202,12 +202,16 @@ def find_sitekey(html_text):
 
 class DkkdPortal:
 
-    def __init__(self, timeout=90, session=None, retries=2, retry_delay=5):
+    def __init__(self, timeout=90, session=None, retries=2, retry_delay=5, proxy=''):
         _require_libs()
         self.timeout = timeout
         self.retries = max(int(retries or 0), 0)
         self.retry_delay = max(int(retry_delay or 0), 0)
         self.session = session or requests.Session()
+        if proxy:
+            # The portal refuses some countries, so a proxy can carry it.
+            address = proxy if '://' in proxy else 'http://' + proxy
+            self.session.proxies.update({'http': address, 'https': address})
         self.session.headers.update({
             'User-Agent': USER_AGENT,
             'Accept-Language': 'vi-VN,vi;q=0.9,en;q=0.8',

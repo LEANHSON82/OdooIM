@@ -74,7 +74,9 @@ class BusinessStatusCheck(models.Model):
         # One session per batch, so the captcha is charged once.
         return dkkd_portal.DkkdPortal(
             timeout=self._setting_int('portal_timeout', 45),
-            retries=self._setting_int('portal_retries', 1))
+            retries=self._setting_int('portal_retries', 1),
+            proxy=self._setting('portal_proxy', '')
+            or os.environ.get('PORTAL_PROXY', ''))
 
     def action_lookup(self):
         solver = self._solver()

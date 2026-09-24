@@ -27,7 +27,7 @@
                     </block>
                     <block title="Vận hành" name="im_runtime_container">
                         <setting string="Cấu hình tra cứu hàng đợi"
-                                 help="Áp dụng cho cron tra cứu. Đặt lô lớn quá hoặc thử lại nhiều quá thì cổng dễ chặn.">
+                                 help="Áp dụng cho mỗi lô tra cứu. Đặt lô lớn quá hoặc thử lại nhiều quá thì cổng dễ chặn.">
                             <div class="content-group">
                                 <div>
                                     <label for="im_batch_size" class="o_light_label"/>
@@ -46,6 +46,10 @@
                                     <field name="im_portal_retries" class="oe_inline"/>
                                 </div>
                             </div>
+                        </setting>
+                        <setting string="Proxy cho cổng"
+                                 help="Máy chủ ở nước ngoài có thể bị cổng chặn. Điền proxy có IP Việt Nam nếu bản ghi báo cổng không trả tình trạng.">
+                            <field name="im_portal_proxy" placeholder="http://tài-khoản:mật-khẩu@host:port"/>
                         </setting>
                     </block>
                 </app>

@@ -13,6 +13,7 @@ PREFIX = 'im_business_status_checker.'
 PARAMETERS = (
     'captcha_provider', 'captcha_api_key', 'captcha_timeout',
     'request_delay', 'batch_size', 'portal_timeout', 'portal_retries',
+    'portal_proxy',
 )
 
 ORDER_PAGE = """
@@ -119,6 +120,7 @@ class _FakeSession:
         self.responses = list(responses)
         self.calls = 0
         self.sent = []
+        self.proxies = {}
 
     def request(self, method, url, **kwargs):
         self.calls += 1
@@ -231,6 +233,14 @@ class TestTalkingToThePortal(BaseCase):
         with self.assertRaises(dkkd_portal.DkkdError):
             portal._get('https://x')
         self.assertEqual(session.calls, 2)
+
+    def test_a_proxy_carries_the_portal_traffic(self):
+        # A server abroad can only reach the portal through a local proxy.
+        _portal, session = self._portal(
+            [_FakeResponse(FILTER_PAGE)], proxy='vn:secret@host:8080')
+        self.assertEqual(session.proxies, {
+            'http': 'http://vn:secret@host:8080',
+            'https': 'http://vn:secret@host:8080'})
 
     def test_form_fields_keep_values_and_drop_buttons(self):
         fields = dkkd_portal.DkkdPortal._form_fields(CATALOG_PAGE)
@@ -525,6 +535,19 @@ class TestTheRecord(TransactionCase):
         client = self.env['business.status.check']._portal_client()
         self.assertEqual(client.timeout, 20)
         self.assertEqual(client.retries, 0)
+
+    def test_the_proxy_can_come_from_the_settings_or_the_environment(self):
+        # Hosting sets the proxy by environment, the settings screen wins.
+        params = self.env['ir.config_parameter'].sudo()
+        key = PREFIX + 'portal_proxy'
+        params.set_param(key, 'http://vn:1')
+        self.assertEqual(
+            self.env['business.status.check']._portal_client()
+            .session.proxies['https'], 'http://vn:1')
+        params.search([('key', '=', key)]).unlink()
+        with patch.dict(os.environ, {'PORTAL_PROXY': 'http://env:1'}):
+            client = self.env['business.status.check']._portal_client()
+        self.assertEqual(client.session.proxies['https'], 'http://env:1')
 
     def test_every_parameter_has_a_settings_field(self):
         # One settings field per parameter, so the two never drift apart.

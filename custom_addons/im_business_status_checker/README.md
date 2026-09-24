@@ -37,6 +37,21 @@ Có thể đặt cả hai qua biến môi trường thay vì lưu trong database
 `CAPTCHA_PROVIDER` và `CAPTCHA_API_KEY`. Cấu hình trong Cài đặt được ưu tiên hơn;
 biến môi trường chỉ dùng khi database chưa có giá trị.
 
+### Máy chủ đặt ở nước ngoài
+
+Cổng vẫn trả danh sách kết quả, nhưng **trang chi tiết doanh nghiệp thì rỗng** khi
+request đi từ IP datacenter nước ngoài (đã gặp trên Railway). Cùng mã số thuế,
+cùng code, chạy từ IP Việt Nam thì ra kết quả trong vài giây.
+
+Cách xử lý: dùng proxy có **IP Việt Nam** (nên là IP dân cư; IP datacenter Việt Nam
+cũng có thể bị chặn) rồi điền vào **Cài đặt → Tra cứu đăng ký doanh nghiệp →
+Proxy cho cổng**, dạng `http://tài-khoản:mật-khẩu@host:port` (thiếu `http://` cũng
+được). Trên hosting có thể đặt bằng biến môi trường `PORTAL_PROXY`; cấu hình trong
+Cài đặt được ưu tiên hơn. Chỉ request tới cổng đi qua proxy; request tới dịch vụ
+captcha đi trực tiếp.
+
+Chắc ăn hơn nếu cần chạy 24/7: đặt Odoo trên VPS Việt Nam, khi đó không cần proxy.
+
 Mọi tham số dưới đây chỉnh được ở **Cài đặt → Tra cứu đăng ký doanh nghiệp**;
 bảng này để tra nhanh khoá và giá trị mặc định.
 
@@ -49,6 +64,7 @@ bảng này để tra nhanh khoá và giá trị mặc định.
 | `im_business_status_checker.request_delay` | `3` | Nghỉ giữa hai lần gọi cổng (giây) |
 | `im_business_status_checker.portal_timeout` | `45` | Số giây chờ cổng mỗi request |
 | `im_business_status_checker.portal_retries` | `1` | Số lần thử lại khi cổng bận hoặc chậm |
+| `im_business_status_checker.portal_proxy` | rỗng | Proxy cho request tới cổng, nên là IP Việt Nam |
 
 Màn hình danh sách chạy hàng đợi: thấy bản ghi *Chờ tra cứu* là gọi
 `business.status.check.process_queue()`, mỗi lô tối đa `batch_size` bản ghi.

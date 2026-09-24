@@ -17,7 +17,7 @@ class ResConfigSettings(models.TransientModel):
         config_parameter='im_business_status_checker.captcha_timeout')
     im_batch_size = fields.Integer(
         string='Số doanh nghiệp mỗi lô', default=10,
-        help='Số bản ghi cron xử lý mỗi lượt. Đặt lớn quá cổng dễ chặn.',
+        help='Số bản ghi xử lý mỗi lượt. Đặt lớn quá cổng dễ chặn.',
         config_parameter='im_business_status_checker.batch_size')
     im_request_delay = fields.Integer(
         string='Nghỉ giữa hai lần gọi (giây)', default=3,
@@ -31,3 +31,8 @@ class ResConfigSettings(models.TransientModel):
         string='Số lần thử lại', default=1,
         help='Số lần gọi lại khi cổng bận. Tăng thì chậm hơn.',
         config_parameter='im_business_status_checker.portal_retries')
+    im_portal_proxy = fields.Char(
+        string='Proxy cho cổng',
+        help='Dạng http://tài-khoản:mật-khẩu@host:port. Điền khi máy chủ ở nước '
+             'ngoài bị cổng chặn; nên dùng proxy có IP Việt Nam.',
+        config_parameter='im_business_status_checker.portal_proxy')
